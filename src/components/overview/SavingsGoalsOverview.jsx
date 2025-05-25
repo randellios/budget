@@ -4,31 +4,21 @@ import {
   Grid,
   Card,
   CardContent,
-  CardHeader,
   Typography,
   LinearProgress,
   Chip,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Avatar,
-  Divider,
-  Alert,
-  Stack,
   Paper,
-  IconButton
+  Avatar
 } from '@mui/material';
 import {
-  Assessment as AssessmentIcon,
   TrackChanges as TrackChangesIcon,
-  CreditCard as CreditCardIcon,
-  Add as AddIcon,
-  TrendingUp as TrendingUpIcon,
-  Warning as WarningIcon,
-  CheckCircle as CheckCircleIcon
+  Security as SecurityIcon,
+  BeachAccess as BeachAccessIcon,
+  DirectionsCar as DirectionsCarIcon,
+  CheckCircle as CheckCircleIcon,
+  Warning as WarningIcon
 } from '@mui/icons-material';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 const GradientCard = styled(Card)(({ theme }) => ({
   background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
@@ -65,406 +55,352 @@ const SectionHeader = styled(Box)(({ theme }) => ({
 }));
 
 const IconWrapper = styled(Avatar)(({ theme, bgcolor }) => ({
-  width: 40,
-  height: 40,
+  width: 36,
+  height: 36,
   backgroundColor: bgcolor || theme.palette.primary.main,
   marginRight: theme.spacing(1.5)
 }));
 
 const ProgressCard = styled(Card)(({ theme }) => ({
-  textAlign: 'center',
-  padding: theme.spacing(3),
   background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)',
-  border: '1px solid #e8ecf3'
-}));
-
-const DebtCard = styled(Card)(({ theme }) => ({
-  borderLeft: `4px solid ${theme.palette.error.main}`,
-  background: 'linear-gradient(135deg, #fefefe 0%, #fdf2f2 100%)',
+  border: '1px solid #e8ecf3',
+  padding: theme.spacing(2.5),
+  height: '100%',
+  borderRadius: 12,
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+  transition: 'all 0.2s ease-in-out',
+  display: 'flex',
+  flexDirection: 'column',
   '&:hover': {
-    borderLeftColor: theme.palette.error.dark
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.12)'
   }
 }));
 
-const SmartWidget = styled(Card)(({ theme }) => ({
-  '& .MuiCardHeader-root': {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: 'white'
-  }
+const MetricBox = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(1.5),
+  borderRadius: 8,
+  border: '1px solid #e8ecf3',
+  backgroundColor: '#ffffff',
+  textAlign: 'center',
+  minHeight: 60,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center'
+}));
+
+const StatusFooter = styled(Box)(({ theme, ontrack }) => ({
+  marginTop: 'auto',
+  padding: theme.spacing(1.5),
+  borderRadius: 8,
+  backgroundColor: ontrack === 'true' ? '#f0fdf4' : '#fef3c7',
+  border: `1px solid ${ontrack === 'true' ? '#bbf7d0' : '#fbbf24'}`,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: theme.spacing(1)
 }));
 
 const SavingsGoalsOverview = () => {
+  const totalSaved = 3500;
+  const monthlyContributions = 200;
+  const monthlyIncome = 5000;
+
+  const savingsGoals = [
+    {
+      id: 1,
+      name: 'Emergency Fund',
+      icon: SecurityIcon,
+      current: 1000,
+      target: 5000,
+      priority: 'High',
+      color: '#ef4444',
+      monthlyContribution: 100,
+      monthsToTarget: 40,
+      targetDate: 'Dec 2026',
+      description: 'Essential safety net',
+      onTrack: true
+    },
+    {
+      id: 2,
+      name: 'Holiday Fund',
+      icon: BeachAccessIcon,
+      current: 500,
+      target: 2000,
+      priority: 'Medium',
+      color: '#f59e0b',
+      monthlyContribution: 0,
+      monthsToTarget: null,
+      targetDate: '2025-08',
+      description: 'Next family vacation',
+      onTrack: false
+    },
+    {
+      id: 3,
+      name: 'New Car Fund',
+      icon: DirectionsCarIcon,
+      current: 2000,
+      target: 10000,
+      priority: 'Low',
+      color: '#10b981',
+      monthlyContribution: 100,
+      monthsToTarget: 80,
+      targetDate: null,
+      description: 'Vehicle replacement',
+      onTrack: false
+    }
+  ];
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'High':
+        return '#ef4444';
+      case 'Medium':
+        return '#f59e0b';
+      case 'Low':
+        return '#10b981';
+      default:
+        return '#6b7280';
+    }
+  };
+
   return (
-    <>
-      {/* Savings Goals */}
-      <GradientCard>
-        <SectionHeader>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconWrapper bgcolor="#10b981">
-              <TrackChangesIcon />
-            </IconWrapper>
-            <Box>
-              <Typography variant="h5">Savings Goals Overview</Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  mt: 0.5
-                }}
-              >
-                <Typography variant="body2" color="text.secondary">
-                  Monthly Contributions: £200
-                </Typography>
-                <Chip
-                  icon={
-                    <Box
-                      sx={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: '50%',
-                        bgcolor: '#10b981'
-                      }}
-                    />
-                  }
-                  label="£3,500 Total Saved"
-                  size="small"
-                  sx={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                    color: '#475569',
-                    border: '1px solid #e2e8f0',
-                    fontSize: '0.75rem',
-                    fontWeight: 500,
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                      transform: 'translateY(-1px)',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                    }
-                  }}
-                />
-              </Box>
-            </Box>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Chip
-              icon={
-                <Box
-                  sx={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    bgcolor: '#f59e0b'
-                  }}
-                />
-              }
-              label="1/3 On Track"
-              size="small"
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                color: '#475569',
-                border: '1px solid #e2e8f0',
-                fontSize: '0.75rem',
-                fontWeight: 500,
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                }
-              }}
-            />
-            <Chip
-              icon={
-                <Box
-                  sx={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    bgcolor: '#10b981'
-                  }}
-                />
-              }
-              label="22% Progress"
-              size="small"
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                color: '#475569',
-                border: '1px solid #e2e8f0',
-                fontSize: '0.75rem',
-                fontWeight: 500,
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                }
-              }}
-            />
-          </Box>
-        </SectionHeader>
-        <CardContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      mb: 2
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="h6">Emergency Fund</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Essential safety net
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label="High"
-                      size="small"
-                      sx={{
-                        backgroundColor: '#fee2e2',
-                        color: '#991b1b',
-                        border: '1px solid #fca5a5',
-                        fontSize: '0.6875rem'
-                      }}
-                    />
-                  </Box>
-                  <Typography variant="h4" sx={{ mb: 2 }}>
-                    £1,000
-                    <Typography
-                      component="span"
-                      variant="body1"
-                      color="text.secondary"
-                    >
-                      / £5,000
-                    </Typography>
-                  </Typography>
-                  <LinearProgress
-                    variant="determinate"
-                    value={20}
-                    color="success"
-                    sx={{ height: 8, borderRadius: 4, mb: 1 }}
-                  />
-                  <Typography variant="caption" color="text.secondary">
-                    20% complete • £4,000 remaining
-                  </Typography>
-                  <Grid container spacing={1} sx={{ mt: 2 }}>
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="h6">20</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5
-                          }}
-                        >
-                          Months to goal
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="h6">Dec 2026</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5
-                          }}
-                        >
-                          Target date
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      mb: 2
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="h6">Holiday Fund</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Next family vacation
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label="Medium"
-                      size="small"
-                      sx={{
-                        backgroundColor: '#fde68a',
-                        color: '#92400e',
-                        border: '1px solid #fbbf24',
-                        fontSize: '0.6875rem'
-                      }}
-                    />
-                  </Box>
-                  <Typography variant="h4" sx={{ mb: 2 }}>
-                    £500
-                    <Typography
-                      component="span"
-                      variant="body1"
-                      color="text.secondary"
-                    >
-                      / £2,000
-                    </Typography>
-                  </Typography>
-                  <LinearProgress
-                    variant="determinate"
-                    value={25}
-                    color="warning"
-                    sx={{ height: 8, borderRadius: 4, mb: 1 }}
-                  />
-                  <Typography variant="caption" color="text.secondary">
-                    25% complete • £1,500 remaining
-                  </Typography>
-                  <Grid container spacing={1} sx={{ mt: 2 }}>
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="h6">∞</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5
-                          }}
-                        >
-                          Months to goal
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="h6">£0</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5
-                          }}
-                        >
-                          Monthly needed
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      mb: 2
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="h6">New Car Fund</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Vehicle replacement
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label="Low"
-                      size="small"
-                      sx={{
-                        backgroundColor: '#dcfce7',
-                        color: '#166534',
-                        border: '1px solid #bbf7d0',
-                        fontSize: '0.6875rem'
-                      }}
-                    />
-                  </Box>
-                  <Typography variant="h4" sx={{ mb: 2 }}>
-                    £2,000
-                    <Typography
-                      component="span"
-                      variant="body1"
-                      color="text.secondary"
-                    >
-                      / £10,000
-                    </Typography>
-                  </Typography>
-                  <LinearProgress
-                    variant="determinate"
-                    value={20}
-                    color="success"
-                    sx={{ height: 8, borderRadius: 4, mb: 1 }}
-                  />
-                  <Typography variant="caption" color="text.secondary">
-                    20% complete • £8,000 remaining
-                  </Typography>
-                  <Grid container spacing={1} sx={{ mt: 2 }}>
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="h6">∞</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5
-                          }}
-                        >
-                          Months to goal
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Paper sx={{ p: 1, textAlign: 'center' }}>
-                        <Typography variant="h6">£0</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5
-                          }}
-                        >
-                          Monthly needed
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </CardContent>
-        <Box
-          sx={{
-            px: 3,
-            py: 2,
-            bgcolor: '#f8f9fa',
-            borderTop: '1px solid #e8ecf3'
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between'
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              Overall Progress: 22%
+    <GradientCard>
+      <SectionHeader>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <IconWrapper bgcolor="#10b981">
+            <TrackChangesIcon />
+          </IconWrapper>
+          <Box>
+            <Typography variant="h5" sx={{ fontSize: '1.375rem' }}>
+              Savings Goals Overview
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              1/3 Goals on Track
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mt: 0.25 }}
+            >
+              Monthly Contributions: £{monthlyContributions}
             </Typography>
           </Box>
         </Box>
-      </GradientCard>
-    </>
+        <Box sx={{ textAlign: 'right' }}>
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: '0.7rem',
+              color: '#6b7280',
+              fontWeight: 500,
+              textTransform: 'uppercase',
+              letterSpacing: '0.3px',
+              display: 'block',
+              mb: 0.25
+            }}
+          >
+            Total Saved
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: 700, fontSize: '1.125rem', color: '#10b981' }}
+          >
+            £{totalSaved.toLocaleString()}
+          </Typography>
+        </Box>
+      </SectionHeader>
+      <CardContent>
+        <Grid container spacing={2}>
+          {savingsGoals.map((goal) => {
+            const IconComponent = goal.icon;
+            const progress = (goal.current / goal.target) * 100;
+            const priorityColor = getPriorityColor(goal.priority);
+            const incomePercentage = (
+              (goal.monthlyContribution / monthlyIncome) *
+              100
+            ).toFixed(1);
+            return (
+              <Grid item xs={12} md={4} key={goal.id}>
+                <ProgressCard>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      mb: 2
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        backgroundColor: `${goal.color}15`,
+                        borderRadius: 2,
+                        p: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <IconComponent sx={{ fontSize: 24, color: goal.color }} />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{ fontWeight: 700, fontSize: '1rem', mb: 0.5 }}
+                      >
+                        {goal.name}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontSize: '0.75rem',
+                          color: priorityColor,
+                          fontWeight: 600
+                        }}
+                      >
+                        {goal.priority} priority
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography
+                      variant="h4"
+                      sx={{
+                        fontWeight: 'bold',
+                        fontSize: '1.75rem',
+                        color: goal.color,
+                        mb: 0.5
+                      }}
+                    >
+                      £{goal.current.toLocaleString()}
+                      <Typography
+                        component="span"
+                        variant="body1"
+                        color="text.secondary"
+                        sx={{ fontSize: '1rem', ml: 1 }}
+                      >
+                        / £{goal.target.toLocaleString()}
+                      </Typography>
+                    </Typography>
+                    <LinearProgress
+                      variant="determinate"
+                      value={progress}
+                      sx={{
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: '#f3f4f6',
+                        mb: 1,
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: goal.color,
+                          borderRadius: 4
+                        }
+                      }}
+                    />
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ fontSize: '0.75rem' }}
+                    >
+                      {progress.toFixed(1)}% complete • £
+                      {(goal.target - goal.current).toLocaleString()} remaining
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                    <MetricBox sx={{ flex: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 'bold',
+                          fontSize: '1rem',
+                          color: '#1f2937',
+                          mb: 0.5
+                        }}
+                      >
+                        {goal.monthsToTarget || '∞'}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontSize: '0.7rem',
+                          color: '#6b7280',
+                          fontWeight: 500
+                        }}
+                      >
+                        Months to goal
+                      </Typography>
+                    </MetricBox>
+                    <MetricBox sx={{ flex: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 'bold',
+                          fontSize: '1rem',
+                          color: goal.color,
+                          mb: 0.5
+                        }}
+                      >
+                        £{goal.monthlyContribution}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontSize: '0.7rem',
+                          color: '#6b7280',
+                          fontWeight: 500
+                        }}
+                      >
+                        Monthly
+                      </Typography>
+                    </MetricBox>
+                    <MetricBox sx={{ flex: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 'bold',
+                          fontSize: '1rem',
+                          color: '#667eea',
+                          mb: 0.5
+                        }}
+                      >
+                        {incomePercentage}%
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontSize: '0.7rem',
+                          color: '#6b7280',
+                          fontWeight: 500
+                        }}
+                      >
+                        Of income
+                      </Typography>
+                    </MetricBox>
+                  </Box>
+                  <StatusFooter ontrack={goal.onTrack.toString()}>
+                    {goal.onTrack ? (
+                      <CheckCircleIcon
+                        sx={{ fontSize: 16, color: '#10b981' }}
+                      />
+                    ) : (
+                      <WarningIcon sx={{ fontSize: 16, color: '#f59e0b' }} />
+                    )}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: goal.onTrack ? '#166534' : '#92400e'
+                      }}
+                    >
+                      {goal.onTrack
+                        ? 'On track to meet goal'
+                        : 'Needs attention'}
+                    </Typography>
+                  </StatusFooter>
+                </ProgressCard>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </CardContent>
+    </GradientCard>
   );
 };
 
