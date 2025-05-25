@@ -1,0 +1,1228 @@
+<html lang="en">
+  <head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.13/html-to-image.min.js"
+      integrity="sha512-iZ2ORl595Wx6miw+GuadDet4WQbdSWS3JLMoNfY8cRGoEFy6oT3G9IbcrBeL6AfkgpA51ETt/faX6yLV+/gFJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Refined Budget Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        color: #1a1a1a;
+        line-height: 1.5;
+      }
+
+      .app-container {
+        display: grid;
+        grid-template-columns: 320px 1fr 300px;
+        gap: 20px;
+        padding: 20px;
+        min-height: 100vh;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      /* Sidebar Styles */
+      .sidebar {
+        background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        height: fit-content;
+        border: 1px solid #e3e8ef;
+      }
+
+      .sidebar-section {
+        border-bottom: 1px solid #f5f5f5;
+      }
+
+      .sidebar-section:last-child {
+        border-bottom: none;
+      }
+
+      .sidebar-header {
+        padding: 18px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .sidebar-header:hover {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      }
+
+      .sidebar-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .sidebar-total {
+        font-size: 14px;
+        color: #666;
+        font-weight: 500;
+      }
+
+      .sidebar-content {
+        padding: 0 20px 20px 20px;
+      }
+
+      .category-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f8f8f8;
+      }
+
+      .category-item:last-child {
+        border-bottom: none;
+      }
+
+      .category-name {
+        font-size: 14px;
+        color: #555;
+      }
+
+      .category-amount {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .add-button {
+        margin-top: 12px;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        color: #666;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+      }
+
+      .add-button:hover {
+        background: #e9ecef;
+        color: #555;
+      }
+
+      /* Main Content Styles */
+      .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .section-card {
+        background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e3e8ef;
+        overflow: hidden;
+      }
+
+      .section-header {
+        padding: 24px 28px;
+        border-bottom: 1px solid #e8ecf3;
+        background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .section-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #10b981, #f59e0b);
+        background-size: 400% 100%;
+        animation: gradientShift 8s ease infinite;
+      }
+
+      @keyframes gradientShift {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+      .section-header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .section-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .section-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .budget-icon {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .savings-icon {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+
+      .debt-icon {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      }
+
+      .section-icon::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transform: rotate(45deg);
+        animation: iconShimmer 3s infinite;
+      }
+
+      @keyframes iconShimmer {
+        0% {
+          transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+        100% {
+          transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+      }
+
+      .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2px;
+        position: relative;
+      }
+
+      .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #667eea, #10b981);
+        transition: width 0.3s ease;
+      }
+
+      .section-header:hover .section-title::after {
+        width: 60px;
+      }
+
+      .section-subtitle {
+        font-size: 14px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .section-stats {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .quick-stat {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+      }
+
+      .quick-stat:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #10b981;
+      }
+
+      .stat-dot.warning {
+        background: #f59e0b;
+      }
+
+      .stat-dot.danger {
+        background: #ef4444;
+      }
+
+      .budget-overview {
+        padding: 24px;
+      }
+
+      .budget-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+
+      .budget-category {
+        text-align: center;
+      }
+
+      .category-label {
+        font-size: 13px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+
+      .category-amount {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+      }
+
+      .category-target {
+        font-size: 13px;
+        color: #888;
+        margin-bottom: 12px;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: #f0f0f0;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        transition: width 0.8s ease;
+        border-radius: 3px;
+      }
+
+      .essentials .progress-fill {
+        background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+      }
+
+      .non-essential .progress-fill {
+        background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+      }
+
+      .savings-debts .progress-fill {
+        background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+      }
+
+      .progress-text {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .status-text {
+        font-size: 12px;
+        margin-top: 8px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        display: inline-block;
+      }
+
+      .on-track {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+      }
+
+      .needs-attention {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #d97706;
+        border: 1px solid #fbbf24;
+      }
+
+      /* Goals Section */
+      .goals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        padding: 24px;
+      }
+
+      .goal-card {
+        padding: 20px;
+        border: 1px solid #e8ecf3;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
+        transition: all 0.3s ease;
+      }
+
+      .goal-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        border-color: #d1d9e6;
+      }
+
+      .goal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+
+      .goal-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 2px;
+      }
+
+      .goal-subtitle {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .priority-badge {
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: 500;
+      }
+
+      .high {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #dc2626;
+        border: 1px solid #fca5a5;
+      }
+      .medium {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #d97706;
+        border: 1px solid #fbbf24;
+      }
+      .low {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+      }
+
+      .goal-amount {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 16px;
+      }
+
+      .goal-progress {
+        margin-bottom: 16px;
+      }
+
+      .goal-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .stat-item {
+        text-align: center;
+        padding: 10px;
+        background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+        border-radius: 6px;
+        border: 1px solid #e8ecf3;
+        transition: all 0.2s ease;
+      }
+
+      .stat-item:hover {
+        border-color: #d1d9e6;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .stat-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .stat-label {
+        font-size: 10px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 2px;
+      }
+
+      /* Widget Styles */
+      .widget {
+        background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e3e8ef;
+        overflow: hidden;
+      }
+
+      .widget-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 16px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .widget-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        animation: shimmer 3s infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+
+      .widget-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .widget-subtitle {
+        font-size: 12px;
+        opacity: 0.9;
+      }
+
+      .widget-content {
+        padding: 16px;
+      }
+
+      .opportunity-alert {
+        background: linear-gradient(135deg, #fef9e7 0%, #fef3c7 100%);
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+
+      .alert-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #92400e;
+        margin-bottom: 2px;
+      }
+
+      .alert-description {
+        font-size: 11px;
+        color: #a16207;
+      }
+
+      .metrics-small {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .metric-small {
+        background: linear-gradient(135deg, #f8f9fa 0%, #f1f5f9 100%);
+        padding: 10px;
+        border-radius: 6px;
+        text-align: center;
+        border: 1px solid #e8ecf3;
+        transition: all 0.2s ease;
+      }
+
+      .metric-small:hover {
+        border-color: #d1d9e6;
+        transform: translateY(-1px);
+      }
+
+      .metric-value-small {
+        font-size: 16px;
+        font-weight: 700;
+        color: #16a34a;
+      }
+
+      .metric-label-small {
+        font-size: 10px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 2px;
+      }
+
+      .quick-improvements {
+        margin-bottom: 16px;
+      }
+
+      .improvements-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .improvement-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 4px;
+      }
+
+      .action-button-small {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .action-button-small:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .action-button-small::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .action-button-small:hover::before {
+        left: 100%;
+      }
+
+      /* Summary Stats */
+      .summary-bar {
+        padding: 16px 24px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #f1f5f9 100%);
+        border-top: 1px solid #e8ecf3;
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #666;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1200px) {
+        .app-container {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .budget-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .goals-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .app-container {
+          padding: 12px;
+          gap: 16px;
+        }
+
+        .section-header,
+        .budget-overview {
+          padding: 16px;
+        }
+      }
+
+      /* Debt specific styles */
+      .debt-card {
+        border-left: 4px solid #ef4444;
+        background: linear-gradient(135deg, #fefefe 0%, #fdf2f2 100%);
+      }
+
+      .debt-card:hover {
+        border-left-color: #dc2626;
+      }
+
+      .debt-amount {
+        color: #ef4444;
+      }
+
+      .interest-info {
+        font-size: 11px;
+        color: #dc2626;
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        padding: 4px 8px;
+        border-radius: 12px;
+        display: inline-block;
+        margin-top: 8px;
+        border: 1px solid #fca5a5;
+      }
+    </style>
+  </head>
+  <body id="artifacts-component-root-html">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-header">
+            <h3 class="sidebar-title">Monthly Outgoings</h3>
+            <span class="sidebar-total">£600</span>
+          </div>
+          <div class="sidebar-content">
+            <div class="category-item">
+              <span class="category-name">Utilities</span>
+              <span class="category-amount">£170</span>
+            </div>
+            <div class="category-item">
+              <span class="category-name">Home</span>
+              <span class="category-amount">£300</span>
+            </div>
+            <div class="category-item">
+              <span class="category-name">Non-recurring</span>
+              <span class="category-amount">£130</span>
+            </div>
+            <button class="add-button">+ Add Category</button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-header">
+            <h3 class="sidebar-title">Savings</h3>
+            <span class="sidebar-total">£200</span>
+          </div>
+          <div class="sidebar-content">
+            <div class="category-item">
+              <span class="category-name">Emergency Fund</span>
+              <span class="category-amount">£1000</span>
+            </div>
+            <div class="category-item">
+              <span class="category-name">Holiday Fund</span>
+              <span class="category-amount">£500</span>
+            </div>
+            <div class="category-item">
+              <span class="category-name">New Car Fund</span>
+              <span class="category-amount">£2000</span>
+            </div>
+            <button class="add-button">+ Add Saving Goal</button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-header">
+            <h3 class="sidebar-title">Debts</h3>
+            <span class="sidebar-total">£200</span>
+          </div>
+          <div class="sidebar-content">
+            <div class="category-item">
+              <span class="category-name">Credit Card</span>
+              <span class="category-amount">£2000</span>
+            </div>
+            <div class="category-item">
+              <span class="category-name">Car Loan</span>
+              <span class="category-amount">£3000</span>
+            </div>
+            <div class="category-item">
+              <span class="category-name">Student Loan</span>
+              <span class="category-amount">£5000</span>
+            </div>
+            <button class="add-button">+ Add Debt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Budget Overview -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-content">
+              <div class="section-header-left">
+                <div class="section-icon budget-icon">📊</div>
+                <div>
+                  <h2 class="section-title">Monthly Budget Overview</h2>
+                  <div class="section-subtitle">
+                    <span>Monthly Income: £5,000</span>
+                    <div class="quick-stat">
+                      <div class="stat-dot warning"></div>
+                      <span>£200 Unallocated</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="section-stats">
+                <div class="quick-stat">
+                  <div class="stat-dot"></div>
+                  <span>66% Allocated</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="budget-overview">
+            <div class="budget-grid">
+              <div class="budget-category essentials">
+                <div class="category-label">Essentials</div>
+                <div class="category-amount">£2,300</div>
+                <div class="category-target">of £2,500 target</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 92%"></div>
+                </div>
+                <div class="progress-text">92% of target • £200 remaining</div>
+                <div class="status-text on-track">On track</div>
+              </div>
+
+              <div class="budget-category non-essential">
+                <div class="category-label">Non-essential</div>
+                <div class="category-amount">£720</div>
+                <div class="category-target">of £1,500 target</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 48%"></div>
+                </div>
+                <div class="progress-text">48% of target • £780 remaining</div>
+                <div class="status-text needs-attention">Under budget</div>
+              </div>
+
+              <div class="budget-category savings-debts">
+                <div class="category-label">Savings &amp; Debts</div>
+                <div class="category-amount">£300</div>
+                <div class="category-target">of £1,000 target</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 30%"></div>
+                </div>
+                <div class="progress-text">30% of target • £700 remaining</div>
+                <div class="status-text needs-attention">Needs attention</div>
+              </div>
+            </div>
+          </div>
+          <div class="summary-bar">
+            <span>Total Allocated: £3,320 of £5,000</span>
+            <span>Budget Health: Good progress on essentials</span>
+          </div>
+        </div>
+
+        <!-- Savings Goals -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-content">
+              <div class="section-header-left">
+                <div class="section-icon savings-icon">🎯</div>
+                <div>
+                  <h2 class="section-title">Savings Goals Overview</h2>
+                  <div class="section-subtitle">
+                    <span>Monthly Contributions: £200</span>
+                    <div class="quick-stat">
+                      <div class="stat-dot"></div>
+                      <span>£3,500 Total Saved</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="section-stats">
+                <div class="quick-stat">
+                  <div class="stat-dot warning"></div>
+                  <span>1/3 On Track</span>
+                </div>
+                <div class="quick-stat">
+                  <div class="stat-dot"></div>
+                  <span>22% Progress</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="goals-grid">
+            <div class="goal-card">
+              <div class="goal-header">
+                <div>
+                  <h3 class="goal-title">Emergency Fund</h3>
+                  <p class="goal-subtitle">Essential safety net</p>
+                </div>
+                <span class="priority-badge high">High</span>
+              </div>
+              <div class="goal-amount">
+                £1,000
+                <span style="font-size: 16px; color: #888">/ £5,000</span>
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 20%"></div>
+                </div>
+                <div class="progress-text">20% complete • £4,000 remaining</div>
+              </div>
+              <div class="goal-stats">
+                <div class="stat-item">
+                  <div class="stat-value">20</div>
+                  <div class="stat-label">Months to goal</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">Dec 2026</div>
+                  <div class="stat-label">Target date</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="goal-card">
+              <div class="goal-header">
+                <div>
+                  <h3 class="goal-title">Holiday Fund</h3>
+                  <p class="goal-subtitle">Next family vacation</p>
+                </div>
+                <span class="priority-badge medium">Medium</span>
+              </div>
+              <div class="goal-amount">
+                £500 <span style="font-size: 16px; color: #888">/ £2,000</span>
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 25%"></div>
+                </div>
+                <div class="progress-text">25% complete • £1,500 remaining</div>
+              </div>
+              <div class="goal-stats">
+                <div class="stat-item">
+                  <div class="stat-value">∞</div>
+                  <div class="stat-label">Months to goal</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">£0</div>
+                  <div class="stat-label">Monthly needed</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="goal-card">
+              <div class="goal-header">
+                <div>
+                  <h3 class="goal-title">New Car Fund</h3>
+                  <p class="goal-subtitle">Vehicle replacement</p>
+                </div>
+                <span class="priority-badge low">Low</span>
+              </div>
+              <div class="goal-amount">
+                £2,000
+                <span style="font-size: 16px; color: #888">/ £10,000</span>
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 20%"></div>
+                </div>
+                <div class="progress-text">20% complete • £8,000 remaining</div>
+              </div>
+              <div class="goal-stats">
+                <div class="stat-item">
+                  <div class="stat-value">∞</div>
+                  <div class="stat-label">Months to goal</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">£0</div>
+                  <div class="stat-label">Monthly needed</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="summary-bar">
+            <span>Overall Progress: 22%</span>
+            <span>1/3 Goals on Track</span>
+          </div>
+        </div>
+
+        <!-- Debt Management -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-content">
+              <div class="section-header-left">
+                <div class="section-icon debt-icon">💳</div>
+                <div>
+                  <h2 class="section-title">Debt Management Overview</h2>
+                  <div class="section-subtitle">
+                    <span>Monthly Payments: £200</span>
+                    <div class="quick-stat">
+                      <div class="stat-dot danger"></div>
+                      <span>£10,000 Total Debt</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="section-stats">
+                <div class="quick-stat">
+                  <div class="stat-dot"></div>
+                  <span>68% Paid Off</span>
+                </div>
+                <div class="quick-stat">
+                  <div class="stat-dot warning"></div>
+                  <span>May 2038 Debt-Free</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="goals-grid">
+            <div class="goal-card debt-card">
+              <div class="goal-header">
+                <div>
+                  <h3 class="goal-title">Credit Card</h3>
+                  <p class="goal-subtitle">High-interest revolving debt</p>
+                </div>
+                <span class="priority-badge high">High</span>
+              </div>
+              <div class="goal-amount debt-amount">
+                £2,000
+                <span
+                  style="
+                    font-size: 16px;
+                    color: #888;
+                    text-decoration: line-through;
+                  "
+                  >£5,000</span
+                >
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 60%"></div>
+                </div>
+                <div class="progress-text">60% paid off • £3,000 progress</div>
+              </div>
+              <div class="goal-stats">
+                <div class="stat-item">
+                  <div class="stat-value">32</div>
+                  <div class="stat-label">Months to payoff</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">£458</div>
+                  <div class="stat-label">Interest cost</div>
+                </div>
+              </div>
+              <div class="interest-info">22.9% APR • £67/month</div>
+            </div>
+
+            <div class="goal-card debt-card">
+              <div class="goal-header">
+                <div>
+                  <h3 class="goal-title">Car Loan</h3>
+                  <p class="goal-subtitle">Auto financing</p>
+                </div>
+                <span class="priority-badge medium">Medium</span>
+              </div>
+              <div class="goal-amount debt-amount">
+                £3,000
+                <span
+                  style="
+                    font-size: 16px;
+                    color: #888;
+                    text-decoration: line-through;
+                  "
+                  >£10,000</span
+                >
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 70%"></div>
+                </div>
+                <div class="progress-text">70% paid off • £7,000 progress</div>
+              </div>
+              <div class="goal-stats">
+                <div class="stat-item">
+                  <div class="stat-value">32</div>
+                  <div class="stat-label">Months to payoff</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">£195</div>
+                  <div class="stat-label">Interest cost</div>
+                </div>
+              </div>
+              <div class="interest-info">6.5% APR • £100/month</div>
+            </div>
+
+            <div class="goal-card debt-card">
+              <div class="goal-header">
+                <div>
+                  <h3 class="goal-title">Student Loan</h3>
+                  <p class="goal-subtitle">Education financing</p>
+                </div>
+                <span class="priority-badge low">Low</span>
+              </div>
+              <div class="goal-amount debt-amount">
+                £5,000
+                <span
+                  style="
+                    font-size: 16px;
+                    color: #888;
+                    text-decoration: line-through;
+                  "
+                  >£22,000</span
+                >
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 77%"></div>
+                </div>
+                <div class="progress-text">77% paid off • £17,000 progress</div>
+              </div>
+              <div class="goal-stats">
+                <div class="stat-item">
+                  <div class="stat-value">162</div>
+                  <div class="stat-label">Months to payoff</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">£300</div>
+                  <div class="stat-label">Interest cost</div>
+                </div>
+              </div>
+              <div class="interest-info">3.2% APR • £33/month</div>
+            </div>
+          </div>
+          <div class="summary-bar">
+            <span>Overall Progress: 68% • Debt-Free: May 2038</span>
+            <span>2/3 Debts on Track</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Widget Sidebar -->
+      <div class="widget">
+        <div class="widget-header">
+          <h3 class="widget-title">Smart Budget Optimizer</h3>
+          <p class="widget-subtitle">AI-powered recommendations</p>
+        </div>
+        <div class="widget-content">
+          <div class="opportunity-alert">
+            <div class="alert-title">Optimization Available</div>
+            <div class="alert-description">
+              Save £260/month by adjusting 6 items
+            </div>
+          </div>
+
+          <div class="metrics-small">
+            <div class="metric-small">
+              <div class="metric-value-small">£260</div>
+              <div class="metric-label-small">Monthly Savings</div>
+            </div>
+            <div class="metric-small">
+              <div class="metric-value-small">24</div>
+              <div class="metric-label-small">Months Saved</div>
+            </div>
+          </div>
+
+          <div class="quick-improvements">
+            <div class="improvements-title">Goal Improvements</div>
+            <div class="improvement-item">
+              <span>Emergency Fund</span>
+              <span style="color: #16a34a; font-weight: 600"
+                >6 months sooner</span
+              >
+            </div>
+            <div class="improvement-item">
+              <span>Debt-Free Date</span>
+              <span style="color: #16a34a; font-weight: 600"
+                >2.5 years sooner</span
+              >
+            </div>
+            <div class="improvement-item">
+              <span>Holiday Fund</span>
+              <span style="color: #16a34a; font-weight: 600"
+                >Now achievable</span
+              >
+            </div>
+          </div>
+
+          <div class="quick-improvements">
+            <div class="improvements-title">Top Adjustments</div>
+            <div class="improvement-item">
+              <span>Dining Out</span>
+              <span style="color: #ef4444">-£100</span>
+            </div>
+            <div class="improvement-item">
+              <span>Shopping</span>
+              <span style="color: #ef4444">-£60</span>
+            </div>
+            <div class="improvement-item">
+              <span>Coffee &amp; Snacks</span>
+              <span style="color: #ef4444">-£35</span>
+            </div>
+          </div>
+
+          <button class="action-button-small">Apply Smart Optimization</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
