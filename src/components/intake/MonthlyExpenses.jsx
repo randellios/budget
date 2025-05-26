@@ -8,7 +8,8 @@ import {
   Button,
   IconButton,
   Collapse,
-  Tooltip
+  Tooltip,
+  TextField
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -21,7 +22,6 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
-
 const expenseCategories = [
   {
     id: 1,
@@ -109,25 +109,21 @@ const expenseCategories = [
     ]
   }
 ];
-
 const MonthlyExpenses = () => {
   const [expandedCategories, setExpandedCategories] = useState({});
   const [editingField, setEditingField] = useState(null);
   const [expenses, setExpenses] = useState(expenseCategories);
-
   const toggleCategory = (categoryId) => {
     setExpandedCategories((prev) => ({
       ...prev,
       [categoryId]: !prev[categoryId]
     }));
   };
-
   const deleteCategory = (categoryId) => {
     setExpenses((prev) =>
       prev.filter((category) => category.id !== categoryId)
     );
   };
-
   const updateCategoryField = (categoryId, field, newValue) => {
     setExpenses((prev) =>
       prev.map((category) =>
@@ -138,7 +134,6 @@ const MonthlyExpenses = () => {
     );
     setEditingField(null);
   };
-
   const updateItemField = (categoryId, itemId, field, newValue) => {
     setExpenses((prev) =>
       prev.map((category) => {
@@ -162,7 +157,6 @@ const MonthlyExpenses = () => {
     );
     setEditingField(null);
   };
-
   const toggleItemEssential = (categoryId, itemId) => {
     setExpenses((prev) =>
       prev.map((category) => {
@@ -181,7 +175,6 @@ const MonthlyExpenses = () => {
       })
     );
   };
-
   const toggleItemFlexible = (categoryId, itemId) => {
     setExpenses((prev) =>
       prev.map((category) => {
@@ -200,40 +193,31 @@ const MonthlyExpenses = () => {
       })
     );
   };
-
   const getCategoryTotal = (category) =>
     category.items.reduce((total, item) => total + item.amount, 0);
-
   const totalExpenses = expenses.reduce(
     (total, category) => total + getCategoryTotal(category),
     0
   );
-
   const getExpenseSummary = () => {
     let essential = 0,
       nonEssential = 0;
     let flexible = 0,
       fixed = 0;
-
     expenses.forEach((category) => {
       category.items.forEach((item) => {
         if (item.isEssential) essential += item.amount;
         else nonEssential += item.amount;
-
         if (item.isFlexible) flexible += item.amount;
         else fixed += item.amount;
       });
     });
-
     return { essential, nonEssential, flexible, fixed };
   };
-
   const summary = getExpenseSummary();
-
   return (
     <Card>
       <CardHeader title="Monthly Expenses" sx={{ pb: 1 }} />
-
       <CardContent sx={{ pt: 0, pb: 2 }}>
         {expenses.map((category) => (
           <Box key={category.id} sx={{ mb: 2 }}>
@@ -264,7 +248,6 @@ const MonthlyExpenses = () => {
                 </IconButton>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="subtitle2">{category.icon}</Typography>
-
                   <EditableField
                     value={category.name}
                     isEditing={editingField === `category-${category.id}-name`}
@@ -285,12 +268,10 @@ const MonthlyExpenses = () => {
                   />
                 </Box>
               </Box>
-
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
                   £{getCategoryTotal(category).toLocaleString()}
                 </Typography>
-
                 <Tooltip title="Delete category">
                   <IconButton
                     size="small"
@@ -311,7 +292,6 @@ const MonthlyExpenses = () => {
                 </Tooltip>
               </Box>
             </Box>
-
             <Collapse
               in={expandedCategories[category.id]}
               timeout="auto"
@@ -366,7 +346,6 @@ const MonthlyExpenses = () => {
                         }}
                       />
                     </Box>
-
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Tooltip
                         title={
@@ -395,7 +374,6 @@ const MonthlyExpenses = () => {
                           )}
                         </IconButton>
                       </Tooltip>
-
                       <Tooltip
                         title={
                           item.isFlexible
@@ -423,40 +401,36 @@ const MonthlyExpenses = () => {
                           )}
                         </IconButton>
                       </Tooltip>
-
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          bgcolor: '#f8fafc',
-                          borderRadius: 1,
-                          border: '1px solid #e2e8f0',
-                          px: 1.5,
-                          py: 0.5,
-                          minWidth: 80
-                        }}
-                      >
-                        <Typography variant="body2">£</Typography>
-                        <input
-                          style={{
-                            border: 'none',
-                            background: 'transparent',
-                            outline: 'none',
-                            width: '60px',
-                            textAlign: 'right',
-                            fontSize: '14px'
+                      <Box sx={{ width: 115 }}>
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          value={item.amount}
+                          onChange={(e) =>
+                            updateItemField(
+                              category.id,
+                              item.id,
+                              'amount',
+                              e.target.value
+                            )
+                          }
+                          InputProps={{
+                            startAdornment: (
+                              <Typography variant="body2" sx={{ mr: 0.5 }}>
+                                £
+                              </Typography>
+                            )
                           }}
-                          defaultValue={item.amount}
+                          fullWidth
                         />
                       </Box>
-
                       <IconButton size="small" sx={{ color: 'error.main' }}>
                         <Box sx={{ fontSize: '14px' }}>✕</Box>
                       </IconButton>
                     </Box>
                   </Box>
                 ))}
-
                 <Button
                   size="small"
                   startIcon={<AddIcon />}
@@ -473,7 +447,6 @@ const MonthlyExpenses = () => {
             </Collapse>
           </Box>
         ))}
-
         <Button
           fullWidth
           variant="outlined"
@@ -497,5 +470,4 @@ const MonthlyExpenses = () => {
     </Card>
   );
 };
-
 export default MonthlyExpenses;

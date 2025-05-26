@@ -9,7 +9,8 @@ import {
   Button,
   IconButton,
   Divider,
-  Collapse
+  Collapse,
+  TextField
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -262,31 +263,29 @@ const SavingGoals = () => {
                           color="text.secondary"
                           sx={{ display: 'block', mb: 0.5 }}
                         >
-                          Current balance
+                          Current Balance
                         </Typography>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            bgcolor: 'white',
-                            borderRadius: 1,
-                            border: '1px solid #e2e8f0',
-                            px: 1.5,
-                            py: 0.5
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          value={goal.currentBalance}
+                          onChange={(e) =>
+                            updateGoalField(
+                              goal.id,
+                              'currentBalance',
+                              e.target.value
+                            )
+                          }
+                          InputProps={{
+                            startAdornment: (
+                              <Typography variant="body2" sx={{ mr: 0.5 }}>
+                                £
+                              </Typography>
+                            )
                           }}
-                        >
-                          <Typography variant="body2">£</Typography>
-                          <input
-                            style={{
-                              border: 'none',
-                              background: 'transparent',
-                              outline: 'none',
-                              width: '100%',
-                              fontSize: '14px'
-                            }}
-                            defaultValue={goal.targetAmount}
-                          />
-                        </Box>
+                          fullWidth
+                        />
                       </Box>
 
                       <Box sx={{ flex: 1 }}>
@@ -297,29 +296,27 @@ const SavingGoals = () => {
                         >
                           Target Amount
                         </Typography>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            bgcolor: 'white',
-                            borderRadius: 1,
-                            border: '1px solid #e2e8f0',
-                            px: 1.5,
-                            py: 0.5
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          value={goal.targetAmount}
+                          onChange={(e) =>
+                            updateGoalField(
+                              goal.id,
+                              'targetAmount',
+                              e.target.value
+                            )
+                          }
+                          InputProps={{
+                            startAdornment: (
+                              <Typography variant="body2" sx={{ mr: 0.5 }}>
+                                £
+                              </Typography>
+                            )
                           }}
-                        >
-                          <Typography variant="body2">£</Typography>
-                          <input
-                            style={{
-                              border: 'none',
-                              background: 'transparent',
-                              outline: 'none',
-                              width: '100%',
-                              fontSize: '14px'
-                            }}
-                            defaultValue={goal.targetAmount}
-                          />
-                        </Box>
+                          fullWidth
+                        />
                       </Box>
                     </Box>
 
@@ -332,27 +329,20 @@ const SavingGoals = () => {
                         >
                           Target Date
                         </Typography>
-                        <Box
-                          sx={{
-                            bgcolor: 'white',
-                            borderRadius: 1,
-                            border: '1px solid #e2e8f0',
-                            px: 1.5,
-                            py: 0.5
-                          }}
-                        >
-                          <input
-                            type="month"
-                            style={{
-                              border: 'none',
-                              background: 'transparent',
-                              outline: 'none',
-                              width: '100%',
-                              fontSize: '14px'
-                            }}
-                            defaultValue={goal.targetDate}
-                          />
-                        </Box>
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          type="month"
+                          value={goal.targetDate}
+                          onChange={(e) =>
+                            updateGoalField(
+                              goal.id,
+                              'targetDate',
+                              e.target.value
+                            )
+                          }
+                          fullWidth
+                        />
                       </Box>
 
                       <Box sx={{ flex: 1 }}>
@@ -363,33 +353,46 @@ const SavingGoals = () => {
                         >
                           Monthly Contribution
                         </Typography>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            bgcolor: '#f0fdf4',
-                            borderRadius: 1,
-                            border: '2px solid #10b981',
-                            px: 1.5,
-                            py: 0.5
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          value={goal.monthlyContribution}
+                          onChange={(e) =>
+                            updateGoalField(
+                              goal.id,
+                              'monthlyContribution',
+                              e.target.value
+                            )
+                          }
+                          InputProps={{
+                            startAdornment: (
+                              <Typography variant="body2" sx={{ mr: 0.5 }}>
+                                £
+                              </Typography>
+                            )
                           }}
-                        >
-                          <Typography variant="body2" sx={{ color: '#10b981' }}>
-                            £
-                          </Typography>
-                          <input
-                            style={{
-                              border: 'none',
-                              background: 'transparent',
-                              outline: 'none',
-                              width: '100%',
-                              fontSize: '14px',
-                              fontWeight: 600,
-                              color: '#10b981'
-                            }}
-                            defaultValue={goal.monthlyContribution}
-                          />
-                        </Box>
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#f0fdf4',
+                              '& fieldset': {
+                                borderColor: '#10b981',
+                                borderWidth: 2
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#059669'
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#10b981'
+                              }
+                            },
+                            '& .MuiInputBase-input': {
+                              color: '#10b981',
+                              fontWeight: 600
+                            }
+                          }}
+                          fullWidth
+                        />
                       </Box>
                     </Box>
                   </Box>

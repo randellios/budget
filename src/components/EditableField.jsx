@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Box, Typography, IconButton } from '@mui/material';
-
+import { Box, Typography, IconButton, TextField } from '@mui/material';
 const EditableField = ({
   value,
   displayValue,
@@ -19,14 +18,12 @@ const EditableField = ({
   inputType = 'text'
 }) => {
   const inputRef = useRef(null);
-
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
     }
   }, [isEditing]);
-
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       const newValue = parseValue(e.target.value);
@@ -35,45 +32,46 @@ const EditableField = ({
       onCancel();
     }
   };
-
   const handleSave = () => {
     const newValue = parseValue(inputRef.current.value);
     onSave(newValue);
   };
-
   if (isEditing) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <Box
-          sx={{
-            bgcolor: 'white',
-            borderRadius: 1,
-            border: '2px solid #667eea',
-            px: 1,
-            py: 0.25,
-            minWidth: 120,
-            ...containerStyle
-          }}
+        <TextField
+          inputRef={inputRef}
+          variant="outlined"
+          size="small"
+          type={inputType}
+          defaultValue={value}
+          placeholder={placeholder}
           onClick={(e) => e.stopPropagation()}
-        >
-          <input
-            ref={inputRef}
-            type={inputType}
-            style={{
-              border: 'none',
-              background: 'transparent',
-              outline: 'none',
-              width: '100%',
+          onKeyDown={handleKeyDown}
+          sx={{
+            minWidth: 120,
+            ...containerStyle,
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'white',
+              '& fieldset': {
+                borderColor: '#667eea',
+                borderWidth: 2
+              },
+              '&:hover fieldset': {
+                borderColor: '#5a67d8'
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#667eea'
+              }
+            },
+            '& .MuiInputBase-input': {
               fontSize: '14px',
               fontWeight: 600,
               ...inputStyle
-            }}
-            defaultValue={value}
-            placeholder={placeholder}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={handleKeyDown}
-          />
-        </Box>
+            }
+          }}
+          fullWidth
+        />
         <IconButton
           size="small"
           sx={{ color: 'success.main' }}
@@ -97,7 +95,6 @@ const EditableField = ({
       </Box>
     );
   }
-
   return (
     <Box
       sx={{
@@ -129,5 +126,4 @@ const EditableField = ({
     </Box>
   );
 };
-
 export default EditableField;

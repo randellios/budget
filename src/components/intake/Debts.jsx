@@ -10,7 +10,8 @@ import {
   IconButton,
   Divider,
   Collapse,
-  Tooltip
+  Tooltip,
+  TextField
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -18,7 +19,6 @@ import {
   ExpandLess as ExpandLessIcon
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
-
 const availableIcons = [
   '💳',
   '🚗',
@@ -31,7 +31,6 @@ const availableIcons = [
   '🍔',
   '🎯'
 ];
-
 const debts = [
   {
     id: 1,
@@ -61,33 +60,28 @@ const debts = [
     monthlyPayment: 33
   }
 ];
-
 const Debts = () => {
   const [expandedDebts, setExpandedDebts] = useState({});
   const [editingField, setEditingField] = useState(null);
   const [showIconPicker, setShowIconPicker] = useState(null);
   const [debtData, setDebtData] = useState(debts);
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showIconPicker && !event.target.closest('.icon-picker')) {
         setShowIconPicker(null);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showIconPicker]);
-
   const toggleDebt = (debtId) => {
     setExpandedDebts((prev) => ({
       ...prev,
       [debtId]: !prev[debtId]
     }));
   };
-
   const updateDebtField = (debtId, field, newValue) => {
     setDebtData((prev) =>
       prev.map((debt) =>
@@ -107,17 +101,14 @@ const Debts = () => {
     );
     setEditingField(null);
   };
-
   const handleIconSelect = (debtId, icon) => {
     updateDebtField(debtId, 'icon', icon);
     setShowIconPicker(null);
   };
-
   const totalDebtPayments = debtData.reduce(
     (total, debt) => total + debt.monthlyPayment,
     0
   );
-
   return (
     <Card>
       <CardHeader
@@ -179,7 +170,6 @@ const Debts = () => {
                   ))}
                 </Box>
               )}
-
               <Box
                 sx={{
                   display: 'flex',
@@ -201,7 +191,6 @@ const Debts = () => {
                       <ExpandMoreIcon fontSize="small" />
                     )}
                   </IconButton>
-
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box
                       sx={{
@@ -223,7 +212,6 @@ const Debts = () => {
                         {debt.icon}
                       </Typography>
                     </Box>
-
                     <EditableField
                       value={debt.name}
                       isEditing={editingField === `${debt.id}-name`}
@@ -257,7 +245,6 @@ const Debts = () => {
                   </IconButton>
                 </Box>
               </Box>
-
               <Collapse
                 in={expandedDebts[debt.id]}
                 timeout="auto"
@@ -276,48 +263,28 @@ const Debts = () => {
                         >
                           Starting Balance
                         </Typography>
-                        <Box
-                          sx={{
-                            bgcolor: '#f8fafc',
-                            borderRadius: 1,
-                            border: '1px solid #e2e8f0',
-                            px: 1.5,
-                            py: 0.5
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          value={debt.startingBalance}
+                          onChange={(e) =>
+                            updateDebtField(
+                              debt.id,
+                              'startingBalance',
+                              e.target.value
+                            )
+                          }
+                          InputProps={{
+                            startAdornment: (
+                              <Typography variant="body2" sx={{ mr: 0.5 }}>
+                                £
+                              </Typography>
+                            )
                           }}
-                        >
-                          <EditableField
-                            value={debt.startingBalance}
-                            displayValue={`£${debt.startingBalance.toLocaleString()}`}
-                            isEditing={
-                              editingField === `${debt.id}-startingBalance`
-                            }
-                            onStartEdit={() =>
-                              setEditingField(`${debt.id}-startingBalance`)
-                            }
-                            onSave={(newValue) =>
-                              updateDebtField(
-                                debt.id,
-                                'startingBalance',
-                                newValue
-                              )
-                            }
-                            onCancel={() => setEditingField(null)}
-                            parseValue={(val) => parseFloat(val) || 0}
-                            containerStyle={{
-                              bgcolor: '#f8fafc',
-                              border: '1px solid #e2e8f0',
-                              px: 0.5,
-                              py: 0
-                            }}
-                            displayStyle={{
-                              px: 0.5,
-                              py: 0,
-                              minWidth: 'auto'
-                            }}
-                          />
-                        </Box>
+                          fullWidth
+                        />
                       </Box>
-
                       <Box sx={{ flex: 1 }}>
                         <Typography
                           variant="caption"
@@ -326,32 +293,29 @@ const Debts = () => {
                         >
                           Current Balance
                         </Typography>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            bgcolor: 'white',
-                            borderRadius: 1,
-                            border: '1px solid #e2e8f0',
-                            px: 1.5,
-                            py: 0.5
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          value={debt.currentBalance}
+                          onChange={(e) =>
+                            updateDebtField(
+                              debt.id,
+                              'currentBalance',
+                              e.target.value
+                            )
+                          }
+                          InputProps={{
+                            startAdornment: (
+                              <Typography variant="body2" sx={{ mr: 0.5 }}>
+                                £
+                              </Typography>
+                            )
                           }}
-                        >
-                          <Typography variant="body2">£</Typography>
-                          <input
-                            style={{
-                              border: 'none',
-                              background: 'transparent',
-                              outline: 'none',
-                              width: '100%',
-                              fontSize: '14px'
-                            }}
-                            defaultValue={debt.currentBalance}
-                          />
-                        </Box>
+                          fullWidth
+                        />
                       </Box>
                     </Box>
-
                     <Box sx={{ display: 'flex', gap: 2 }}>
                       <Box sx={{ flex: 1 }}>
                         <Typography
@@ -361,31 +325,28 @@ const Debts = () => {
                         >
                           Interest Rate (APR)
                         </Typography>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            bgcolor: 'white',
-                            borderRadius: 1,
-                            border: '1px solid #e2e8f0',
-                            px: 1.5,
-                            py: 0.5
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          value={debt.interestRate}
+                          onChange={(e) =>
+                            updateDebtField(
+                              debt.id,
+                              'interestRate',
+                              e.target.value
+                            )
+                          }
+                          InputProps={{
+                            endAdornment: (
+                              <Typography variant="body2" sx={{ ml: 0.5 }}>
+                                %
+                              </Typography>
+                            )
                           }}
-                        >
-                          <input
-                            style={{
-                              border: 'none',
-                              background: 'transparent',
-                              outline: 'none',
-                              width: '100%',
-                              fontSize: '14px'
-                            }}
-                            defaultValue={debt.interestRate}
-                          />
-                          <Typography variant="body2">%</Typography>
-                        </Box>
+                          fullWidth
+                        />
                       </Box>
-
                       <Box sx={{ flex: 1 }}>
                         <Typography
                           variant="caption"
@@ -394,33 +355,46 @@ const Debts = () => {
                         >
                           Monthly Payment
                         </Typography>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            bgcolor: '#fef2f2',
-                            borderRadius: 1,
-                            border: '2px solid #ef4444',
-                            px: 1.5,
-                            py: 0.5
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          value={debt.monthlyPayment}
+                          onChange={(e) =>
+                            updateDebtField(
+                              debt.id,
+                              'monthlyPayment',
+                              e.target.value
+                            )
+                          }
+                          InputProps={{
+                            startAdornment: (
+                              <Typography variant="body2" sx={{ mr: 0.5 }}>
+                                £
+                              </Typography>
+                            )
                           }}
-                        >
-                          <Typography variant="body2" sx={{ color: '#ef4444' }}>
-                            £
-                          </Typography>
-                          <input
-                            style={{
-                              border: 'none',
-                              background: 'transparent',
-                              outline: 'none',
-                              width: '100%',
-                              fontSize: '14px',
-                              fontWeight: 600,
-                              color: '#ef4444'
-                            }}
-                            defaultValue={debt.monthlyPayment}
-                          />
-                        </Box>
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#fef2f2',
+                              '& fieldset': {
+                                borderColor: '#ef4444',
+                                borderWidth: 2
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#dc2626'
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#ef4444'
+                              }
+                            },
+                            '& .MuiInputBase-input': {
+                              color: '#ef4444',
+                              fontWeight: 600
+                            }
+                          }}
+                          fullWidth
+                        />
                       </Box>
                     </Box>
                   </Box>
@@ -429,7 +403,6 @@ const Debts = () => {
             </Box>
           );
         })}
-
         <Button
           fullWidth
           variant="outlined"
@@ -453,5 +426,4 @@ const Debts = () => {
     </Card>
   );
 };
-
 export default Debts;
