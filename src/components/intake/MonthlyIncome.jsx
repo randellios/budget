@@ -119,11 +119,9 @@ const MonthlyIncome = () => {
                   py: 0.5,
                   borderRadius: 1,
                   cursor: 'text',
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    bgcolor: 'rgba(102, 126, 234, 0.1)',
-                    outline: '1px solid rgba(102, 126, 234, 0.3)'
-                  }
+                  bgcolor: 'rgba(102, 126, 234, 0.1)',
+                  outline: '1px solid rgba(102, 126, 234, 0.3)',
+                  minWidth: '100px'
                 }}
                 onClick={handleStartEdit}
               >
