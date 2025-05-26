@@ -127,9 +127,6 @@ const Debts = () => {
             <Typography variant="body2" color="text.secondary">
               £{totalDebtPayments}/month
             </Typography>
-            <IconButton size="small" sx={{ color: 'primary.main' }}>
-              <AddIcon fontSize="small" />
-            </IconButton>
           </Box>
         }
         sx={{ pb: 1 }}
@@ -236,6 +233,9 @@ const Debts = () => {
                       }
                       onCancel={() => setEditingField(null)}
                       displayStyle={{
+                        fontWeight: 600
+                      }}
+                      displayTypographyProps={{
                         fontWeight: 600
                       }}
                     />

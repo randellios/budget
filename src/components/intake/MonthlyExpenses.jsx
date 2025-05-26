@@ -277,8 +277,7 @@ const MonthlyExpenses = () => {
                     onCancel={() => setEditingField(null)}
                     displayVariant="subtitle2"
                     displayTypographyProps={{
-                      fontWeight: 600,
-                      color: '#1a1a1a'
+                      fontWeight: 600
                     }}
                     displayStyle={{
                       minWidth: 100

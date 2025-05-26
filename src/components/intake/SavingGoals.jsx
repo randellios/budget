@@ -116,9 +116,6 @@ const SavingGoals = () => {
             <Typography variant="body2" color="text.secondary">
               £{totalSavings}/month
             </Typography>
-            <IconButton size="small" sx={{ color: 'primary.main' }}>
-              <AddIcon fontSize="small" />
-            </IconButton>
           </Box>
         }
         sx={{ pb: 1 }}
@@ -226,6 +223,9 @@ const SavingGoals = () => {
                       displayStyle={{
                         fontWeight: 600
                       }}
+                      displayTypographyProps={{
+                        fontWeight: 600
+                      }}
                     />
                   </Box>
                 </Box>
@@ -262,23 +262,31 @@ const SavingGoals = () => {
                           color="text.secondary"
                           sx={{ display: 'block', mb: 0.5 }}
                         >
-                          Current Balance
+                          Current balance
                         </Typography>
-                        <EditableField
-                          value={goal.currentBalance}
-                          displayValue={`£${goal.currentBalance.toLocaleString()}`}
-                          isEditing={
-                            editingField === `${goal.id}-currentBalance`
-                          }
-                          onStartEdit={() =>
-                            setEditingField(`${goal.id}-currentBalance`)
-                          }
-                          onSave={(newValue) =>
-                            updateGoalField(goal.id, 'currentBalance', newValue)
-                          }
-                          onCancel={() => setEditingField(null)}
-                          parseValue={(val) => parseFloat(val) || 0}
-                        />
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            bgcolor: 'white',
+                            borderRadius: 1,
+                            border: '1px solid #e2e8f0',
+                            px: 1.5,
+                            py: 0.5
+                          }}
+                        >
+                          <Typography variant="body2">£</Typography>
+                          <input
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              outline: 'none',
+                              width: '100%',
+                              fontSize: '14px'
+                            }}
+                            defaultValue={goal.targetAmount}
+                          />
+                        </Box>
                       </Box>
 
                       <Box sx={{ flex: 1 }}>
