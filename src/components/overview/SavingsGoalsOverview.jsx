@@ -168,9 +168,6 @@ const SavingsGoalsOverview = () => {
     <GradientCard>
       <SectionHeader>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconWrapper bgcolor="#10b981">
-            <TrackChangesIcon />
-          </IconWrapper>
           <Box>
             <Typography variant="h5" sx={{ fontSize: '1.375rem' }}>
               Savings Goals Overview

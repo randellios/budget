@@ -214,9 +214,6 @@ const DebtManagementOverview = () => {
     <GradientCard>
       <SectionHeader>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconWrapper>
-            <CreditCardIcon />
-          </IconWrapper>
           <Box>
             <Typography variant="h5" sx={{ fontSize: '1.375rem' }}>
               Debt Management Overview

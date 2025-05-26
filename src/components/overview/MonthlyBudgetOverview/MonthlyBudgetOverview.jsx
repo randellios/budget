@@ -149,9 +149,6 @@ const MonthlyBudgetOverview = () => {
     <GradientCard>
       <SectionHeader>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconWrapper>
-            <AssessmentIcon />
-          </IconWrapper>
           <Box>
             <Typography variant="h5" sx={{ fontSize: '1.375rem' }}>
               Monthly Budget Overview
@@ -166,84 +163,6 @@ const MonthlyBudgetOverview = () => {
           </Box>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <FinancialMetricCard gradient="linear-gradient(135deg, #10b981 0%, #34d399 100%)">
-            <Box sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mb: 0.5
-                }}
-              >
-                <WalletIcon sx={{ fontSize: 16, opacity: 0.85, mr: 0.25 }} />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    fontSize: '0.65rem',
-                    fontWeight: 500,
-                    opacity: 0.85,
-                    letterSpacing: '0.3px',
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  Monthly Income
-                </Typography>
-              </Box>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '1.5rem',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.08)'
-                }}
-              >
-                £{monthlyIncome.toLocaleString()}
-              </Typography>
-            </Box>
-          </FinancialMetricCard>
-          <FinancialMetricCard
-            gradient={
-              remaining > 0
-                ? 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)'
-                : 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)'
-            }
-          >
-            <Box sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mb: 0.5
-                }}
-              >
-                <PaidIcon sx={{ fontSize: 16, opacity: 0.85, mr: 0.25 }} />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    fontSize: '0.65rem',
-                    fontWeight: 500,
-                    opacity: 0.85,
-                    letterSpacing: '0.3px',
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  {remaining > 0 ? 'Remaining' : 'Over Budget'}
-                </Typography>
-              </Box>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '1.5rem',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.08)'
-                }}
-              >
-                £{Math.abs(remaining).toLocaleString()}
-              </Typography>
-            </Box>
-          </FinancialMetricCard>
           <AllocationCircle>
             <Box sx={{ position: 'relative', display: 'inline-flex' }}>
               <CircularProgress
@@ -643,18 +562,6 @@ const MonthlyBudgetOverview = () => {
                   mb: 2
                 }}
               >
-                <Box
-                  sx={{
-                    backgroundColor: '#f0fdf4',
-                    borderRadius: 2,
-                    p: 1.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <SecurityIcon sx={{ fontSize: 28, color: '#059669' }} />
-                </Box>
                 <Box sx={{ flex: 1 }}>
                   <Box
                     sx={{
@@ -797,18 +704,6 @@ const MonthlyBudgetOverview = () => {
                   mb: 2
                 }}
               >
-                <Box
-                  sx={{
-                    backgroundColor: '#fef2f2',
-                    borderRadius: 2,
-                    p: 1.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <CreditCardIcon sx={{ fontSize: 28, color: '#dc2626' }} />
-                </Box>
                 <Box sx={{ flex: 1 }}>
                   <Box
                     sx={{
@@ -949,18 +844,6 @@ const MonthlyBudgetOverview = () => {
                   mb: 2
                 }}
               >
-                <Box
-                  sx={{
-                    backgroundColor: '#f0f9ff',
-                    borderRadius: 2,
-                    p: 1.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <AccountBalanceIcon sx={{ fontSize: 28, color: '#0284c7' }} />
-                </Box>
                 <Box sx={{ flex: 1 }}>
                   <Box
                     sx={{
