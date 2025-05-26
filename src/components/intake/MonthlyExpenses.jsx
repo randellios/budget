@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Typography,
   Button,
   IconButton,
   Collapse,
   Tooltip,
-  TextField
+  TextField,
+  Typography,
+  Chip
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -22,6 +20,7 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
+import CollapsibleCard from '../CollapsibleCard';
 const expenseCategories = [
   {
     id: 1,
@@ -113,6 +112,7 @@ const MonthlyExpenses = () => {
   const [expandedCategories, setExpandedCategories] = useState({});
   const [editingField, setEditingField] = useState(null);
   const [expenses, setExpenses] = useState(expenseCategories);
+  const [isExpanded, setIsExpanded] = useState(true);
   const toggleCategory = (categoryId) => {
     setExpandedCategories((prev) => ({
       ...prev,
@@ -199,6 +199,10 @@ const MonthlyExpenses = () => {
     (total, category) => total + getCategoryTotal(category),
     0
   );
+  const totalItems = expenses.reduce(
+    (total, category) => total + category.items.length,
+    0
+  );
   const getExpenseSummary = () => {
     let essential = 0,
       nonEssential = 0;
@@ -216,258 +220,285 @@ const MonthlyExpenses = () => {
   };
   const summary = getExpenseSummary();
   return (
-    <Card>
-      <CardHeader title="Monthly Expenses" sx={{ pb: 1 }} />
-      <CardContent sx={{ pt: 0, pb: 2 }}>
-        {expenses.map((category) => (
-          <Box key={category.id} sx={{ mb: 2 }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                p: 1,
-                bgcolor: '#f8fafc',
-                borderRadius: 1,
-                border: '1px solid #e2e8f0',
-                mb: 1,
-                cursor: 'pointer',
-                '&:hover': {
-                  bgcolor: '#f1f5f9'
-                }
-              }}
-              onClick={() => toggleCategory(category.id)}
-            >
+    <CollapsibleCard
+      title="Monthly Expenses"
+      isExpanded={isExpanded}
+      onToggle={() => setIsExpanded(!isExpanded)}
+    >
+      {expenses.map((category) => (
+        <Box key={category.id} sx={{ mb: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              p: 1,
+              bgcolor: '#f8fafc',
+              borderRadius: 1,
+              border: '1px solid #e2e8f0',
+              mb: 1,
+              cursor: 'pointer',
+              '&:hover': {
+                bgcolor: '#f1f5f9'
+              }
+            }}
+            onClick={() => toggleCategory(category.id)}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <IconButton size="small" sx={{ color: 'text.secondary' }}>
+                {expandedCategories[category.id] ? (
+                  <ExpandLessIcon fontSize="small" />
+                ) : (
+                  <ExpandMoreIcon fontSize="small" />
+                )}
+              </IconButton>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton size="small" sx={{ color: 'text.secondary' }}>
-                  {expandedCategories[category.id] ? (
-                    <ExpandLessIcon fontSize="small" />
-                  ) : (
-                    <ExpandMoreIcon fontSize="small" />
-                  )}
-                </IconButton>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="subtitle2">{category.icon}</Typography>
-                  <EditableField
-                    value={category.name}
-                    isEditing={editingField === `category-${category.id}-name`}
-                    onStartEdit={() =>
-                      setEditingField(`category-${category.id}-name`)
-                    }
-                    onSave={(newValue) =>
-                      updateCategoryField(category.id, 'name', newValue)
-                    }
-                    onCancel={() => setEditingField(null)}
-                    displayVariant="subtitle2"
-                    displayTypographyProps={{
-                      fontWeight: 600
-                    }}
-                    displayStyle={{
-                      minWidth: 100
-                    }}
-                  />
-                </Box>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  £{getCategoryTotal(category).toLocaleString()}
-                </Typography>
-                <Tooltip title="Delete category">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: '#d1d5db',
-                      '&:hover': {
-                        color: '#ef4444',
-                        bgcolor: 'rgba(239, 68, 68, 0.1)'
-                      }
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteCategory(category.id);
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
+                <Typography variant="subtitle2">{category.icon}</Typography>
+                <EditableField
+                  value={category.name}
+                  isEditing={editingField === `category-${category.id}-name`}
+                  onStartEdit={() =>
+                    setEditingField(`category-${category.id}-name`)
+                  }
+                  onSave={(newValue) =>
+                    updateCategoryField(category.id, 'name', newValue)
+                  }
+                  onCancel={() => setEditingField(null)}
+                  displayVariant="subtitle2"
+                  displayTypographyProps={{
+                    fontWeight: 600
+                  }}
+                  displayStyle={{
+                    minWidth: 100
+                  }}
+                />
               </Box>
             </Box>
-            <Collapse
-              in={expandedCategories[category.id]}
-              timeout="auto"
-              unmountOnExit
-            >
-              <Box sx={{ ml: 2, borderLeft: '2px solid #e2e8f0', pl: 2 }}>
-                {category.items.map((item) => (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                £{getCategoryTotal(category).toLocaleString()}
+              </Typography>
+              <Tooltip title="Delete category">
+                <IconButton
+                  size="small"
+                  sx={{
+                    color: '#d1d5db',
+                    '&:hover': {
+                      color: '#ef4444',
+                      bgcolor: 'rgba(239, 68, 68, 0.1)'
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteCategory(category.id);
+                  }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
+          <Collapse
+            in={expandedCategories[category.id]}
+            timeout="auto"
+            unmountOnExit
+          >
+            <Box sx={{ ml: 2, borderLeft: '2px solid #e2e8f0', pl: 2 }}>
+              {category.items.map((item) => (
+                <Box
+                  key={item.id}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    py: 1,
+                    '&:hover': {
+                      bgcolor: '#f8fafc',
+                      borderRadius: 1,
+                      mx: -1,
+                      px: 1
+                    }
+                  }}
+                >
                   <Box
-                    key={item.id}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
-                      py: 1,
-                      '&:hover': {
-                        bgcolor: '#f8fafc',
-                        borderRadius: 1,
-                        mx: -1,
-                        px: 1
-                      }
+                      gap: 1,
+                      flex: 1
                     }}
                   >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        flex: 1
+                    <EditableField
+                      value={item.name}
+                      isEditing={editingField === `item-${item.id}-name`}
+                      onStartEdit={() =>
+                        setEditingField(`item-${item.id}-name`)
+                      }
+                      onSave={(newValue) =>
+                        updateItemField(category.id, item.id, 'name', newValue)
+                      }
+                      onCancel={() => setEditingField(null)}
+                      displayVariant="body2"
+                      displayTypographyProps={{
+                        color: 'text.secondary'
                       }}
+                      displayStyle={{
+                        minWidth: 120
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Tooltip
+                      title={
+                        item.isEssential
+                          ? 'Mark as optional'
+                          : 'Mark as essential'
+                      }
                     >
-                      <EditableField
-                        value={item.name}
-                        isEditing={editingField === `item-${item.id}-name`}
-                        onStartEdit={() =>
-                          setEditingField(`item-${item.id}-name`)
+                      <IconButton
+                        size="small"
+                        sx={{
+                          color: item.isEssential ? '#f59e0b' : '#d1d5db',
+                          '&:hover': {
+                            color: item.isEssential ? '#d97706' : '#9ca3af',
+                            bgcolor: 'rgba(0, 0, 0, 0.04)'
+                          }
+                        }}
+                        onClick={() =>
+                          toggleItemEssential(category.id, item.id)
                         }
-                        onSave={(newValue) =>
+                      >
+                        {item.isEssential ? (
+                          <StarIcon fontSize="small" />
+                        ) : (
+                          <StarBorderIcon fontSize="small" />
+                        )}
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip
+                      title={
+                        item.isFlexible
+                          ? 'Click to make fixed amount'
+                          : 'Click to make flexible amount'
+                      }
+                    >
+                      <IconButton
+                        size="small"
+                        sx={{
+                          color: item.isFlexible ? '#64748b' : '#e2e8f0',
+                          '&:hover': {
+                            color: item.isFlexible ? '#475569' : '#cbd5e1',
+                            bgcolor: 'rgba(0, 0, 0, 0.04)'
+                          }
+                        }}
+                        onClick={() => toggleItemFlexible(category.id, item.id)}
+                      >
+                        {item.isFlexible ? (
+                          <TuneIcon fontSize="small" />
+                        ) : (
+                          <LockIcon fontSize="small" />
+                        )}
+                      </IconButton>
+                    </Tooltip>
+                    <Box sx={{ width: 115 }}>
+                      <TextField
+                        variant="outlined"
+                        size="small"
+                        type="number"
+                        value={item.amount}
+                        onChange={(e) =>
                           updateItemField(
                             category.id,
                             item.id,
-                            'name',
-                            newValue
+                            'amount',
+                            e.target.value
                           )
                         }
-                        onCancel={() => setEditingField(null)}
-                        displayVariant="body2"
-                        displayTypographyProps={{
-                          color: 'text.secondary'
+                        InputProps={{
+                          startAdornment: (
+                            <Typography variant="body2" sx={{ mr: 0.5 }}>
+                              £
+                            </Typography>
+                          )
                         }}
-                        displayStyle={{
-                          minWidth: 120
-                        }}
+                        fullWidth
                       />
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Tooltip
-                        title={
-                          item.isEssential
-                            ? 'Mark as optional'
-                            : 'Mark as essential'
-                        }
-                      >
-                        <IconButton
-                          size="small"
-                          sx={{
-                            color: item.isEssential ? '#f59e0b' : '#d1d5db',
-                            '&:hover': {
-                              color: item.isEssential ? '#d97706' : '#9ca3af',
-                              bgcolor: 'rgba(0, 0, 0, 0.04)'
-                            }
-                          }}
-                          onClick={() =>
-                            toggleItemEssential(category.id, item.id)
-                          }
-                        >
-                          {item.isEssential ? (
-                            <StarIcon fontSize="small" />
-                          ) : (
-                            <StarBorderIcon fontSize="small" />
-                          )}
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip
-                        title={
-                          item.isFlexible
-                            ? 'Click to make fixed amount'
-                            : 'Click to make flexible amount'
-                        }
-                      >
-                        <IconButton
-                          size="small"
-                          sx={{
-                            color: item.isFlexible ? '#64748b' : '#e2e8f0',
-                            '&:hover': {
-                              color: item.isFlexible ? '#475569' : '#cbd5e1',
-                              bgcolor: 'rgba(0, 0, 0, 0.04)'
-                            }
-                          }}
-                          onClick={() =>
-                            toggleItemFlexible(category.id, item.id)
-                          }
-                        >
-                          {item.isFlexible ? (
-                            <TuneIcon fontSize="small" />
-                          ) : (
-                            <LockIcon fontSize="small" />
-                          )}
-                        </IconButton>
-                      </Tooltip>
-                      <Box sx={{ width: 115 }}>
-                        <TextField
-                          variant="outlined"
-                          size="small"
-                          type="number"
-                          value={item.amount}
-                          onChange={(e) =>
-                            updateItemField(
-                              category.id,
-                              item.id,
-                              'amount',
-                              e.target.value
-                            )
-                          }
-                          InputProps={{
-                            startAdornment: (
-                              <Typography variant="body2" sx={{ mr: 0.5 }}>
-                                £
-                              </Typography>
-                            )
-                          }}
-                          fullWidth
-                        />
-                      </Box>
-                      <IconButton size="small" sx={{ color: 'error.main' }}>
-                        <Box sx={{ fontSize: '14px' }}>✕</Box>
-                      </IconButton>
-                    </Box>
+                    <IconButton size="small" sx={{ color: 'error.main' }}>
+                      <Box sx={{ fontSize: '14px' }}>✕</Box>
+                    </IconButton>
                   </Box>
-                ))}
-                <Button
-                  size="small"
-                  startIcon={<AddIcon />}
-                  sx={{
-                    mt: 1,
-                    color: 'text.secondary',
-                    fontSize: '0.75rem',
-                    textTransform: 'none'
-                  }}
-                >
-                  Add {category.name.toLowerCase()}
-                </Button>
-              </Box>
-            </Collapse>
-          </Box>
-        ))}
-        <Button
-          fullWidth
-          variant="outlined"
-          startIcon={<AddIcon />}
+                </Box>
+              ))}
+              <Button
+                size="small"
+                startIcon={<AddIcon />}
+                sx={{
+                  mt: 1,
+                  color: 'text.secondary',
+                  fontSize: '0.75rem',
+                  textTransform: 'none'
+                }}
+              >
+                Add {category.name.toLowerCase()}
+              </Button>
+            </Box>
+          </Collapse>
+        </Box>
+      ))}
+      <Button
+        fullWidth
+        variant="outlined"
+        startIcon={<AddIcon />}
+        sx={{
+          mt: 2,
+          color: 'text.secondary',
+          borderColor: '#e9ecef',
+          backgroundColor: '#f8f9fa',
+          textTransform: 'none',
+          '&:hover': {
+            backgroundColor: '#e9ecef',
+            borderColor: '#e9ecef',
+            color: '#555'
+          }
+        }}
+      >
+        Add Category
+      </Button>
+      {!isExpanded && (
+        <Box
           sx={{
             mt: 2,
-            color: 'text.secondary',
-            borderColor: '#e9ecef',
-            backgroundColor: '#f8f9fa',
-            textTransform: 'none',
-            '&:hover': {
-              backgroundColor: '#e9ecef',
-              borderColor: '#e9ecef',
-              color: '#555'
-            }
+            p: 1.5,
+            bgcolor: '#f8fafc',
+            borderRadius: 1,
+            border: '1px solid #e2e8f0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
           }}
         >
-          Add Category
-        </Button>
-      </CardContent>
-    </Card>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontSize: '0.75rem' }}
+          >
+            {expenses.length} categories • {totalItems} items
+          </Typography>
+          <Chip
+            label={`£${totalExpenses.toLocaleString()}`}
+            size="small"
+            sx={{
+              backgroundColor: '#e0e7ff',
+              color: '#3730a3',
+              fontSize: '0.7rem',
+              fontWeight: 500,
+              height: 20
+            }}
+          />
+        </Box>
+      )}
+    </CollapsibleCard>
   );
 };
 export default MonthlyExpenses;

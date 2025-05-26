@@ -162,18 +162,6 @@ const MonthlyBudgetOverview = () => {
               <Typography variant="body2" color="text.secondary">
                 May 2025
               </Typography>
-              <Chip
-                size="small"
-                label="17.0% wealth building"
-                sx={{
-                  backgroundColor: '#dcfce7',
-                  color: '#166534',
-                  border: '1px solid #bbf7d0',
-                  borderRadius: 20,
-                  fontSize: '0.75rem',
-                  fontWeight: 500
-                }}
-              />
             </Box>
           </Box>
         </Box>
