@@ -57,19 +57,6 @@ const MonthlyIncome = () => {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box
-              sx={{
-                backgroundColor: '#667eea',
-                borderRadius: 1.5,
-                p: 1,
-                mr: 1.5,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <WalletIcon sx={{ fontSize: 18, color: 'white' }} />
-            </Box>
             <Typography
               variant="h6"
               sx={{

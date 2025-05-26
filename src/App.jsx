@@ -42,7 +42,7 @@ export default function Dashboard() {
           component="aside"
           sx={{
             width: 500,
-            bgcolor: 'background.default',
+            bgcolor: '#f1f5f9',
             borderRight: '1px solid #e0e0e0',
             display: 'flex',
             flexDirection: 'column',
