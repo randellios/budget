@@ -241,21 +241,31 @@ const SavingsGoalsOverview = () => {
                     >
                       {goal.name}
                     </Typography>
-                    <Chip
-                      label={`${goal.priority} Priority`}
-                      size="small"
-                      sx={{
-                        backgroundColor: `${priorityColor}15`,
-                        color: priorityColor,
-                        border: `1px solid ${priorityColor}30`,
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        height: 24,
-                        '& .MuiChip-label': {
-                          padding: '0 8px'
-                        }
-                      }}
-                    />
+                    <Box sx={{ mt: 0.5 }}>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          // color: '#667eea',
+                          display: 'inline'
+                        }}
+                      >
+                        £{goal.monthlyContribution}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontSize: '0.875rem',
+                          fontWeight: 400,
+                          // color: '#64748b',
+                          display: 'inline',
+                          ml: 0.5
+                        }}
+                      >
+                        /month
+                      </Typography>
+                    </Box>
                   </Box>
                 </Box>
 
@@ -300,7 +310,7 @@ const SavingsGoalsOverview = () => {
                         fontSize: '0.9rem'
                       }}
                     >
-                      {progress.toFixed(1)}% complete
+                      {progress.toFixed(1)}%
                     </Typography>
                   </Box>
                   <LinearProgress
@@ -310,7 +320,7 @@ const SavingsGoalsOverview = () => {
                       height: 8,
                       borderRadius: 4,
                       backgroundColor: '#f3f4f6',
-                      mb: 1.5,
+                      mb: 1,
                       '& .MuiLinearProgress-bar': {
                         backgroundColor: goal.color,
                         borderRadius: 4,
@@ -321,11 +331,10 @@ const SavingsGoalsOverview = () => {
                   <Typography
                     variant="caption"
                     color="text.secondary"
-                    sx={{ fontSize: '0.8rem' }}
+                    sx={{ fontSize: '1rem' }}
                   >
-                    £{remaining.toLocaleString()} remaining
                     {goal.monthsToTarget &&
-                      ` • ${goal.monthsToTarget} months remaining`}
+                      `${goal.monthsToTarget} months to go`}
                   </Typography>
                 </ProgressSection>
 
@@ -334,40 +343,6 @@ const SavingsGoalsOverview = () => {
                   flexItem
                   sx={{ height: 50, mx: 2 }}
                 />
-
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    flex: '0 0 100px'
-                  }}
-                >
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: 'bold',
-                        fontSize: '1.25rem',
-                        color: monthlyColor,
-                        lineHeight: 1
-                      }}
-                    >
-                      £{goal.monthlyContribution}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontSize: '0.7rem',
-                        color: '#6b7280',
-                        fontWeight: 500,
-                        textTransform: 'uppercase'
-                      }}
-                    >
-                      Monthly
-                    </Typography>
-                  </Box>
-                </Box>
 
                 <Box
                   sx={{
