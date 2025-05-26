@@ -25,12 +25,16 @@ const CollapsibleCard = ({ title, children, isExpanded, onToggle }) => {
               width: '100%'
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 600, fontSize: '1.125rem' }}
-            >
-              {title}
-            </Typography>
+            {typeof title === 'string' ? (
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 600, fontSize: '1.125rem' }}
+              >
+                {title}
+              </Typography>
+            ) : (
+              title
+            )}
             <IconButton
               size="small"
               sx={{ color: 'text.secondary' }}

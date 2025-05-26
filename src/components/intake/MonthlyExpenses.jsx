@@ -17,7 +17,8 @@ import {
   Lock as LockIcon,
   Star as StarIcon,
   StarBorder as StarBorderIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  ShoppingCart as ShoppingCartIcon
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
 import CollapsibleCard from '../CollapsibleCard';
@@ -221,7 +222,36 @@ const MonthlyExpenses = () => {
   const summary = getExpenseSummary();
   return (
     <CollapsibleCard
-      title="Monthly Expenses"
+      title={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            sx={{
+              backgroundColor: '#667eea',
+              borderRadius: 1.5,
+              p: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <ShoppingCartIcon sx={{ fontSize: 18, color: 'white' }} />
+          </Box>
+          <Box>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 600, fontSize: '1.125rem', color: '#1f2937' }}
+            >
+              Monthly Expenses
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
+            >
+              £{totalExpenses.toLocaleString()} • {expenses.length} categories
+            </Typography>
+          </Box>
+        </Box>
+      }
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
     >

@@ -13,7 +13,8 @@ import {
 import {
   Add as AddIcon,
   ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon
+  ExpandLess as ExpandLessIcon,
+  CreditCard as CreditCardIcon
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
 import CollapsibleCard from '../CollapsibleCard';
@@ -110,7 +111,36 @@ const Debts = () => {
   );
   return (
     <CollapsibleCard
-      title="Debts"
+      title={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            sx={{
+              backgroundColor: '#ef4444',
+              borderRadius: 1.5,
+              p: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <CreditCardIcon sx={{ fontSize: 18, color: 'white' }} />
+          </Box>
+          <Box>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 600, fontSize: '1.125rem', color: '#1f2937' }}
+            >
+              Debts
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
+            >
+              £{totalDebtPayments}/month • {debtData.length} debts
+            </Typography>
+          </Box>
+        </Box>
+      }
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
     >

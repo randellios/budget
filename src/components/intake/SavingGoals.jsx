@@ -12,7 +12,8 @@ import {
 import {
   Add as AddIcon,
   ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon
+  ExpandLess as ExpandLessIcon,
+  TrackChanges as TargetIcon
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
 import CollapsibleCard from '../CollapsibleCard';
@@ -99,7 +100,36 @@ const SavingGoals = () => {
   );
   return (
     <CollapsibleCard
-      title="Savings Goals"
+      title={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            sx={{
+              backgroundColor: '#10b981',
+              borderRadius: 1.5,
+              p: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <TargetIcon sx={{ fontSize: 18, color: 'white' }} />
+          </Box>
+          <Box>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 600, fontSize: '1.125rem', color: '#1f2937' }}
+            >
+              Savings Goals
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
+            >
+              £{totalSavings}/month • {goalData.length} goals
+            </Typography>
+          </Box>
+        </Box>
+      }
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
     >
