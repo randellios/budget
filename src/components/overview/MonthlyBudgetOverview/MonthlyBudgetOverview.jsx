@@ -511,8 +511,7 @@ const MonthlyBudgetOverview = () => {
                           sx={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                            alignItems: 'center',
-                            mb: 0.5
+                            alignItems: 'center'
                           }}
                         >
                           <Typography
