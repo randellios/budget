@@ -482,29 +482,6 @@ const MonthlyBudgetOverview = () => {
                     Monthly Outgoings
                   </Typography>
                 </Box>
-                <Box>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      display: 'inline-block',
-                      fontSize: '0.7rem',
-                      color: '#666',
-                      mr: 2
-                    }}
-                  >
-                    Total Outgoings:
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      display: 'inline-block',
-                      fontWeight: 'bold',
-                      fontSize: '1.125rem'
-                    }}
-                  >
-                    £{totalOutgoings.toLocaleString()}
-                  </Typography>
-                </Box>
               </CashFlowHeader>
               <Box sx={{ p: 3 }}>
                 {cashFlowData.map((item, index) => {
