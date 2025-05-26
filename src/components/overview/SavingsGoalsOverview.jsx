@@ -64,6 +64,7 @@ const GoalRow = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2.5, 3),
   borderBottom: '1px solid #f1f5f9',
   position: 'relative',
+  minHeight: '80px',
   '&:last-child': {
     borderBottom: 'none'
   }
@@ -217,27 +218,38 @@ const SavingsGoalsOverview = () => {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    flex: '0 0 240px'
+                    flex: '0 0 240px',
+                    minHeight: '60px'
                   }}
                 >
                   <Box
                     sx={{
-                      backgroundColor: `${goal.color}15`,
                       borderRadius: 2,
                       p: 1.5,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       mr: 2,
-                      fontSize: '24px'
+                      fontSize: '20px'
                     }}
                   >
                     {goal.icon}
                   </Box>
-                  <Box>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
+                    }}
+                  >
                     <Typography
                       variant="h6"
-                      sx={{ fontWeight: 700, fontSize: '1.125rem', mb: 0.5 }}
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: '1.125rem',
+                        mb: 0.5,
+                        lineHeight: 1.2
+                      }}
                     >
                       {goal.name}
                     </Typography>
@@ -247,7 +259,6 @@ const SavingsGoalsOverview = () => {
                         sx={{
                           fontSize: '1rem',
                           fontWeight: 600,
-                          // color: '#667eea',
                           display: 'inline'
                         }}
                       >
@@ -258,7 +269,6 @@ const SavingsGoalsOverview = () => {
                         sx={{
                           fontSize: '0.875rem',
                           fontWeight: 400,
-                          // color: '#64748b',
                           display: 'inline',
                           ml: 0.5
                         }}
@@ -268,14 +278,19 @@ const SavingsGoalsOverview = () => {
                     </Box>
                   </Box>
                 </Box>
-
                 <Divider
                   orientation="vertical"
                   flexItem
-                  sx={{ height: 50, mx: 2 }}
+                  sx={{ height: 50, mx: 2, alignSelf: 'center' }}
                 />
-
-                <ProgressSection>
+                <ProgressSection
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    minHeight: '60px'
+                  }}
+                >
                   <Box
                     sx={{
                       display: 'flex',
@@ -289,7 +304,8 @@ const SavingsGoalsOverview = () => {
                       sx={{
                         fontWeight: 'bold',
                         fontSize: '1.5rem',
-                        color: '#10b981'
+                        color: '#10b981',
+                        lineHeight: 1.2
                       }}
                     >
                       £{goal.current.toLocaleString()}
@@ -337,19 +353,19 @@ const SavingsGoalsOverview = () => {
                       `${goal.monthsToTarget} months to go`}
                   </Typography>
                 </ProgressSection>
-
                 <Divider
                   orientation="vertical"
                   flexItem
-                  sx={{ height: 50, mx: 2 }}
+                  sx={{ height: 50, mx: 2, alignSelf: 'center' }}
                 />
-
                 <Box
                   sx={{
                     ml: 2,
                     display: 'flex',
                     alignItems: 'center',
-                    flex: '0 0 120px'
+                    justifyContent: 'center',
+                    flex: '0 0 120px',
+                    minHeight: '60px'
                   }}
                 >
                   {goal.onTrack ? (
