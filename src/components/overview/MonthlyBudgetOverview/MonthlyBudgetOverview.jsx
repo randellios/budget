@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import {
   Box,
+  Grid,
+  Card,
   CardContent,
   Typography,
   LinearProgress,
@@ -420,157 +422,190 @@ const MonthlyBudgetOverview = () => {
               </HealthScoreCard>
             </Box>
             <Box sx={{ flex: 1 }}>
-              <CashFlowCard>
-                <CashFlowHeader>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <WaterDropIcon color="primary" sx={{ mr: 1 }} />
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  p: 2
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <WaterDropIcon color="primary" sx={{ mr: 1 }} />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 600,
+                      fontSize: '1.125rem',
+                      color: '#1f2937'
+                    }}
+                  >
+                    Monthly Breakdown
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: '#6b7280',
+                      fontSize: '0.875rem',
+                      fontWeight: 500
+                    }}
+                  >
+                    50/30/20 Rule
+                  </Typography>
+                  <Box
+                    sx={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      border: '1.5px solid #94a3b8',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'help',
+                      '&:hover': {
+                        backgroundColor: '#f1f5f9'
+                      }
+                    }}
+                    title="The 50/30/20 rule suggests allocating 50% of income to essentials, 30% to optional spending, and 20% to savings and debt payments"
+                  >
                     <Typography
-                      variant="h6"
+                      variant="caption"
                       sx={{
-                        fontWeight: 700,
-                        fontSize: '1.125rem',
-                        color: '#1f2937'
+                        color: '#64748b',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        lineHeight: 1
                       }}
                     >
-                      Monthly Outgoings
+                      ?
                     </Typography>
                   </Box>
-                </CashFlowHeader>
-                <Box sx={{ p: 3 }}>
-                  {cashFlowData.map((item, index) => {
-                    const percentage = (item.amount / totalOutgoings) * 100;
-                    const incomePercentage =
-                      (item.amount / monthlyIncome) * 100;
-                    const targetIncomePercentage =
-                      (item.target / monthlyIncome) * 100;
-                    const targetStatus = getTargetStatus(
-                      item.amount,
-                      item.target
-                    );
-                    const IconComponent = item.icon;
-                    return (
-                      <FlowItem key={index}>
-                        <IconComponent
-                          sx={{ color: item.color, mr: 1.5, fontSize: 20 }}
-                        />
-                        <Box sx={{ flex: 1 }}>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              mb: 0.5
-                            }}
-                          >
-                            <Typography
-                              variant="body2"
-                              sx={{ fontWeight: 600, color: '#1f2937' }}
-                            >
-                              {item.name}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{ fontWeight: 'bold', color: item.color }}
-                            >
-                              £{item.amount.toLocaleString()}
-                            </Typography>
-                          </Box>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              mb: 0.5
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              {item.description}
-                            </Typography>
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1
-                              }}
-                            >
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  fontSize: '0.7rem',
-                                  fontWeight: 600,
-                                  color: '#6b7280',
-                                  backgroundColor: '#f3f4f6',
-                                  px: 1,
-                                  py: 0.25,
-                                  borderRadius: 1
-                                }}
-                              >
-                                {percentage.toFixed(0)}%
-                              </Typography>
-                              <Chip
-                                size="small"
-                                label={targetStatus.status}
-                                sx={{
-                                  backgroundColor: `${targetStatus.color}15`,
-                                  color: targetStatus.color,
-                                  fontSize: '0.6rem',
-                                  fontWeight: 500,
-                                  height: 18,
-                                  '& .MuiChip-label': { px: 0.75 }
-                                }}
-                              />
-                            </Box>
-                          </Box>
-                          <Box>
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                fontSize: '0.7rem',
-                                color: '#666',
-                                mb: 0.25,
-                                display: 'block'
-                              }}
-                            >
-                              {incomePercentage.toFixed(1)}% of income • Target:{' '}
-                              {item.category}
-                            </Typography>
-                            <Box sx={{ position: 'relative' }}>
-                              <LinearProgress
-                                variant="determinate"
-                                value={incomePercentage}
-                                sx={{
-                                  height: 4,
-                                  borderRadius: 2,
-                                  backgroundColor: '#f3f4f6',
-                                  '& .MuiLinearProgress-bar': {
-                                    backgroundColor: item.color,
-                                    borderRadius: 2
-                                  }
-                                }}
-                              />
-                              <Box
-                                sx={{
-                                  position: 'absolute',
-                                  left: `${targetIncomePercentage}%`,
-                                  top: -1,
-                                  width: 2,
-                                  height: 6,
-                                  backgroundColor: '#374151',
-                                  borderRadius: 1,
-                                  zIndex: 1
-                                }}
-                              />
-                            </Box>
-                          </Box>
-                        </Box>
-                      </FlowItem>
-                    );
-                  })}
                 </Box>
-              </CashFlowCard>
+              </Box>
+              <Divider sx={{ mb: 1, borderColor: '#e2e8f0' }} />
+              <Box
+                sx={{ display: 'flex', flexDirection: 'column', gap: 0, px: 2 }}
+              >
+                {cashFlowData.map((item, index) => {
+                  const incomePercentage = (item.amount / monthlyIncome) * 100;
+                  const targetIncomePercentage =
+                    (item.target / monthlyIncome) * 100;
+                  const IconComponent = item.icon;
+                  return (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        p: 1,
+                        mb: 1
+                      }}
+                    >
+                      <IconComponent
+                        sx={{ color: item.color, mr: 1.5, fontSize: 20 }}
+                      />
+                      <Box sx={{ flex: 1 }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            mb: 0.5
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: 700,
+                              color: '#1f2937',
+                              fontSize: '1rem'
+                            }}
+                          >
+                            {item.name}
+                          </Typography>
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: 'bold',
+                              color: item.color,
+                              fontSize: '1.25rem'
+                            }}
+                          >
+                            £{item.amount.toLocaleString()}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            mb: 1.5,
+                            fontSize: '0.875rem',
+                            fontStyle: 'italic'
+                          }}
+                        >
+                          {item.description}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            mb: 1
+                          }}
+                        >
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              color: '#1f2937',
+                              fontSize: '0.95rem',
+                              fontWeight: 600
+                            }}
+                          >
+                            {incomePercentage.toFixed(1)}% of income
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: '#6b7280', fontSize: '0.875rem' }}
+                          >
+                            Target: {item.category}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ position: 'relative' }}>
+                          <LinearProgress
+                            variant="determinate"
+                            value={incomePercentage}
+                            sx={{
+                              height: 8,
+                              borderRadius: 4,
+                              backgroundColor: '#f3f4f6',
+                              '& .MuiLinearProgress-bar': {
+                                backgroundColor: item.color,
+                                borderRadius: 4,
+                                boxShadow: `0 2px 8px ${item.color}40`
+                              }
+                            }}
+                          />
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              left: `${Math.min(targetIncomePercentage, 100)}%`,
+                              top: -1,
+                              width: 2,
+                              height: 10,
+                              backgroundColor: '#374151',
+                              borderRadius: 1,
+                              zIndex: 1,
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Box>
             </Box>
           </Box>
           <Box sx={{ display: 'flex', gap: 3, mb: 3 }}>
