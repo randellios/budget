@@ -16,44 +16,21 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon
 } from '@mui/icons-material';
+import EditableField from '../EditableField';
 
-// Sample data
-const expenseCategories = [
-  {
-    id: 1,
-    name: 'Home',
-    icon: '🏠',
-    isEssential: true,
-    items: [
-      { id: 1, name: 'Mortgage', amount: 1000, isEssential: true },
-      { id: 2, name: 'Council Tax', amount: 150, isEssential: true },
-      { id: 3, name: 'Home Insurance', amount: 150, isEssential: true }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Utilities',
-    icon: '⚡',
-    isEssential: true,
-    items: [
-      { id: 4, name: 'Electricity', amount: 120, isEssential: true },
-      { id: 5, name: 'Gas', amount: 80, isEssential: true },
-      { id: 6, name: 'Water', amount: 45, isEssential: true },
-      { id: 7, name: 'Internet', amount: 35, isEssential: false }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Entertainment',
-    icon: '🍿',
-    isEssential: false,
-    items: [
-      { id: 8, name: 'Netflix', amount: 15, isEssential: false },
-      { id: 9, name: 'Spotify', amount: 12, isEssential: false },
-      { id: 10, name: 'Dining Out', amount: 150, isEssential: false }
-    ]
-  }
+const availableIcons = [
+  '🎯',
+  '🏖️',
+  '🚗',
+  '🏠',
+  '💰',
+  '📱',
+  '🛍️',
+  '⚡',
+  '🍔',
+  '✈️'
 ];
+
 const savingsGoals = [
   {
     id: 1,
@@ -75,64 +52,24 @@ const savingsGoals = [
   }
 ];
 
-const debts = [
-  {
-    id: 1,
-    name: 'Credit Card',
-    icon: '💳',
-    currentBalance: 2000,
-    interestRate: 22.9,
-    monthlyPayment: 67
-  },
-  {
-    id: 2,
-    name: 'Car Loan',
-    icon: '🚗',
-    currentBalance: 3000,
-    interestRate: 6.5,
-    monthlyPayment: 100
-  },
-  {
-    id: 3,
-    name: 'Student Loan',
-    icon: '🎓',
-    currentBalance: 5000,
-    interestRate: 3.2,
-    monthlyPayment: 33
-  }
-];
-
 const SavingGoals = () => {
-  const [expandedCategories, setExpandedCategories] = useState({});
   const [expandedSavings, setExpandedSavings] = useState({});
-  const [expandedDebts, setExpandedDebts] = useState({});
-  const [editingCategoryId, setEditingCategoryId] = useState(null);
-  const [editingItemId, setEditingItemId] = useState(null);
-
-  const categoryInputRef = useRef(null);
-  const itemInputRef = useRef(null);
-
-  // Auto-focus when editing starts
-  useEffect(() => {
-    if (editingCategoryId && categoryInputRef.current) {
-      categoryInputRef.current.focus();
-      categoryInputRef.current.select();
-    }
-  }, [editingCategoryId]);
+  const [editingField, setEditingField] = useState(null);
+  const [showIconPicker, setShowIconPicker] = useState(null);
+  const [goalData, setGoalData] = useState(savingsGoals);
 
   useEffect(() => {
-    if (editingItemId && itemInputRef.current) {
-      itemInputRef.current.focus();
-      itemInputRef.current.select();
-    }
-  }, [editingItemId]);
+    const handleClickOutside = (event) => {
+      if (showIconPicker && !event.target.closest('.icon-picker')) {
+        setShowIconPicker(null);
+      }
+    };
 
-  const toggleCategory = (categoryId) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [categoryId]: !prev[categoryId]
-    }));
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showIconPicker]);
 
   const toggleSaving = (savingId) => {
     setExpandedSavings((prev) => ({
@@ -141,34 +78,34 @@ const SavingGoals = () => {
     }));
   };
 
-  const toggleDebt = (debtId) => {
-    setExpandedDebts((prev) => ({
-      ...prev,
-      [debtId]: !prev[debtId]
-    }));
+  const updateGoalField = (goalId, field, newValue) => {
+    setGoalData((prev) =>
+      prev.map((goal) =>
+        goal.id === goalId
+          ? {
+              ...goal,
+              [field]:
+                field === 'currentBalance' ||
+                field === 'targetAmount' ||
+                field === 'monthlyContribution'
+                  ? parseFloat(newValue) || 0
+                  : newValue
+            }
+          : goal
+      )
+    );
+    setEditingField(null);
   };
 
-  const getCategoryTotal = (category) =>
-    category.items.reduce((total, item) => total + item.amount, 0);
+  const handleIconSelect = (goalId, icon) => {
+    updateGoalField(goalId, 'icon', icon);
+    setShowIconPicker(null);
+  };
 
-  const totalExpenses = expenseCategories.reduce(
-    (total, category) => total + getCategoryTotal(category),
-    0
-  );
-
-  const totalSavings = savingsGoals.reduce(
+  const totalSavings = goalData.reduce(
     (total, goal) => total + goal.monthlyContribution,
     0
   );
-
-  const totalDebtPayments = debts.reduce(
-    (total, debt) => total + debt.monthlyPayment,
-    0
-  );
-
-  const monthlyIncome = 5000;
-  const remaining =
-    monthlyIncome - totalExpenses - totalSavings - totalDebtPayments;
 
   return (
     <Card>
@@ -187,211 +124,272 @@ const SavingGoals = () => {
         sx={{ pb: 1 }}
       />
       <CardContent sx={{ pt: 0 }}>
-        {savingsGoals.map((goal) => (
-          <Box
-            key={goal.id}
-            sx={{
-              mb: 2,
-              border: '1px solid #e2e8f0',
-              borderRadius: 2,
-              bgcolor: '#fafbfc'
-            }}
-          >
+        {goalData.map((goal) => {
+          return (
             <Box
+              key={goal.id}
               sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                p: 2,
-                cursor: 'pointer',
-                '&:hover': {
-                  bgcolor: '#f8fafc'
-                }
+                mb: 2,
+                border: '1px solid #e2e8f0',
+                borderRadius: 2,
+                bgcolor: '#fafbfc',
+                position: 'relative'
               }}
-              onClick={() => toggleSaving(goal.id)}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton size="small" sx={{ color: 'text.secondary' }}>
-                  {expandedSavings[goal.id] ? (
-                    <ExpandLessIcon fontSize="small" />
-                  ) : (
-                    <ExpandMoreIcon fontSize="small" />
-                  )}
-                </IconButton>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                  {goal.icon} {goal.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  £{goal.currentBalance.toLocaleString()} / £
-                  {goal.targetAmount.toLocaleString()}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography
-                  variant="body2"
-                  sx={{ fontWeight: 600, color: '#10b981' }}
+              {showIconPicker === goal.id && (
+                <Box
+                  className="icon-picker"
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    left: 8,
+                    zIndex: 10,
+                    bgcolor: 'white',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: 2,
+                    p: 1,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    display: 'flex',
+                    gap: 0.5,
+                    flexWrap: 'wrap',
+                    maxWidth: 200
+                  }}
                 >
-                  £{goal.monthlyContribution}/month
-                </Typography>
-                <IconButton
-                  size="small"
-                  sx={{ color: 'error.main' }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Box sx={{ fontSize: '14px' }}>✕</Box>
-                </IconButton>
-              </Box>
-            </Box>
+                  {availableIcons.map((icon) => (
+                    <IconButton
+                      key={icon}
+                      size="small"
+                      sx={{
+                        fontSize: '16px',
+                        '&:hover': { bgcolor: '#f0f9ff' }
+                      }}
+                      onClick={() => handleIconSelect(goal.id, icon)}
+                    >
+                      {icon}
+                    </IconButton>
+                  ))}
+                </Box>
+              )}
 
-            <Collapse
-              in={expandedSavings[goal.id]}
-              timeout="auto"
-              unmountOnExit
-            >
-              <Box sx={{ p: 2, pt: 0 }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Box sx={{ flex: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  p: 2,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    bgcolor: '#f8fafc'
+                  }
+                }}
+                onClick={() => toggleSaving(goal.id)}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <IconButton size="small" sx={{ color: 'text.secondary' }}>
+                    {expandedSavings[goal.id] ? (
+                      <ExpandLessIcon fontSize="small" />
+                    ) : (
+                      <ExpandMoreIcon fontSize="small" />
+                    )}
+                  </IconButton>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          bgcolor: 'rgba(102, 126, 234, 0.1)',
+                          borderRadius: 1
+                        }
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowIconPicker(goal.id);
+                      }}
+                    >
                       <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
+                        variant="subtitle2"
+                        sx={{ fontSize: '18px', px: 0.5, py: 0.25 }}
                       >
-                        Current Balance
+                        {goal.icon}
                       </Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          bgcolor: 'white',
-                          borderRadius: 1,
-                          border: '1px solid #e2e8f0',
-                          px: 1.5,
-                          py: 0.5
-                        }}
-                      >
-                        <Typography variant="body2">£</Typography>
-                        <input
-                          style={{
-                            border: 'none',
-                            background: 'transparent',
-                            outline: 'none',
-                            width: '100%',
-                            fontSize: '14px'
-                          }}
-                          defaultValue={goal.currentBalance}
-                        />
-                      </Box>
                     </Box>
 
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
-                      >
-                        Target Amount
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          bgcolor: 'white',
-                          borderRadius: 1,
-                          border: '1px solid #e2e8f0',
-                          px: 1.5,
-                          py: 0.5
-                        }}
-                      >
-                        <Typography variant="body2">£</Typography>
-                        <input
-                          style={{
-                            border: 'none',
-                            background: 'transparent',
-                            outline: 'none',
-                            width: '100%',
-                            fontSize: '14px'
-                          }}
-                          defaultValue={goal.targetAmount}
-                        />
-                      </Box>
-                    </Box>
+                    <EditableField
+                      value={goal.name}
+                      isEditing={editingField === `${goal.id}-name`}
+                      onStartEdit={() => setEditingField(`${goal.id}-name`)}
+                      onSave={(newValue) =>
+                        updateGoalField(goal.id, 'name', newValue)
+                      }
+                      onCancel={() => setEditingField(null)}
+                      displayStyle={{
+                        fontWeight: 600
+                      }}
+                    />
                   </Box>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: '#10b981' }}
+                  >
+                    £{goal.monthlyContribution}/month
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    sx={{ color: 'error.main' }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Box sx={{ fontSize: '14px' }}>✕</Box>
+                  </IconButton>
+                </Box>
+              </Box>
 
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
-                      >
-                        Target Date
-                      </Typography>
-                      <Box
-                        sx={{
-                          bgcolor: 'white',
-                          borderRadius: 1,
-                          border: '1px solid #e2e8f0',
-                          px: 1.5,
-                          py: 0.5
-                        }}
-                      >
-                        <input
-                          type="month"
-                          style={{
-                            border: 'none',
-                            background: 'transparent',
-                            outline: 'none',
-                            width: '100%',
-                            fontSize: '14px'
-                          }}
-                          defaultValue={goal.targetDate}
+              <Collapse
+                in={expandedSavings[goal.id]}
+                timeout="auto"
+                unmountOnExit
+              >
+                <Box sx={{ p: 2, pt: 0 }}>
+                  <Box
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                  >
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
+                          Current Balance
+                        </Typography>
+                        <EditableField
+                          value={goal.currentBalance}
+                          displayValue={`£${goal.currentBalance.toLocaleString()}`}
+                          isEditing={
+                            editingField === `${goal.id}-currentBalance`
+                          }
+                          onStartEdit={() =>
+                            setEditingField(`${goal.id}-currentBalance`)
+                          }
+                          onSave={(newValue) =>
+                            updateGoalField(goal.id, 'currentBalance', newValue)
+                          }
+                          onCancel={() => setEditingField(null)}
+                          parseValue={(val) => parseFloat(val) || 0}
                         />
+                      </Box>
+
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
+                          Target Amount
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            bgcolor: 'white',
+                            borderRadius: 1,
+                            border: '1px solid #e2e8f0',
+                            px: 1.5,
+                            py: 0.5
+                          }}
+                        >
+                          <Typography variant="body2">£</Typography>
+                          <input
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              outline: 'none',
+                              width: '100%',
+                              fontSize: '14px'
+                            }}
+                            defaultValue={goal.targetAmount}
+                          />
+                        </Box>
                       </Box>
                     </Box>
 
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
-                      >
-                        Monthly Contribution
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          bgcolor: '#f0fdf4',
-                          borderRadius: 1,
-                          border: '2px solid #10b981',
-                          px: 1.5,
-                          py: 0.5
-                        }}
-                      >
-                        <Typography variant="body2" sx={{ color: '#10b981' }}>
-                          £
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
+                          Target Date
                         </Typography>
-                        <input
-                          style={{
-                            border: 'none',
-                            background: 'transparent',
-                            outline: 'none',
-                            width: '100%',
-                            fontSize: '14px',
-                            fontWeight: 600,
-                            color: '#10b981'
+                        <Box
+                          sx={{
+                            bgcolor: 'white',
+                            borderRadius: 1,
+                            border: '1px solid #e2e8f0',
+                            px: 1.5,
+                            py: 0.5
                           }}
-                          defaultValue={goal.monthlyContribution}
-                        />
+                        >
+                          <input
+                            type="month"
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              outline: 'none',
+                              width: '100%',
+                              fontSize: '14px'
+                            }}
+                            defaultValue={goal.targetDate}
+                          />
+                        </Box>
+                      </Box>
+
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
+                          Monthly Contribution
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            bgcolor: '#f0fdf4',
+                            borderRadius: 1,
+                            border: '2px solid #10b981',
+                            px: 1.5,
+                            py: 0.5
+                          }}
+                        >
+                          <Typography variant="body2" sx={{ color: '#10b981' }}>
+                            £
+                          </Typography>
+                          <input
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              outline: 'none',
+                              width: '100%',
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              color: '#10b981'
+                            }}
+                            defaultValue={goal.monthlyContribution}
+                          />
+                        </Box>
                       </Box>
                     </Box>
                   </Box>
                 </Box>
-              </Box>
-            </Collapse>
-          </Box>
-        ))}
+              </Collapse>
+            </Box>
+          );
+        })}
 
         <Button
           fullWidth

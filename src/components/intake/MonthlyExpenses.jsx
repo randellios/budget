@@ -20,8 +20,8 @@ import {
   StarBorder as StarBorderIcon,
   Delete as DeleteIcon
 } from '@mui/icons-material';
+import EditableField from '../EditableField';
 
-// Sample data with simplified structure
 const expenseCategories = [
   {
     id: 1,
@@ -112,27 +112,8 @@ const expenseCategories = [
 
 const MonthlyExpenses = () => {
   const [expandedCategories, setExpandedCategories] = useState({});
-  const [editingCategoryId, setEditingCategoryId] = useState(null);
-  const [editingItemId, setEditingItemId] = useState(null);
+  const [editingField, setEditingField] = useState(null);
   const [expenses, setExpenses] = useState(expenseCategories);
-
-  const categoryInputRef = useRef(null);
-  const itemInputRef = useRef(null);
-
-  // Auto-focus when editing starts
-  useEffect(() => {
-    if (editingCategoryId && categoryInputRef.current) {
-      categoryInputRef.current.focus();
-      categoryInputRef.current.select();
-    }
-  }, [editingCategoryId]);
-
-  useEffect(() => {
-    if (editingItemId && itemInputRef.current) {
-      itemInputRef.current.focus();
-      itemInputRef.current.select();
-    }
-  }, [editingItemId]);
 
   const toggleCategory = (categoryId) => {
     setExpandedCategories((prev) => ({
@@ -145,6 +126,41 @@ const MonthlyExpenses = () => {
     setExpenses((prev) =>
       prev.filter((category) => category.id !== categoryId)
     );
+  };
+
+  const updateCategoryField = (categoryId, field, newValue) => {
+    setExpenses((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? { ...category, [field]: newValue }
+          : category
+      )
+    );
+    setEditingField(null);
+  };
+
+  const updateItemField = (categoryId, itemId, field, newValue) => {
+    setExpenses((prev) =>
+      prev.map((category) => {
+        if (category.id === categoryId) {
+          return {
+            ...category,
+            items: category.items.map((item) => {
+              if (item.id === itemId) {
+                return {
+                  ...item,
+                  [field]:
+                    field === 'amount' ? parseFloat(newValue) || 0 : newValue
+                };
+              }
+              return item;
+            })
+          };
+        }
+        return category;
+      })
+    );
+    setEditingField(null);
   };
 
   const toggleItemEssential = (categoryId, itemId) => {
@@ -218,7 +234,6 @@ const MonthlyExpenses = () => {
     <Card>
       <CardHeader title="Monthly Expenses" sx={{ pb: 1 }} />
 
-      {/* Expense Summary */}
       <CardContent sx={{ pt: 0, pb: 2 }}>
         {expenses.map((category) => (
           <Box key={category.id} sx={{ mb: 2 }}>
@@ -250,84 +265,25 @@ const MonthlyExpenses = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="subtitle2">{category.icon}</Typography>
 
-                  {/* Editable Category Name */}
-                  {editingCategoryId === category.id ? (
-                    <Box
-                      sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-                    >
-                      <Box
-                        sx={{
-                          bgcolor: 'white',
-                          borderRadius: 1,
-                          border: '2px solid #667eea',
-                          px: 1,
-                          py: 0.25,
-                          minWidth: 100
-                        }}
-                      >
-                        <input
-                          ref={categoryInputRef}
-                          style={{
-                            border: 'none',
-                            background: 'transparent',
-                            outline: 'none',
-                            width: '100%',
-                            fontSize: '14px',
-                            fontWeight: 600
-                          }}
-                          defaultValue={category.name}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              setEditingCategoryId(null);
-                            } else if (e.key === 'Escape') {
-                              setEditingCategoryId(null);
-                            }
-                          }}
-                        />
-                      </Box>
-                      <IconButton
-                        size="small"
-                        sx={{ color: 'success.main' }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingCategoryId(null);
-                        }}
-                      >
-                        <Box sx={{ fontSize: '14px' }}>✓</Box>
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        sx={{ color: 'error.main' }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingCategoryId(null);
-                        }}
-                      >
-                        <Box sx={{ fontSize: '14px' }}>✕</Box>
-                      </IconButton>
-                    </Box>
-                  ) : (
-                    <Box
-                      sx={{
-                        px: 1,
-                        py: 0.5,
-                        borderRadius: 1,
-                        cursor: 'text',
-                        '&:hover': {
-                          bgcolor: 'rgba(102, 126, 234, 0.1)',
-                          outline: '1px solid rgba(102, 126, 234, 0.3)'
-                        }
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingCategoryId(category.id);
-                      }}
-                    >
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                        {category.name}
-                      </Typography>
-                    </Box>
-                  )}
+                  <EditableField
+                    value={category.name}
+                    isEditing={editingField === `category-${category.id}-name`}
+                    onStartEdit={() =>
+                      setEditingField(`category-${category.id}-name`)
+                    }
+                    onSave={(newValue) =>
+                      updateCategoryField(category.id, 'name', newValue)
+                    }
+                    onCancel={() => setEditingField(null)}
+                    displayVariant="subtitle2"
+                    displayTypographyProps={{
+                      fontWeight: 600,
+                      color: '#1a1a1a'
+                    }}
+                    displayStyle={{
+                      minWidth: 100
+                    }}
+                  />
                 </Box>
               </Box>
 
@@ -336,7 +292,6 @@ const MonthlyExpenses = () => {
                   £{getCategoryTotal(category).toLocaleString()}
                 </Typography>
 
-                {/* Delete Category Button */}
                 <Tooltip title="Delete category">
                   <IconButton
                     size="small"
@@ -388,83 +343,32 @@ const MonthlyExpenses = () => {
                         flex: 1
                       }}
                     >
-                      {/* Editable Item Name */}
-                      {editingItemId === item.id ? (
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 0.5
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              bgcolor: 'white',
-                              borderRadius: 1,
-                              border: '2px solid #667eea',
-                              px: 1,
-                              py: 0.25,
-                              minWidth: 120
-                            }}
-                          >
-                            <input
-                              ref={itemInputRef}
-                              style={{
-                                border: 'none',
-                                background: 'transparent',
-                                outline: 'none',
-                                width: '100%',
-                                fontSize: '14px'
-                              }}
-                              defaultValue={item.name}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  setEditingItemId(null);
-                                } else if (e.key === 'Escape') {
-                                  setEditingItemId(null);
-                                }
-                              }}
-                            />
-                          </Box>
-                          <IconButton
-                            size="small"
-                            sx={{ color: 'success.main' }}
-                            onClick={() => setEditingItemId(null)}
-                          >
-                            <Box sx={{ fontSize: '14px' }}>✓</Box>
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            sx={{ color: 'error.main' }}
-                            onClick={() => setEditingItemId(null)}
-                          >
-                            <Box sx={{ fontSize: '14px' }}>✕</Box>
-                          </IconButton>
-                        </Box>
-                      ) : (
-                        <Box
-                          sx={{
-                            px: 1,
-                            py: 0.5,
-                            borderRadius: 1,
-                            cursor: 'text',
-                            minWidth: 120,
-                            '&:hover': {
-                              bgcolor: 'rgba(102, 126, 234, 0.1)',
-                              outline: '1px solid rgba(102, 126, 234, 0.3)'
-                            }
-                          }}
-                          onClick={() => setEditingItemId(item.id)}
-                        >
-                          <Typography variant="body2" color="text.secondary">
-                            {item.name}
-                          </Typography>
-                        </Box>
-                      )}
+                      <EditableField
+                        value={item.name}
+                        isEditing={editingField === `item-${item.id}-name`}
+                        onStartEdit={() =>
+                          setEditingField(`item-${item.id}-name`)
+                        }
+                        onSave={(newValue) =>
+                          updateItemField(
+                            category.id,
+                            item.id,
+                            'name',
+                            newValue
+                          )
+                        }
+                        onCancel={() => setEditingField(null)}
+                        displayVariant="body2"
+                        displayTypographyProps={{
+                          color: 'text.secondary'
+                        }}
+                        displayStyle={{
+                          minWidth: 120
+                        }}
+                      />
                     </Box>
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {/* Essential Toggle */}
                       <Tooltip
                         title={
                           item.isEssential
@@ -493,7 +397,6 @@ const MonthlyExpenses = () => {
                         </IconButton>
                       </Tooltip>
 
-                      {/* Flexibility Toggle - Very subtle */}
                       <Tooltip
                         title={
                           item.isFlexible

@@ -9,70 +9,27 @@ import {
   Button,
   IconButton,
   Divider,
-  Collapse
+  Collapse,
+  Tooltip
 } from '@mui/material';
 import {
   Add as AddIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon
 } from '@mui/icons-material';
+import EditableField from '../EditableField';
 
-// Sample data
-const expenseCategories = [
-  {
-    id: 1,
-    name: 'Home',
-    icon: '🏠',
-    isEssential: true,
-    items: [
-      { id: 1, name: 'Mortgage', amount: 1000, isEssential: true },
-      { id: 2, name: 'Council Tax', amount: 150, isEssential: true },
-      { id: 3, name: 'Home Insurance', amount: 150, isEssential: true }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Utilities',
-    icon: '⚡',
-    isEssential: true,
-    items: [
-      { id: 4, name: 'Electricity', amount: 120, isEssential: true },
-      { id: 5, name: 'Gas', amount: 80, isEssential: true },
-      { id: 6, name: 'Water', amount: 45, isEssential: true },
-      { id: 7, name: 'Internet', amount: 35, isEssential: false }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Entertainment',
-    icon: '🍿',
-    isEssential: false,
-    items: [
-      { id: 8, name: 'Netflix', amount: 15, isEssential: false },
-      { id: 9, name: 'Spotify', amount: 12, isEssential: false },
-      { id: 10, name: 'Dining Out', amount: 150, isEssential: false }
-    ]
-  }
-];
-const savingsGoals = [
-  {
-    id: 1,
-    name: 'Emergency Fund',
-    icon: '🎯',
-    currentBalance: 1000,
-    targetAmount: 5000,
-    targetDate: '2026-12',
-    monthlyContribution: 100
-  },
-  {
-    id: 2,
-    name: 'Holiday Fund',
-    icon: '🏖️',
-    currentBalance: 500,
-    targetAmount: 2000,
-    targetDate: '2025-08',
-    monthlyContribution: 100
-  }
+const availableIcons = [
+  '💳',
+  '🚗',
+  '🎓',
+  '🏠',
+  '💰',
+  '📱',
+  '🛍️',
+  '⚡',
+  '🍔',
+  '🎯'
 ];
 
 const debts = [
@@ -80,6 +37,7 @@ const debts = [
     id: 1,
     name: 'Credit Card',
     icon: '💳',
+    startingBalance: 5000,
     currentBalance: 2000,
     interestRate: 22.9,
     monthlyPayment: 67
@@ -88,6 +46,7 @@ const debts = [
     id: 2,
     name: 'Car Loan',
     icon: '🚗',
+    startingBalance: 10000,
     currentBalance: 3000,
     interestRate: 6.5,
     monthlyPayment: 100
@@ -96,6 +55,7 @@ const debts = [
     id: 3,
     name: 'Student Loan',
     icon: '🎓',
+    startingBalance: 22000,
     currentBalance: 5000,
     interestRate: 3.2,
     monthlyPayment: 33
@@ -103,43 +63,23 @@ const debts = [
 ];
 
 const Debts = () => {
-  const [expandedCategories, setExpandedCategories] = useState({});
-  const [expandedSavings, setExpandedSavings] = useState({});
   const [expandedDebts, setExpandedDebts] = useState({});
-  const [editingCategoryId, setEditingCategoryId] = useState(null);
-  const [editingItemId, setEditingItemId] = useState(null);
-
-  const categoryInputRef = useRef(null);
-  const itemInputRef = useRef(null);
-
-  // Auto-focus when editing starts
-  useEffect(() => {
-    if (editingCategoryId && categoryInputRef.current) {
-      categoryInputRef.current.focus();
-      categoryInputRef.current.select();
-    }
-  }, [editingCategoryId]);
+  const [editingField, setEditingField] = useState(null);
+  const [showIconPicker, setShowIconPicker] = useState(null);
+  const [debtData, setDebtData] = useState(debts);
 
   useEffect(() => {
-    if (editingItemId && itemInputRef.current) {
-      itemInputRef.current.focus();
-      itemInputRef.current.select();
-    }
-  }, [editingItemId]);
+    const handleClickOutside = (event) => {
+      if (showIconPicker && !event.target.closest('.icon-picker')) {
+        setShowIconPicker(null);
+      }
+    };
 
-  const toggleCategory = (categoryId) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [categoryId]: !prev[categoryId]
-    }));
-  };
-
-  const toggleSaving = (savingId) => {
-    setExpandedSavings((prev) => ({
-      ...prev,
-      [savingId]: !prev[savingId]
-    }));
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showIconPicker]);
 
   const toggleDebt = (debtId) => {
     setExpandedDebts((prev) => ({
@@ -148,27 +88,35 @@ const Debts = () => {
     }));
   };
 
-  const getCategoryTotal = (category) =>
-    category.items.reduce((total, item) => total + item.amount, 0);
+  const updateDebtField = (debtId, field, newValue) => {
+    setDebtData((prev) =>
+      prev.map((debt) =>
+        debt.id === debtId
+          ? {
+              ...debt,
+              [field]:
+                field === 'startingBalance' ||
+                field === 'currentBalance' ||
+                field === 'interestRate' ||
+                field === 'monthlyPayment'
+                  ? parseFloat(newValue) || 0
+                  : newValue
+            }
+          : debt
+      )
+    );
+    setEditingField(null);
+  };
 
-  const totalExpenses = expenseCategories.reduce(
-    (total, category) => total + getCategoryTotal(category),
-    0
-  );
+  const handleIconSelect = (debtId, icon) => {
+    updateDebtField(debtId, 'icon', icon);
+    setShowIconPicker(null);
+  };
 
-  const totalSavings = savingsGoals.reduce(
-    (total, goal) => total + goal.monthlyContribution,
-    0
-  );
-
-  const totalDebtPayments = debts.reduce(
+  const totalDebtPayments = debtData.reduce(
     (total, debt) => total + debt.monthlyPayment,
     0
   );
-
-  const monthlyIncome = 5000;
-  const remaining =
-    monthlyIncome - totalExpenses - totalSavings - totalDebtPayments;
 
   return (
     <Card>
@@ -187,174 +135,300 @@ const Debts = () => {
         sx={{ pb: 1 }}
       />
       <CardContent sx={{ pt: 0 }}>
-        {debts.map((debt) => (
-          <Box
-            key={debt.id}
-            sx={{
-              mb: 2,
-              border: '1px solid #fca5a5',
-              borderLeft: '4px solid #ef4444',
-              borderRadius: 2,
-              bgcolor: '#fefefe'
-            }}
-          >
+        {debtData.map((debt) => {
+          return (
             <Box
+              key={debt.id}
               sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                p: 2,
-                cursor: 'pointer',
-                '&:hover': {
-                  bgcolor: '#fdf8f8'
-                }
+                mb: 2,
+                border: '1px solid #fca5a5',
+                borderLeft: '4px solid #ef4444',
+                borderRadius: 2,
+                bgcolor: '#fefefe',
+                position: 'relative'
               }}
-              onClick={() => toggleDebt(debt.id)}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton size="small" sx={{ color: 'text.secondary' }}>
-                  {expandedDebts[debt.id] ? (
-                    <ExpandLessIcon fontSize="small" />
-                  ) : (
-                    <ExpandMoreIcon fontSize="small" />
-                  )}
-                </IconButton>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                  {debt.icon} {debt.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  £{debt.currentBalance.toLocaleString()} @ {debt.interestRate}%
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography
-                  variant="body2"
-                  sx={{ fontWeight: 600, color: '#ef4444' }}
+              {showIconPicker === debt.id && (
+                <Box
+                  className="icon-picker"
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    left: 8,
+                    zIndex: 10,
+                    bgcolor: 'white',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: 2,
+                    p: 1,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    display: 'flex',
+                    gap: 0.5,
+                    flexWrap: 'wrap',
+                    maxWidth: 200
+                  }}
                 >
-                  £{debt.monthlyPayment}/month
-                </Typography>
-                <IconButton
-                  size="small"
-                  sx={{ color: 'error.main' }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Box sx={{ fontSize: '14px' }}>✕</Box>
-                </IconButton>
-              </Box>
-            </Box>
-
-            <Collapse in={expandedDebts[debt.id]} timeout="auto" unmountOnExit>
-              <Box sx={{ p: 2, pt: 0 }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
-                      >
-                        Current Balance
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          bgcolor: 'white',
-                          borderRadius: 1,
-                          border: '1px solid #e2e8f0',
-                          px: 1.5,
-                          py: 0.5
-                        }}
-                      >
-                        <Typography variant="body2">£</Typography>
-                        <input
-                          style={{
-                            border: 'none',
-                            background: 'transparent',
-                            outline: 'none',
-                            width: '100%',
-                            fontSize: '14px'
-                          }}
-                          defaultValue={debt.currentBalance}
-                        />
-                      </Box>
-                    </Box>
-
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
-                      >
-                        Interest Rate (APR)
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          bgcolor: 'white',
-                          borderRadius: 1,
-                          border: '1px solid #e2e8f0',
-                          px: 1.5,
-                          py: 0.5
-                        }}
-                      >
-                        <input
-                          style={{
-                            border: 'none',
-                            background: 'transparent',
-                            outline: 'none',
-                            width: '100%',
-                            fontSize: '14px'
-                          }}
-                          defaultValue={debt.interestRate}
-                        />
-                        <Typography variant="body2">%</Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-
-                  <Box>
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{ display: 'block', mb: 0.5 }}
+                  {availableIcons.map((icon) => (
+                    <IconButton
+                      key={icon}
+                      size="small"
+                      sx={{
+                        fontSize: '16px',
+                        '&:hover': { bgcolor: '#f0f9ff' }
+                      }}
+                      onClick={() => handleIconSelect(debt.id, icon)}
                     >
-                      Monthly Payment
-                    </Typography>
+                      {icon}
+                    </IconButton>
+                  ))}
+                </Box>
+              )}
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  p: 2,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    bgcolor: '#fdf8f8'
+                  }
+                }}
+                onClick={() => toggleDebt(debt.id)}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <IconButton size="small" sx={{ color: 'text.secondary' }}>
+                    {expandedDebts[debt.id] ? (
+                      <ExpandLessIcon fontSize="small" />
+                    ) : (
+                      <ExpandMoreIcon fontSize="small" />
+                    )}
+                  </IconButton>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box
                       sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        bgcolor: '#fef2f2',
-                        borderRadius: 1,
-                        border: '2px solid #ef4444',
-                        px: 1.5,
-                        py: 0.5
+                        cursor: 'pointer',
+                        '&:hover': {
+                          bgcolor: 'rgba(102, 126, 234, 0.1)',
+                          borderRadius: 1
+                        }
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowIconPicker(debt.id);
                       }}
                     >
-                      <Typography variant="body2" sx={{ color: '#ef4444' }}>
-                        £
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ fontSize: '18px', px: 0.5, py: 0.25 }}
+                      >
+                        {debt.icon}
                       </Typography>
-                      <input
-                        style={{
-                          border: 'none',
-                          background: 'transparent',
-                          outline: 'none',
-                          width: '100%',
-                          fontSize: '14px',
-                          fontWeight: 600,
-                          color: '#ef4444'
-                        }}
-                        defaultValue={debt.monthlyPayment}
-                      />
+                    </Box>
+
+                    <EditableField
+                      value={debt.name}
+                      isEditing={editingField === `${debt.id}-name`}
+                      onStartEdit={() => setEditingField(`${debt.id}-name`)}
+                      onSave={(newValue) =>
+                        updateDebtField(debt.id, 'name', newValue)
+                      }
+                      onCancel={() => setEditingField(null)}
+                      displayStyle={{
+                        fontWeight: 600
+                      }}
+                    />
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: '#ef4444' }}
+                  >
+                    £{debt.monthlyPayment}/month
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    sx={{ color: 'error.main' }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Box sx={{ fontSize: '14px' }}>✕</Box>
+                  </IconButton>
+                </Box>
+              </Box>
+
+              <Collapse
+                in={expandedDebts[debt.id]}
+                timeout="auto"
+                unmountOnExit
+              >
+                <Box sx={{ p: 2, pt: 0 }}>
+                  <Box
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                  >
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
+                          Starting Balance
+                        </Typography>
+                        <Box
+                          sx={{
+                            bgcolor: '#f8fafc',
+                            borderRadius: 1,
+                            border: '1px solid #e2e8f0',
+                            px: 1.5,
+                            py: 0.5
+                          }}
+                        >
+                          <EditableField
+                            value={debt.startingBalance}
+                            displayValue={`£${debt.startingBalance.toLocaleString()}`}
+                            isEditing={
+                              editingField === `${debt.id}-startingBalance`
+                            }
+                            onStartEdit={() =>
+                              setEditingField(`${debt.id}-startingBalance`)
+                            }
+                            onSave={(newValue) =>
+                              updateDebtField(
+                                debt.id,
+                                'startingBalance',
+                                newValue
+                              )
+                            }
+                            onCancel={() => setEditingField(null)}
+                            parseValue={(val) => parseFloat(val) || 0}
+                            containerStyle={{
+                              bgcolor: '#f8fafc',
+                              border: '1px solid #e2e8f0',
+                              px: 0.5,
+                              py: 0
+                            }}
+                            displayStyle={{
+                              px: 0.5,
+                              py: 0,
+                              minWidth: 'auto'
+                            }}
+                          />
+                        </Box>
+                      </Box>
+
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
+                          Current Balance
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            bgcolor: 'white',
+                            borderRadius: 1,
+                            border: '1px solid #e2e8f0',
+                            px: 1.5,
+                            py: 0.5
+                          }}
+                        >
+                          <Typography variant="body2">£</Typography>
+                          <input
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              outline: 'none',
+                              width: '100%',
+                              fontSize: '14px'
+                            }}
+                            defaultValue={debt.currentBalance}
+                          />
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
+                          Interest Rate (APR)
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            bgcolor: 'white',
+                            borderRadius: 1,
+                            border: '1px solid #e2e8f0',
+                            px: 1.5,
+                            py: 0.5
+                          }}
+                        >
+                          <input
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              outline: 'none',
+                              width: '100%',
+                              fontSize: '14px'
+                            }}
+                            defaultValue={debt.interestRate}
+                          />
+                          <Typography variant="body2">%</Typography>
+                        </Box>
+                      </Box>
+
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
+                          Monthly Payment
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            bgcolor: '#fef2f2',
+                            borderRadius: 1,
+                            border: '2px solid #ef4444',
+                            px: 1.5,
+                            py: 0.5
+                          }}
+                        >
+                          <Typography variant="body2" sx={{ color: '#ef4444' }}>
+                            £
+                          </Typography>
+                          <input
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              outline: 'none',
+                              width: '100%',
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              color: '#ef4444'
+                            }}
+                            defaultValue={debt.monthlyPayment}
+                          />
+                        </Box>
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
-              </Box>
-            </Collapse>
-          </Box>
-        ))}
+              </Collapse>
+            </Box>
+          );
+        })}
 
         <Button
           fullWidth
