@@ -1,21 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Card, CardContent, Typography } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button } from '@mui/material';
 import {
   AccountBalanceWallet as WalletIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
-
+import SaveStatusIndicator from '../SaveStatusIndicator';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   selectMonthlyIncome,
   updateMonthlyIncome
 } from '../../store/slices/incomeSlice';
+import {
+  selectSaveError,
+  saveBudgetData,
+  clearSaveError
+} from '../../store/slices/apiSlice';
 
 const MonthlyIncome = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState('');
   const inputRef = useRef(null);
   const income = useAppSelector(selectMonthlyIncome);
+  const saveError = useAppSelector(selectSaveError);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -24,6 +30,15 @@ const MonthlyIncome = () => {
       inputRef.current.select();
     }
   }, [isEditing]);
+
+  useEffect(() => {
+    if (saveError) {
+      const timer = setTimeout(() => {
+        dispatch(clearSaveError());
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [saveError, dispatch]);
 
   const handleStartEdit = () => {
     setTempValue(income.toString());
@@ -35,6 +50,7 @@ const MonthlyIncome = () => {
     dispatch(updateMonthlyIncome(newValue));
     setIsEditing(false);
   };
+
   const handleCancel = () => {
     setIsEditing(false);
     setTempValue('');
@@ -48,9 +64,46 @@ const MonthlyIncome = () => {
     }
   };
 
+  const handleManualSave = () => {
+    dispatch(saveBudgetData());
+  };
+
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent sx={{ p: 2.5 }}>
+        {saveError && (
+          <Box
+            sx={{
+              mb: 2,
+              p: 1.5,
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fca5a5',
+              borderRadius: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{ color: '#dc2626', fontSize: '0.8rem' }}
+            >
+              Failed to save: {saveError}
+            </Typography>
+            <Button
+              size="small"
+              onClick={handleManualSave}
+              sx={{
+                color: '#dc2626',
+                fontSize: '0.7rem',
+                textTransform: 'none',
+                minWidth: 'auto'
+              }}
+            >
+              Retry
+            </Button>
+          </Box>
+        )}
         <Box
           sx={{
             display: 'flex',
@@ -62,7 +115,7 @@ const MonthlyIncome = () => {
             border: '2px solid #e2e8f0'
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography
               variant="h6"
               sx={{
@@ -73,6 +126,7 @@ const MonthlyIncome = () => {
             >
               Monthly Income
             </Typography>
+            <SaveStatusIndicator context="income" />
           </Box>
 
           {isEditing ? (

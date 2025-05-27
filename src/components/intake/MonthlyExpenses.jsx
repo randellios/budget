@@ -194,7 +194,11 @@ const MonthlyExpenses = () => {
                 £{totalExpenses.toLocaleString()} • {categories.length}{' '}
                 categories
               </Typography>
-              <SaveStatusIndicator showInTitle={true} size="small" />
+              <SaveStatusIndicator
+                showManualSave={false}
+                size="small"
+                context="expenses"
+              />
             </Box>
           </Box>
         </Box>

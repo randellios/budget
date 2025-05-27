@@ -9,14 +9,39 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import { useDebouncedCallback } from 'use-debounce';
 import {
   Add as AddIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-  TrackChanges as TargetIcon
+  TrackChanges as TargetIcon,
+  Delete as DeleteIcon
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
 import CollapsibleCard from '../CollapsibleCard';
+import SaveStatusIndicator from '../SaveStatusIndicator';
+import ConfirmationModal from '../ConfirmationModal';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import {
+  selectSavingsGoals,
+  selectTotalSavingsContributions,
+  addSavingsGoal,
+  updateSavingsGoal,
+  deleteSavingsGoal
+} from '../../store/slices/savingsSlice';
+import {
+  selectExpandedSavings,
+  selectEditingField,
+  selectShowIconPicker,
+  toggleSaving,
+  setEditingField,
+  setShowIconPicker
+} from '../../store/slices/uiSlice';
+import {
+  selectSaveError,
+  saveBudgetData,
+  clearSaveError
+} from '../../store/slices/apiSlice';
 const availableIcons = [
   '🎯',
   '🏖️',
@@ -29,75 +54,85 @@ const availableIcons = [
   '🍔',
   '✈️'
 ];
-const savingsGoals = [
-  {
-    id: 1,
-    name: 'Emergency Fund',
-    icon: '🎯',
-    currentBalance: 1000,
-    targetAmount: 5000,
-    targetDate: '2026-12',
-    monthlyContribution: 100
-  },
-  {
-    id: 2,
-    name: 'Holiday Fund',
-    icon: '🏖️',
-    currentBalance: 500,
-    targetAmount: 2000,
-    targetDate: '2025-08',
-    monthlyContribution: 100
-  }
-];
 const SavingGoals = () => {
-  const [expandedSavings, setExpandedSavings] = useState({});
-  const [editingField, setEditingField] = useState(null);
-  const [showIconPicker, setShowIconPicker] = useState(null);
-  const [goalData, setGoalData] = useState(savingsGoals);
+  const dispatch = useAppDispatch();
+  const goalData = useAppSelector(selectSavingsGoals);
+  const totalSavings = useAppSelector(selectTotalSavingsContributions);
+  const expandedSavings = useAppSelector(selectExpandedSavings);
+  const editingField = useAppSelector(selectEditingField);
+  const showIconPicker = useAppSelector(selectShowIconPicker);
+  const saveError = useAppSelector(selectSaveError);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [localValues, setLocalValues] = useState({});
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    title: '',
+    message: '',
+    onConfirm: null
+  });
+  const debouncedUpdateGoal = useDebouncedCallback(
+    ({ goalId, field, value }) => {
+      dispatch(updateSavingsGoal({ goalId, field, value }));
+    },
+    500
+  );
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showIconPicker && !event.target.closest('.icon-picker')) {
-        setShowIconPicker(null);
+        dispatch(setShowIconPicker(null));
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showIconPicker]);
-  const toggleSaving = (savingId) => {
-    setExpandedSavings((prev) => ({
-      ...prev,
-      [savingId]: !prev[savingId]
-    }));
+  }, [showIconPicker, dispatch]);
+  useEffect(() => {
+    if (saveError) {
+      const timer = setTimeout(() => {
+        dispatch(clearSaveError());
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [saveError, dispatch]);
+  const handleToggleSaving = (savingId) => {
+    dispatch(toggleSaving(savingId));
   };
   const updateGoalField = (goalId, field, newValue) => {
-    setGoalData((prev) =>
-      prev.map((goal) =>
-        goal.id === goalId
-          ? {
-              ...goal,
-              [field]:
-                field === 'currentBalance' ||
-                field === 'targetAmount' ||
-                field === 'monthlyContribution'
-                  ? parseFloat(newValue) || 0
-                  : newValue
-            }
-          : goal
-      )
-    );
-    setEditingField(null);
+    dispatch(updateSavingsGoal({ goalId, field, value: newValue }));
+    dispatch(setEditingField(null));
   };
   const handleIconSelect = (goalId, icon) => {
-    updateGoalField(goalId, 'icon', icon);
-    setShowIconPicker(null);
+    dispatch(updateSavingsGoal({ goalId, field: 'icon', value: icon }));
+    dispatch(setShowIconPicker(null));
   };
-  const totalSavings = goalData.reduce(
-    (total, goal) => total + goal.monthlyContribution,
-    0
-  );
+  const handleDeleteGoal = (goalId) => {
+    const goal = goalData.find((g) => g.id === goalId);
+    setConfirmModal({
+      open: true,
+      title: 'Delete Savings Goal',
+      message: `Are you sure you want to delete "${goal?.name}"? This action cannot be undone.`,
+      onConfirm: () => {
+        dispatch(deleteSavingsGoal(goalId));
+        setConfirmModal((prev) => ({ ...prev, open: false }));
+      }
+    });
+  };
+  const handleGoalAmountChange = (goalId, field, value) => {
+    const key = `${goalId}-${field}`;
+    setLocalValues((prev) => ({ ...prev, [key]: value }));
+    debouncedUpdateGoal({ goalId, field, value });
+  };
+  const getGoalValue = (goalId, field, originalValue) => {
+    const key = `${goalId}-${field}`;
+    return localValues[key] !== undefined ? localValues[key] : originalValue;
+  };
+  const handleAddGoal = () => {
+    dispatch(addSavingsGoal({ name: 'New Goal', icon: '🎯' }));
+  };
+  const handleManualSave = () => {
+    dispatch(saveBudgetData());
+  };
   return (
     <CollapsibleCard
       title={
@@ -114,25 +149,65 @@ const SavingGoals = () => {
           >
             <TargetIcon sx={{ fontSize: 18, color: 'white' }} />
           </Box>
-          <Box>
+          <Box sx={{ flex: 1 }}>
             <Typography
               variant="h6"
               sx={{ fontWeight: 600, fontSize: '1.125rem', color: '#1f2937' }}
             >
               Savings Goals
             </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
-            >
-              £{totalSavings}/month • {goalData.length} goals
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
+              >
+                £{totalSavings}/month • {goalData.length} goals
+              </Typography>
+              <SaveStatusIndicator
+                showInTitle={true}
+                size="small"
+                context="savings"
+              />
+            </Box>
           </Box>
         </Box>
       }
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
     >
+      {saveError && (
+        <Box
+          sx={{
+            mb: 2,
+            p: 1.5,
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fca5a5',
+            borderRadius: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: '#dc2626', fontSize: '0.8rem' }}
+          >
+            Failed to save: {saveError}
+          </Typography>
+          <Button
+            size="small"
+            onClick={handleManualSave}
+            sx={{
+              color: '#dc2626',
+              fontSize: '0.7rem',
+              textTransform: 'none',
+              minWidth: 'auto'
+            }}
+          >
+            Retry
+          </Button>
+        </Box>
+      )}
       {goalData.map((goal) => {
         return (
           <Box
@@ -190,7 +265,7 @@ const SavingGoals = () => {
                   bgcolor: '#f8fafc'
                 }
               }}
-              onClick={() => toggleSaving(goal.id)}
+              onClick={() => handleToggleSaving(goal.id)}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <IconButton size="small" sx={{ color: 'text.secondary' }}>
@@ -211,7 +286,7 @@ const SavingGoals = () => {
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setShowIconPicker(goal.id);
+                      dispatch(setShowIconPicker(goal.id));
                     }}
                   >
                     <Typography
@@ -224,11 +299,13 @@ const SavingGoals = () => {
                   <EditableField
                     value={goal.name}
                     isEditing={editingField === `${goal.id}-name`}
-                    onStartEdit={() => setEditingField(`${goal.id}-name`)}
+                    onStartEdit={() =>
+                      dispatch(setEditingField(`${goal.id}-name`))
+                    }
                     onSave={(newValue) =>
                       updateGoalField(goal.id, 'name', newValue)
                     }
-                    onCancel={() => setEditingField(null)}
+                    onCancel={() => dispatch(setEditingField(null))}
                     displayStyle={{
                       fontWeight: 600
                     }}
@@ -247,10 +324,19 @@ const SavingGoals = () => {
                 </Typography>
                 <IconButton
                   size="small"
-                  sx={{ color: 'error.main' }}
-                  onClick={(e) => e.stopPropagation()}
+                  sx={{
+                    color: '#d1d5db',
+                    '&:hover': {
+                      color: '#ef4444',
+                      bgcolor: 'rgba(239, 68, 68, 0.1)'
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteGoal(goal.id);
+                  }}
                 >
-                  <Box sx={{ fontSize: '14px' }}>✕</Box>
+                  <DeleteIcon fontSize="small" />
                 </IconButton>
               </Box>
             </Box>
@@ -274,9 +360,13 @@ const SavingGoals = () => {
                         variant="outlined"
                         size="small"
                         type="number"
-                        value={goal.currentBalance}
+                        value={getGoalValue(
+                          goal.id,
+                          'currentBalance',
+                          goal.currentBalance
+                        )}
                         onChange={(e) =>
-                          updateGoalField(
+                          handleGoalAmountChange(
                             goal.id,
                             'currentBalance',
                             e.target.value
@@ -304,9 +394,13 @@ const SavingGoals = () => {
                         variant="outlined"
                         size="small"
                         type="number"
-                        value={goal.targetAmount}
+                        value={getGoalValue(
+                          goal.id,
+                          'targetAmount',
+                          goal.targetAmount
+                        )}
                         onChange={(e) =>
-                          updateGoalField(
+                          handleGoalAmountChange(
                             goal.id,
                             'targetAmount',
                             e.target.value
@@ -336,9 +430,17 @@ const SavingGoals = () => {
                         variant="outlined"
                         size="small"
                         type="month"
-                        value={goal.targetDate}
+                        value={getGoalValue(
+                          goal.id,
+                          'targetDate',
+                          goal.targetDate
+                        )}
                         onChange={(e) =>
-                          updateGoalField(goal.id, 'targetDate', e.target.value)
+                          handleGoalAmountChange(
+                            goal.id,
+                            'targetDate',
+                            e.target.value
+                          )
                         }
                         fullWidth
                       />
@@ -355,9 +457,13 @@ const SavingGoals = () => {
                         variant="outlined"
                         size="small"
                         type="number"
-                        value={goal.monthlyContribution}
+                        value={getGoalValue(
+                          goal.id,
+                          'monthlyContribution',
+                          goal.monthlyContribution
+                        )}
                         onChange={(e) =>
-                          updateGoalField(
+                          handleGoalAmountChange(
                             goal.id,
                             'monthlyContribution',
                             e.target.value
@@ -415,9 +521,61 @@ const SavingGoals = () => {
             color: '#555'
           }
         }}
+        onClick={handleAddGoal}
       >
         Add Saving Goal
       </Button>
+      {!isExpanded && (
+        <Box
+          sx={{
+            mt: 2,
+            p: 1.5,
+            bgcolor: '#f8fafc',
+            borderRadius: 1,
+            border: '1px solid #e2e8f0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ fontSize: '0.75rem' }}
+            >
+              {goalData.length} goals
+            </Typography>
+            <SaveStatusIndicator
+              showManualSave={false}
+              size="small"
+              context="savings"
+            />
+          </Box>
+          <Chip
+            label={`£${totalSavings.toLocaleString()}`}
+            size="small"
+            sx={{
+              backgroundColor: '#dcfce7',
+              color: '#166534',
+              fontSize: '0.7rem',
+              fontWeight: 500,
+              height: 20
+            }}
+          />
+        </Box>
+      )}
+      <ConfirmationModal
+        open={confirmModal.open}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        variant="warning"
+        destructive={true}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </CollapsibleCard>
   );
 };

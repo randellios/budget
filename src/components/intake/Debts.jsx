@@ -10,14 +10,39 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import { useDebouncedCallback } from 'use-debounce';
 import {
   Add as AddIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-  CreditCard as CreditCardIcon
+  CreditCard as CreditCardIcon,
+  Delete as DeleteIcon
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
 import CollapsibleCard from '../CollapsibleCard';
+import SaveStatusIndicator from '../SaveStatusIndicator';
+import ConfirmationModal from '../ConfirmationModal';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import {
+  selectDebts,
+  selectTotalDebtPayments,
+  addDebt,
+  updateDebt,
+  deleteDebt
+} from '../../store/slices/debtsSlice';
+import {
+  selectExpandedDebts,
+  selectEditingField,
+  selectShowIconPicker,
+  toggleDebt,
+  setEditingField,
+  setShowIconPicker
+} from '../../store/slices/uiSlice';
+import {
+  selectSaveError,
+  saveBudgetData,
+  clearSaveError
+} from '../../store/slices/apiSlice';
 const availableIcons = [
   '💳',
   '🚗',
@@ -30,85 +55,85 @@ const availableIcons = [
   '🍔',
   '🎯'
 ];
-const debts = [
-  {
-    id: 1,
-    name: 'Credit Card',
-    icon: '💳',
-    startingBalance: 5000,
-    currentBalance: 2000,
-    interestRate: 22.9,
-    monthlyPayment: 67
-  },
-  {
-    id: 2,
-    name: 'Car Loan',
-    icon: '🚗',
-    startingBalance: 10000,
-    currentBalance: 3000,
-    interestRate: 6.5,
-    monthlyPayment: 100
-  },
-  {
-    id: 3,
-    name: 'Student Loan',
-    icon: '🎓',
-    startingBalance: 22000,
-    currentBalance: 5000,
-    interestRate: 3.2,
-    monthlyPayment: 33
-  }
-];
 const Debts = () => {
-  const [expandedDebts, setExpandedDebts] = useState({});
-  const [editingField, setEditingField] = useState(null);
-  const [showIconPicker, setShowIconPicker] = useState(null);
-  const [debtData, setDebtData] = useState(debts);
+  const dispatch = useAppDispatch();
+  const debtData = useAppSelector(selectDebts);
+  const totalDebtPayments = useAppSelector(selectTotalDebtPayments);
+  const expandedDebts = useAppSelector(selectExpandedDebts);
+  const editingField = useAppSelector(selectEditingField);
+  const showIconPicker = useAppSelector(selectShowIconPicker);
+  const saveError = useAppSelector(selectSaveError);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [localValues, setLocalValues] = useState({});
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    title: '',
+    message: '',
+    onConfirm: null
+  });
+  const debouncedUpdateDebt = useDebouncedCallback(
+    ({ debtId, field, value }) => {
+      dispatch(updateDebt({ debtId, field, value }));
+    },
+    500
+  );
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showIconPicker && !event.target.closest('.icon-picker')) {
-        setShowIconPicker(null);
+        dispatch(setShowIconPicker(null));
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showIconPicker]);
-  const toggleDebt = (debtId) => {
-    setExpandedDebts((prev) => ({
-      ...prev,
-      [debtId]: !prev[debtId]
-    }));
+  }, [showIconPicker, dispatch]);
+  useEffect(() => {
+    if (saveError) {
+      const timer = setTimeout(() => {
+        dispatch(clearSaveError());
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [saveError, dispatch]);
+  const handleToggleDebt = (debtId) => {
+    dispatch(toggleDebt(debtId));
   };
   const updateDebtField = (debtId, field, newValue) => {
-    setDebtData((prev) =>
-      prev.map((debt) =>
-        debt.id === debtId
-          ? {
-              ...debt,
-              [field]:
-                field === 'startingBalance' ||
-                field === 'currentBalance' ||
-                field === 'interestRate' ||
-                field === 'monthlyPayment'
-                  ? parseFloat(newValue) || 0
-                  : newValue
-            }
-          : debt
-      )
-    );
-    setEditingField(null);
+    dispatch(updateDebt({ debtId, field, value: newValue }));
+    dispatch(setEditingField(null));
   };
   const handleIconSelect = (debtId, icon) => {
-    updateDebtField(debtId, 'icon', icon);
-    setShowIconPicker(null);
+    dispatch(updateDebt({ debtId, field: 'icon', value: icon }));
+    dispatch(setShowIconPicker(null));
   };
-  const totalDebtPayments = debtData.reduce(
-    (total, debt) => total + debt.monthlyPayment,
-    0
-  );
+  const handleDeleteDebt = (debtId) => {
+    const debt = debtData.find((d) => d.id === debtId);
+    setConfirmModal({
+      open: true,
+      title: 'Delete Debt',
+      message: `Are you sure you want to delete "${debt?.name}"? This action cannot be undone.`,
+      onConfirm: () => {
+        dispatch(deleteDebt(debtId));
+        setConfirmModal((prev) => ({ ...prev, open: false }));
+      }
+    });
+  };
+  const handleDebtAmountChange = (debtId, field, value) => {
+    const key = `${debtId}-${field}`;
+    setLocalValues((prev) => ({ ...prev, [key]: value }));
+    debouncedUpdateDebt({ debtId, field, value });
+  };
+  const getDebtValue = (debtId, field, originalValue) => {
+    const key = `${debtId}-${field}`;
+    return localValues[key] !== undefined ? localValues[key] : originalValue;
+  };
+  const handleAddDebt = () => {
+    dispatch(addDebt({ name: 'New Debt', icon: '💳' }));
+  };
+  const handleManualSave = () => {
+    dispatch(saveBudgetData());
+  };
   return (
     <CollapsibleCard
       title={
@@ -125,25 +150,61 @@ const Debts = () => {
           >
             <CreditCardIcon sx={{ fontSize: 18, color: 'white' }} />
           </Box>
-          <Box>
+          <Box sx={{ flex: 1 }}>
             <Typography
               variant="h6"
               sx={{ fontWeight: 600, fontSize: '1.125rem', color: '#1f2937' }}
             >
               Debts
             </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
-            >
-              £{totalDebtPayments}/month • {debtData.length} debts
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
+              >
+                £{totalDebtPayments}/month • {debtData.length} debts
+              </Typography>
+              <SaveStatusIndicator context="debts" />
+            </Box>
           </Box>
         </Box>
       }
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
     >
+      {saveError && (
+        <Box
+          sx={{
+            mb: 2,
+            p: 1.5,
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fca5a5',
+            borderRadius: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: '#dc2626', fontSize: '0.8rem' }}
+          >
+            Failed to save: {saveError}
+          </Typography>
+          <Button
+            size="small"
+            onClick={handleManualSave}
+            sx={{
+              color: '#dc2626',
+              fontSize: '0.7rem',
+              textTransform: 'none',
+              minWidth: 'auto'
+            }}
+          >
+            Retry
+          </Button>
+        </Box>
+      )}
       {debtData.map((debt) => {
         return (
           <Box
@@ -202,7 +263,7 @@ const Debts = () => {
                   bgcolor: '#fdf8f8'
                 }
               }}
-              onClick={() => toggleDebt(debt.id)}
+              onClick={() => handleToggleDebt(debt.id)}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <IconButton size="small" sx={{ color: 'text.secondary' }}>
@@ -223,7 +284,7 @@ const Debts = () => {
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setShowIconPicker(debt.id);
+                      dispatch(setShowIconPicker(debt.id));
                     }}
                   >
                     <Typography
@@ -236,11 +297,13 @@ const Debts = () => {
                   <EditableField
                     value={debt.name}
                     isEditing={editingField === `${debt.id}-name`}
-                    onStartEdit={() => setEditingField(`${debt.id}-name`)}
+                    onStartEdit={() =>
+                      dispatch(setEditingField(`${debt.id}-name`))
+                    }
                     onSave={(newValue) =>
                       updateDebtField(debt.id, 'name', newValue)
                     }
-                    onCancel={() => setEditingField(null)}
+                    onCancel={() => dispatch(setEditingField(null))}
                     displayStyle={{
                       fontWeight: 600
                     }}
@@ -259,10 +322,19 @@ const Debts = () => {
                 </Typography>
                 <IconButton
                   size="small"
-                  sx={{ color: 'error.main' }}
-                  onClick={(e) => e.stopPropagation()}
+                  sx={{
+                    color: '#d1d5db',
+                    '&:hover': {
+                      color: '#ef4444',
+                      bgcolor: 'rgba(239, 68, 68, 0.1)'
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteDebt(debt.id);
+                  }}
                 >
-                  <Box sx={{ fontSize: '14px' }}>✕</Box>
+                  <DeleteIcon fontSize="small" />
                 </IconButton>
               </Box>
             </Box>
@@ -282,9 +354,13 @@ const Debts = () => {
                         variant="outlined"
                         size="small"
                         type="number"
-                        value={debt.startingBalance}
+                        value={getDebtValue(
+                          debt.id,
+                          'startingBalance',
+                          debt.startingBalance
+                        )}
                         onChange={(e) =>
-                          updateDebtField(
+                          handleDebtAmountChange(
                             debt.id,
                             'startingBalance',
                             e.target.value
@@ -312,9 +388,13 @@ const Debts = () => {
                         variant="outlined"
                         size="small"
                         type="number"
-                        value={debt.currentBalance}
+                        value={getDebtValue(
+                          debt.id,
+                          'currentBalance',
+                          debt.currentBalance
+                        )}
                         onChange={(e) =>
-                          updateDebtField(
+                          handleDebtAmountChange(
                             debt.id,
                             'currentBalance',
                             e.target.value
@@ -344,9 +424,13 @@ const Debts = () => {
                         variant="outlined"
                         size="small"
                         type="number"
-                        value={debt.interestRate}
+                        value={getDebtValue(
+                          debt.id,
+                          'interestRate',
+                          debt.interestRate
+                        )}
                         onChange={(e) =>
-                          updateDebtField(
+                          handleDebtAmountChange(
                             debt.id,
                             'interestRate',
                             e.target.value
@@ -374,9 +458,13 @@ const Debts = () => {
                         variant="outlined"
                         size="small"
                         type="number"
-                        value={debt.monthlyPayment}
+                        value={getDebtValue(
+                          debt.id,
+                          'monthlyPayment',
+                          debt.monthlyPayment
+                        )}
                         onChange={(e) =>
-                          updateDebtField(
+                          handleDebtAmountChange(
                             debt.id,
                             'monthlyPayment',
                             e.target.value
@@ -434,9 +522,57 @@ const Debts = () => {
             color: '#555'
           }
         }}
+        onClick={handleAddDebt}
       >
         Add Debt
       </Button>
+      {!isExpanded && (
+        <Box
+          sx={{
+            mt: 2,
+            p: 1.5,
+            bgcolor: '#f8fafc',
+            borderRadius: 1,
+            border: '1px solid #e2e8f0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ fontSize: '0.75rem' }}
+            >
+              {debtData.length} debts
+            </Typography>
+            <SaveStatusIndicator context="debts" />
+          </Box>
+          <Chip
+            label={`£${totalDebtPayments.toLocaleString()}`}
+            size="small"
+            sx={{
+              backgroundColor: '#fecaca',
+              color: '#991b1b',
+              fontSize: '0.7rem',
+              fontWeight: 500,
+              height: 20
+            }}
+          />
+        </Box>
+      )}
+      <ConfirmationModal
+        open={confirmModal.open}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        variant="warning"
+        destructive={true}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </CollapsibleCard>
   );
 };
