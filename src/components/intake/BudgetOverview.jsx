@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-  CircularProgress
-} from '@mui/material';
+import { Box, Typography, TextField } from '@mui/material';
 import {
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
-  Error as ErrorIcon
+  Error as ErrorIcon,
+  TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon
 } from '@mui/icons-material';
 import { useAppSelector } from '../../store/hooks';
 import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
@@ -26,68 +21,68 @@ const BudgetOverview = () => {
 
   const totalAllocated = totalExpenses + savingsContributions + debtPayments;
   const remaining = monthlyIncome - totalAllocated;
-  const allocatedPercentage =
-    monthlyIncome > 0 ? (totalAllocated / monthlyIncome) * 100 : 0;
 
   const getBudgetStatus = () => {
     if (remaining > monthlyIncome * 0.1) {
       return {
-        status: 'excellent',
+        status: 'Excellent',
         color: '#10b981',
-        bgColor: '#dcfce7',
-        borderColor: '#667eea',
-        icon: CheckCircleIcon
+        borderColor: '#10b981',
+        icon: CheckCircleIcon,
+        shadowColor: 'rgba(16, 185, 129, 0.15)'
       };
     }
     if (remaining > 0) {
       return {
-        status: 'good',
-        color: '#f59e0b',
-        bgColor: '#fef3c7',
+        status: 'Good',
+        color: '#667eea',
         borderColor: '#667eea',
-        icon: CheckCircleIcon
+        icon: CheckCircleIcon,
+        shadowColor: 'rgba(102, 126, 234, 0.15)'
       };
     }
     if (remaining >= -100) {
       return {
-        status: 'warning',
-        color: '#ef4444',
-        bgColor: '#fee2e2',
-        borderColor: '#fca5a5',
-        icon: WarningIcon
+        status: 'Warning',
+        color: '#f59e0b',
+        borderColor: '#f59e0b',
+        icon: WarningIcon,
+        shadowColor: 'rgba(245, 158, 11, 0.15)'
       };
     }
     return {
-      status: 'critical',
-      color: '#dc2626',
-      bgColor: '#fef2f2',
-      borderColor: '#f87171',
-      icon: ErrorIcon
+      status: 'Over Budget',
+      color: '#ef4444',
+      borderColor: '#ef4444',
+      icon: ErrorIcon,
+      shadowColor: 'rgba(239, 68, 68, 0.15)'
     };
   };
 
   const budgetStatus = getBudgetStatus();
-  const StatusIcon = budgetStatus.icon;
 
   return (
-    <Card
+    <Box
       sx={{
-        background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
-        border: `2px solid ${budgetStatus.borderColor}`,
-        position: 'relative',
-        overflow: 'hidden'
+        position: 'sticky',
+        top: '-10px',
+        zIndex: 100,
+        mx: -2,
+        mb: 2,
+        background: 'linear-gradient(135deg, #ffffff 0%, #fdfdfd 100%)',
+        border: `1px solid ${budgetStatus.borderColor}`,
+        borderLeft: 'none',
+        borderRight: 'none',
+        boxShadow: `0 4px 16px ${budgetStatus.shadowColor}`,
+        px: 3,
+        py: 3,
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between'
       }}
     >
-      {/* Income Header */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-          borderBottom: '1px solid #cbd5e1',
-          px: 3,
-          py: 2,
-          position: 'relative'
-        }}
-      >
+      {/* Left Side - Monthly Income */}
+      <Box sx={{ flex: 1 }}>
         <Typography
           variant="caption"
           sx={{
@@ -102,7 +97,6 @@ const BudgetOverview = () => {
         >
           Monthly Income
         </Typography>
-
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography
             sx={{
@@ -147,108 +141,61 @@ const BudgetOverview = () => {
         </Box>
       </Box>
 
-      <CardContent sx={{ p: 3, position: 'relative', zIndex: 1 }}>
-        {/* Budget Status with Circular Progress */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-          {/* Circular Progress */}
-          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-            <CircularProgress
-              variant="determinate"
-              value={100}
-              size={80}
-              thickness={2}
-              sx={{ color: '#f3f4f6', position: 'absolute' }}
-            />
-            <CircularProgress
-              variant="determinate"
-              value={Math.min(allocatedPercentage, 100)}
-              size={80}
-              thickness={2}
+      {/* Right Side - Available Balance */}
+      <Box sx={{ flex: 1, textAlign: 'right' }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: '#64748b',
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            display: 'block',
+            mb: 0.5
+          }}
+        >
+          {remaining >= 0 ? 'Available to Spend' : 'Over Budget'}
+        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end'
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 800,
+              fontSize: '1.75rem',
+              color: budgetStatus.color,
+              lineHeight: 1,
+              mr: 0.5
+            }}
+          >
+            £{Math.abs(remaining).toLocaleString()}
+          </Typography>
+          {remaining >= 0 ? (
+            <TrendingUpIcon
               sx={{
+                fontSize: 20,
                 color: budgetStatus.color,
-                '& .MuiCircularProgress-circle': {
-                  strokeLinecap: 'round'
-                }
+                opacity: 0.8
               }}
             />
-            <Box
+          ) : (
+            <TrendingDownIcon
               sx={{
-                top: 0,
-                left: 0,
-                bottom: 0,
-                right: 0,
-                position: 'absolute',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '0.9rem',
-                  color: budgetStatus.color,
-                  lineHeight: 1
-                }}
-              >
-                {Math.min(allocatedPercentage, 100).toFixed(0)}%
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{
-                  fontSize: '0.65rem',
-                  color: 'text.secondary',
-                  textTransform: 'uppercase',
-                  fontWeight: 500
-                }}
-              >
-                Used
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Budget Status Display - Centered */}
-          <Box sx={{ flex: 1, textAlign: 'center' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mb: 1
-              }}
-            >
-              <StatusIcon
-                sx={{ fontSize: 20, color: budgetStatus.color, mr: 0.5 }}
-              />
-              <Typography
-                variant="h3"
-                sx={{
-                  fontWeight: 800,
-                  fontSize: '2rem',
-                  color: budgetStatus.color,
-                  lineHeight: 1
-                }}
-              >
-                £{Math.abs(remaining).toLocaleString()}
-              </Typography>
-            </Box>
-
-            <Typography
-              variant="body2"
-              sx={{
-                fontWeight: 600,
+                fontSize: 20,
                 color: budgetStatus.color,
-                fontSize: '0.9rem'
+                opacity: 0.8
               }}
-            >
-              {remaining >= 0 ? 'Available' : 'Over Budget'}
-            </Typography>
-          </Box>
+            />
+          )}
         </Box>
-      </CardContent>
-    </Card>
+      </Box>
+    </Box>
   );
 };
 

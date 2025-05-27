@@ -49,7 +49,7 @@ export default function Dashboard() {
             position: 'fixed',
             height: '100vh',
             overflow: 'auto',
-            paddingTop: '90px', // Add padding to account for header height
+            paddingTop: '60px', // Add padding to account for header height
             px: 2
           }}
         >
