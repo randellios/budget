@@ -301,7 +301,7 @@ const SavingsGoalsOverview = () => {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    flex: '0 0 240px',
+                    flex: '0 0 280px',
                     minHeight: '60px'
                   }}
                 >
@@ -336,22 +336,35 @@ const SavingsGoalsOverview = () => {
                     >
                       {goal.name}
                     </Typography>
-                    <Box sx={{ mt: 0.5 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        bgcolor: '#f0fdf4',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: 2,
+                        border: '2px solid #10b981',
+                        width: 'fit-content'
+                      }}
+                    >
                       <Typography
-                        variant="body1"
+                        variant="h6"
                         sx={{
-                          fontSize: '1rem',
-                          fontWeight: 600,
+                          fontSize: '1.25rem',
+                          fontWeight: 800,
+                          color: '#10b981',
                           display: 'inline'
                         }}
                       >
                         £{goal.monthlyContribution}
                       </Typography>
                       <Typography
-                        variant="body1"
+                        variant="body2"
                         sx={{
-                          fontSize: '0.875rem',
-                          fontWeight: 400,
+                          fontSize: '0.9rem',
+                          fontWeight: 600,
+                          color: '#059669',
                           display: 'inline',
                           ml: 0.5
                         }}

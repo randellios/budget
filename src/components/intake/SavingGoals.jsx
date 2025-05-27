@@ -316,12 +316,6 @@ const SavingGoals = () => {
                 </Box>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography
-                  variant="body2"
-                  sx={{ fontWeight: 600, color: '#10b981' }}
-                >
-                  £{goal.monthlyContribution}/month
-                </Typography>
                 <IconButton
                   size="small"
                   sx={{
@@ -347,157 +341,180 @@ const SavingGoals = () => {
             >
               <Box sx={{ p: 2, pt: 0 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
-                      >
-                        Current Balance
-                      </Typography>
-                      <TextField
-                        variant="outlined"
-                        size="small"
-                        type="number"
-                        value={getGoalValue(
-                          goal.id,
-                          'currentBalance',
-                          goal.currentBalance
-                        )}
-                        onChange={(e) =>
-                          handleGoalAmountChange(
-                            goal.id,
-                            'currentBalance',
-                            e.target.value
-                          )
-                        }
-                        InputProps={{
-                          startAdornment: (
-                            <Typography variant="body2" sx={{ mr: 0.5 }}>
-                              £
-                            </Typography>
-                          )
-                        }}
-                        fullWidth
-                      />
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
-                      >
-                        Target Amount
-                      </Typography>
-                      <TextField
-                        variant="outlined"
-                        size="small"
-                        type="number"
-                        value={getGoalValue(
-                          goal.id,
-                          'targetAmount',
-                          goal.targetAmount
-                        )}
-                        onChange={(e) =>
-                          handleGoalAmountChange(
-                            goal.id,
-                            'targetAmount',
-                            e.target.value
-                          )
-                        }
-                        InputProps={{
-                          startAdornment: (
-                            <Typography variant="body2" sx={{ mr: 0.5 }}>
-                              £
-                            </Typography>
-                          )
-                        }}
-                        fullWidth
-                      />
-                    </Box>
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
-                      >
-                        Target Date
-                      </Typography>
-                      <TextField
-                        variant="outlined"
-                        size="small"
-                        type="month"
-                        value={getGoalValue(
-                          goal.id,
-                          'targetDate',
-                          goal.targetDate
-                        )}
-                        onChange={(e) =>
-                          handleGoalAmountChange(
-                            goal.id,
-                            'targetDate',
-                            e.target.value
-                          )
-                        }
-                        fullWidth
-                      />
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mb: 0.5 }}
-                      >
-                        Monthly Contribution
-                      </Typography>
-                      <TextField
-                        variant="outlined"
-                        size="small"
-                        type="number"
-                        value={getGoalValue(
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      p: 2,
+                      bgcolor: '#f8fafc',
+                      borderRadius: 2,
+                      border: '2px solid #667eea'
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        minWidth: '120px',
+                        fontWeight: 700,
+                        fontSize: '0.9rem',
+                        color: '#667eea'
+                      }}
+                    >
+                      Monthly Contribution:
+                    </Typography>
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      type="number"
+                      value={getGoalValue(
+                        goal.id,
+                        'monthlyContribution',
+                        goal.monthlyContribution
+                      )}
+                      onChange={(e) =>
+                        handleGoalAmountChange(
                           goal.id,
                           'monthlyContribution',
-                          goal.monthlyContribution
-                        )}
-                        onChange={(e) =>
-                          handleGoalAmountChange(
-                            goal.id,
-                            'monthlyContribution',
-                            e.target.value
-                          )
-                        }
-                        InputProps={{
-                          startAdornment: (
-                            <Typography variant="body2" sx={{ mr: 0.5 }}>
-                              £
-                            </Typography>
-                          )
-                        }}
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            backgroundColor: '#f0fdf4',
-                            '& fieldset': {
-                              borderColor: '#10b981',
-                              borderWidth: 2
-                            },
-                            '&:hover fieldset': {
-                              borderColor: '#059669'
-                            },
-                            '&.Mui-focused fieldset': {
-                              borderColor: '#10b981'
-                            }
+                          e.target.value
+                        )
+                      }
+                      InputProps={{
+                        startAdornment: (
+                          <Typography variant="body2" sx={{ mr: 0.5 }}>
+                            £
+                          </Typography>
+                        )
+                      }}
+                      sx={{
+                        flex: 1,
+                        '& .MuiOutlinedInput-root': {
+                          backgroundColor: 'white',
+                          '& fieldset': {
+                            borderColor: '#667eea',
+                            borderWidth: 2
                           },
-                          '& .MuiInputBase-input': {
-                            color: '#10b981',
-                            fontWeight: 600
+                          '&:hover fieldset': {
+                            borderColor: '#5a67d8'
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#667eea'
                           }
-                        }}
-                        fullWidth
-                      />
-                    </Box>
+                        },
+                        '& .MuiInputBase-input': {
+                          color: '#667eea',
+                          fontWeight: 700,
+                          fontSize: '1.1rem'
+                        }
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{
+                        minWidth: '120px',
+                        fontWeight: 500,
+                        fontSize: '0.8rem'
+                      }}
+                    >
+                      Current Balance:
+                    </Typography>
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      type="number"
+                      value={getGoalValue(
+                        goal.id,
+                        'currentBalance',
+                        goal.currentBalance
+                      )}
+                      onChange={(e) =>
+                        handleGoalAmountChange(
+                          goal.id,
+                          'currentBalance',
+                          e.target.value
+                        )
+                      }
+                      InputProps={{
+                        startAdornment: (
+                          <Typography variant="body2" sx={{ mr: 0.5 }}>
+                            £
+                          </Typography>
+                        )
+                      }}
+                      sx={{ flex: 1 }}
+                    />
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{
+                        minWidth: '120px',
+                        fontWeight: 500,
+                        fontSize: '0.8rem'
+                      }}
+                    >
+                      Target Amount:
+                    </Typography>
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      type="number"
+                      value={getGoalValue(
+                        goal.id,
+                        'targetAmount',
+                        goal.targetAmount
+                      )}
+                      onChange={(e) =>
+                        handleGoalAmountChange(
+                          goal.id,
+                          'targetAmount',
+                          e.target.value
+                        )
+                      }
+                      InputProps={{
+                        startAdornment: (
+                          <Typography variant="body2" sx={{ mr: 0.5 }}>
+                            £
+                          </Typography>
+                        )
+                      }}
+                      sx={{ flex: 1 }}
+                    />
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{
+                        minWidth: '120px',
+                        fontWeight: 500,
+                        fontSize: '0.8rem'
+                      }}
+                    >
+                      Target Date:
+                    </Typography>
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      type="month"
+                      value={getGoalValue(
+                        goal.id,
+                        'targetDate',
+                        goal.targetDate
+                      )}
+                      onChange={(e) =>
+                        handleGoalAmountChange(
+                          goal.id,
+                          'targetDate',
+                          e.target.value
+                        )
+                      }
+                      sx={{ flex: 1 }}
+                    />
                   </Box>
                 </Box>
               </Box>
