@@ -9,6 +9,7 @@ import {
   Typography,
   Chip
 } from '@mui/material';
+import { useDebouncedCallback } from 'use-debounce';
 import {
   Add as AddIcon,
   ExpandMore as ExpandMoreIcon,
@@ -22,204 +23,99 @@ import {
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
 import CollapsibleCard from '../CollapsibleCard';
-const expenseCategories = [
-  {
-    id: 1,
-    name: 'Home',
-    icon: '🏠',
-    items: [
-      {
-        id: 1,
-        name: 'Mortgage',
-        amount: 1000,
-        isEssential: true,
-        isFlexible: false
-      },
-      {
-        id: 2,
-        name: 'Council Tax',
-        amount: 150,
-        isEssential: true,
-        isFlexible: false
-      },
-      {
-        id: 3,
-        name: 'Home Insurance',
-        amount: 150,
-        isEssential: true,
-        isFlexible: false
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Utilities',
-    icon: '⚡',
-    items: [
-      {
-        id: 4,
-        name: 'Electricity',
-        amount: 120,
-        isEssential: true,
-        isFlexible: false
-      },
-      { id: 5, name: 'Gas', amount: 80, isEssential: true, isFlexible: false },
-      {
-        id: 6,
-        name: 'Water',
-        amount: 45,
-        isEssential: true,
-        isFlexible: false
-      },
-      {
-        id: 7,
-        name: 'Internet',
-        amount: 35,
-        isEssential: false,
-        isFlexible: true
-      }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Entertainment',
-    icon: '🍿',
-    items: [
-      {
-        id: 8,
-        name: 'Netflix',
-        amount: 15,
-        isEssential: false,
-        isFlexible: true
-      },
-      {
-        id: 9,
-        name: 'Spotify',
-        amount: 12,
-        isEssential: false,
-        isFlexible: true
-      },
-      {
-        id: 10,
-        name: 'Dining Out',
-        amount: 150,
-        isEssential: false,
-        isFlexible: true
-      }
-    ]
-  }
-];
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import {
+  selectExpenseCategories,
+  selectTotalExpenses,
+  addCategory,
+  updateCategory,
+  deleteCategory,
+  addExpenseItem,
+  updateExpenseItem,
+  deleteExpenseItem,
+  toggleItemEssential,
+  toggleItemFlexible
+} from '../../store/slices/expensesSlice';
+import {
+  selectExpandedCategories,
+  selectEditingField,
+  toggleCategory,
+  setEditingField
+} from '../../store/slices/uiSlice';
 const MonthlyExpenses = () => {
-  const [expandedCategories, setExpandedCategories] = useState({});
-  const [editingField, setEditingField] = useState(null);
-  const [expenses, setExpenses] = useState(expenseCategories);
+  const dispatch = useAppDispatch();
+  const categories = useAppSelector(selectExpenseCategories);
+  const totalExpenses = useAppSelector(selectTotalExpenses);
+  const expandedCategories = useAppSelector(selectExpandedCategories);
+  const editingField = useAppSelector(selectEditingField);
   const [isExpanded, setIsExpanded] = useState(true);
-  const toggleCategory = (categoryId) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [categoryId]: !prev[categoryId]
-    }));
+  const [localValues, setLocalValues] = useState({});
+  const debouncedUpdateItem = useDebouncedCallback(
+    ({ categoryId, itemId, field, value }) => {
+      dispatch(updateExpenseItem({ categoryId, itemId, field, value }));
+    },
+    500
+  );
+  const debouncedUpdateCategory = useDebouncedCallback(
+    ({ categoryId, field, value }) => {
+      dispatch(updateCategory({ categoryId, field, value }));
+    },
+    500
+  );
+  const handleToggleCategory = (categoryId) => {
+    dispatch(toggleCategory(categoryId));
   };
-  const deleteCategory = (categoryId) => {
-    setExpenses((prev) =>
-      prev.filter((category) => category.id !== categoryId)
-    );
+  const handleDeleteCategory = (categoryId) => {
+    dispatch(deleteCategory(categoryId));
   };
-  const updateCategoryField = (categoryId, field, newValue) => {
-    setExpenses((prev) =>
-      prev.map((category) =>
-        category.id === categoryId
-          ? { ...category, [field]: newValue }
-          : category
-      )
-    );
-    setEditingField(null);
+  const handleUpdateCategoryField = (categoryId, field, newValue) => {
+    dispatch(updateCategory({ categoryId, field, value: newValue }));
+    dispatch(setEditingField(null));
   };
-  const updateItemField = (categoryId, itemId, field, newValue) => {
-    setExpenses((prev) =>
-      prev.map((category) => {
-        if (category.id === categoryId) {
-          return {
-            ...category,
-            items: category.items.map((item) => {
-              if (item.id === itemId) {
-                return {
-                  ...item,
-                  [field]:
-                    field === 'amount' ? parseFloat(newValue) || 0 : newValue
-                };
-              }
-              return item;
-            })
-          };
+  const handleUpdateItemField = (categoryId, itemId, field, newValue) => {
+    dispatch(updateExpenseItem({ categoryId, itemId, field, value: newValue }));
+    dispatch(setEditingField(null));
+  };
+  const handleItemAmountChange = (categoryId, itemId, value) => {
+    const key = `${categoryId}-${itemId}`;
+    setLocalValues((prev) => ({ ...prev, [key]: value }));
+    debouncedUpdateItem({ categoryId, itemId, field: 'amount', value });
+  };
+  const getItemValue = (categoryId, itemId, originalValue) => {
+    const key = `${categoryId}-${itemId}`;
+    return localValues[key] !== undefined ? localValues[key] : originalValue;
+  };
+  const handleToggleItemEssential = (categoryId, itemId) => {
+    dispatch(toggleItemEssential({ categoryId, itemId }));
+  };
+  const handleToggleItemFlexible = (categoryId, itemId) => {
+    dispatch(toggleItemFlexible({ categoryId, itemId }));
+  };
+  const handleAddCategory = () => {
+    dispatch(addCategory({ name: 'New Category', icon: '📝' }));
+  };
+  const handleAddItem = (categoryId, categoryName) => {
+    dispatch(
+      addExpenseItem({
+        categoryId,
+        item: {
+          name: `New ${categoryName.toLowerCase()}`,
+          amount: 0,
+          isEssential: false,
+          isFlexible: true
         }
-        return category;
-      })
-    );
-    setEditingField(null);
-  };
-  const toggleItemEssential = (categoryId, itemId) => {
-    setExpenses((prev) =>
-      prev.map((category) => {
-        if (category.id === categoryId) {
-          return {
-            ...category,
-            items: category.items.map((item) => {
-              if (item.id === itemId) {
-                return { ...item, isEssential: !item.isEssential };
-              }
-              return item;
-            })
-          };
-        }
-        return category;
       })
     );
   };
-  const toggleItemFlexible = (categoryId, itemId) => {
-    setExpenses((prev) =>
-      prev.map((category) => {
-        if (category.id === categoryId) {
-          return {
-            ...category,
-            items: category.items.map((item) => {
-              if (item.id === itemId) {
-                return { ...item, isFlexible: !item.isFlexible };
-              }
-              return item;
-            })
-          };
-        }
-        return category;
-      })
-    );
+  const handleDeleteItem = (categoryId, itemId) => {
+    dispatch(deleteExpenseItem({ categoryId, itemId }));
   };
   const getCategoryTotal = (category) =>
     category.items.reduce((total, item) => total + item.amount, 0);
-  const totalExpenses = expenses.reduce(
-    (total, category) => total + getCategoryTotal(category),
-    0
-  );
-  const totalItems = expenses.reduce(
+  const totalItems = categories.reduce(
     (total, category) => total + category.items.length,
     0
   );
-  const getExpenseSummary = () => {
-    let essential = 0,
-      nonEssential = 0;
-    let flexible = 0,
-      fixed = 0;
-    expenses.forEach((category) => {
-      category.items.forEach((item) => {
-        if (item.isEssential) essential += item.amount;
-        else nonEssential += item.amount;
-        if (item.isFlexible) flexible += item.amount;
-        else fixed += item.amount;
-      });
-    });
-    return { essential, nonEssential, flexible, fixed };
-  };
-  const summary = getExpenseSummary();
   return (
     <CollapsibleCard
       title={
@@ -247,7 +143,7 @@ const MonthlyExpenses = () => {
               variant="caption"
               sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
             >
-              £{totalExpenses.toLocaleString()} • {expenses.length} categories
+              £{totalExpenses.toLocaleString()} • {categories.length} categories
             </Typography>
           </Box>
         </Box>
@@ -255,7 +151,7 @@ const MonthlyExpenses = () => {
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
     >
-      {expenses.map((category) => (
+      {categories.map((category) => (
         <Box key={category.id} sx={{ mb: 2 }}>
           <Box
             sx={{
@@ -272,7 +168,7 @@ const MonthlyExpenses = () => {
                 bgcolor: '#f1f5f9'
               }
             }}
-            onClick={() => toggleCategory(category.id)}
+            onClick={() => handleToggleCategory(category.id)}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton size="small" sx={{ color: 'text.secondary' }}>
@@ -288,12 +184,12 @@ const MonthlyExpenses = () => {
                   value={category.name}
                   isEditing={editingField === `category-${category.id}-name`}
                   onStartEdit={() =>
-                    setEditingField(`category-${category.id}-name`)
+                    dispatch(setEditingField(`category-${category.id}-name`))
                   }
                   onSave={(newValue) =>
-                    updateCategoryField(category.id, 'name', newValue)
+                    handleUpdateCategoryField(category.id, 'name', newValue)
                   }
-                  onCancel={() => setEditingField(null)}
+                  onCancel={() => dispatch(setEditingField(null))}
                   displayVariant="subtitle2"
                   displayTypographyProps={{
                     fontWeight: 600
@@ -320,7 +216,7 @@ const MonthlyExpenses = () => {
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    deleteCategory(category.id);
+                    handleDeleteCategory(category.id);
                   }}
                 >
                   <DeleteIcon fontSize="small" />
@@ -362,12 +258,17 @@ const MonthlyExpenses = () => {
                       value={item.name}
                       isEditing={editingField === `item-${item.id}-name`}
                       onStartEdit={() =>
-                        setEditingField(`item-${item.id}-name`)
+                        dispatch(setEditingField(`item-${item.id}-name`))
                       }
                       onSave={(newValue) =>
-                        updateItemField(category.id, item.id, 'name', newValue)
+                        handleUpdateItemField(
+                          category.id,
+                          item.id,
+                          'name',
+                          newValue
+                        )
                       }
-                      onCancel={() => setEditingField(null)}
+                      onCancel={() => dispatch(setEditingField(null))}
                       displayVariant="body2"
                       displayTypographyProps={{
                         color: 'text.secondary'
@@ -395,7 +296,7 @@ const MonthlyExpenses = () => {
                           }
                         }}
                         onClick={() =>
-                          toggleItemEssential(category.id, item.id)
+                          handleToggleItemEssential(category.id, item.id)
                         }
                       >
                         {item.isEssential ? (
@@ -421,7 +322,9 @@ const MonthlyExpenses = () => {
                             bgcolor: 'rgba(0, 0, 0, 0.04)'
                           }
                         }}
-                        onClick={() => toggleItemFlexible(category.id, item.id)}
+                        onClick={() =>
+                          handleToggleItemFlexible(category.id, item.id)
+                        }
                       >
                         {item.isFlexible ? (
                           <TuneIcon fontSize="small" />
@@ -435,12 +338,11 @@ const MonthlyExpenses = () => {
                         variant="outlined"
                         size="small"
                         type="number"
-                        value={item.amount}
+                        value={getItemValue(category.id, item.id, item.amount)}
                         onChange={(e) =>
-                          updateItemField(
+                          handleItemAmountChange(
                             category.id,
                             item.id,
-                            'amount',
                             e.target.value
                           )
                         }
@@ -454,7 +356,11 @@ const MonthlyExpenses = () => {
                         fullWidth
                       />
                     </Box>
-                    <IconButton size="small" sx={{ color: 'error.main' }}>
+                    <IconButton
+                      size="small"
+                      sx={{ color: 'error.main' }}
+                      onClick={() => handleDeleteItem(category.id, item.id)}
+                    >
                       <Box sx={{ fontSize: '14px' }}>✕</Box>
                     </IconButton>
                   </Box>
@@ -469,6 +375,7 @@ const MonthlyExpenses = () => {
                   fontSize: '0.75rem',
                   textTransform: 'none'
                 }}
+                onClick={() => handleAddItem(category.id, category.name)}
               >
                 Add {category.name.toLowerCase()}
               </Button>
@@ -492,6 +399,7 @@ const MonthlyExpenses = () => {
             color: '#555'
           }
         }}
+        onClick={handleAddCategory}
       >
         Add Category
       </Button>
@@ -513,7 +421,7 @@ const MonthlyExpenses = () => {
             color="text.secondary"
             sx={{ fontSize: '0.75rem' }}
           >
-            {expenses.length} categories • {totalItems} items
+            {categories.length} categories • {totalItems} items
           </Typography>
           <Chip
             label={`£${totalExpenses.toLocaleString()}`}

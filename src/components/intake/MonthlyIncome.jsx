@@ -5,11 +5,18 @@ import {
   Edit as EditIcon
 } from '@mui/icons-material';
 
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import {
+  selectMonthlyIncome,
+  updateMonthlyIncome
+} from '../../store/slices/incomeSlice';
+
 const MonthlyIncome = () => {
-  const [income, setIncome] = useState(5000);
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState('');
   const inputRef = useRef(null);
+  const income = useAppSelector(selectMonthlyIncome);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -25,10 +32,9 @@ const MonthlyIncome = () => {
 
   const handleSave = () => {
     const newValue = parseFloat(tempValue) || 0;
-    setIncome(newValue);
+    dispatch(updateMonthlyIncome(newValue));
     setIsEditing(false);
   };
-
   const handleCancel = () => {
     setIsEditing(false);
     setTempValue('');
@@ -136,20 +142,6 @@ const MonthlyIncome = () => {
                   £{income.toLocaleString()}
                 </Typography>
               </Box>
-              <EditIcon
-                sx={{
-                  fontSize: 14,
-                  color: '#9ca3af',
-                  opacity: 0.6,
-                  transition: 'opacity 0.2s ease-in-out',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    opacity: 1,
-                    color: '#667eea'
-                  }
-                }}
-                onClick={handleStartEdit}
-              />
             </Box>
           )}
         </Box>
