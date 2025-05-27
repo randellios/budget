@@ -11,7 +11,8 @@ import {
   Avatar,
   Divider,
   IconButton,
-  Collapse
+  Collapse,
+  CircularProgress
 } from '@mui/material';
 import {
   TrackChanges as TrackChangesIcon,
@@ -20,10 +21,14 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   Timeline as TimelineIcon,
-  TrendingUp as TrendingUpIcon
+  TrendingUp as TrendingUpIcon,
+  Lightbulb as LightbulbIcon,
+  Speed as SpeedIcon,
+  GpsFixed as TargetIcon,
+  AttachMoney as AttachMoneyIcon,
+  CalendarToday as CalendarIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-
 const GradientCard = styled(Card)(({ theme }) => ({
   background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
   position: 'relative',
@@ -48,7 +53,6 @@ const GradientCard = styled(Card)(({ theme }) => ({
     }
   }
 }));
-
 const SectionHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
   background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)',
@@ -57,7 +61,6 @@ const SectionHeader = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between'
 }));
-
 const GoalRow = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -69,13 +72,18 @@ const GoalRow = styled(Box)(({ theme }) => ({
     borderBottom: 'none'
   }
 }));
-
 const ProgressSection = styled(Box)(({ theme }) => ({
   flex: 1,
   marginLeft: theme.spacing(2),
   marginRight: theme.spacing(2)
 }));
-
+const SavingsAcceleratorSection = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2.5),
+  background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+  border: '1px solid #bbf7d0',
+  borderRadius: 12,
+  margin: theme.spacing(0, 3, 3, 3)
+}));
 const getPriorityColor = (priority) => {
   switch (priority) {
     case 'High':
@@ -88,19 +96,20 @@ const getPriorityColor = (priority) => {
       return '#6b7280';
   }
 };
-
 const getIncomePercentageColor = (percentage) => {
   if (percentage >= 10) return '#ef4444';
   if (percentage >= 5) return '#f59e0b';
   return '#10b981';
 };
-
 const SavingsGoalsOverview = () => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [acceleratorOpen, setAcceleratorOpen] = useState(false);
   const totalSaved = 3500;
   const monthlyContributions = 200;
   const monthlyIncome = 5000;
-
+  const totalTarget = 17000;
+  const overallProgress = (totalSaved / totalTarget) * 100;
+  const nextMilestone = new Date(2025, 11); // December 2025
   const savingsGoals = [
     {
       id: 1,
@@ -114,7 +123,8 @@ const SavingsGoalsOverview = () => {
       monthsToTarget: 40,
       targetDate: 'Dec 2026',
       description: 'Essential safety net',
-      onTrack: true
+      onTrack: true,
+      expectedCompletion: new Date(2027, 4)
     },
     {
       id: 2,
@@ -128,7 +138,9 @@ const SavingsGoalsOverview = () => {
       monthsToTarget: null,
       targetDate: '2025-08',
       description: 'Next family vacation',
-      onTrack: false
+      onTrack: false,
+      monthsBehind: 15,
+      expectedCompletion: null
     },
     {
       id: 3,
@@ -142,10 +154,18 @@ const SavingsGoalsOverview = () => {
       monthsToTarget: 80,
       targetDate: null,
       description: 'Vehicle replacement',
-      onTrack: false
+      onTrack: false,
+      monthsBehind: 24,
+      expectedCompletion: new Date(2031, 8)
     }
   ];
-
+  const formatCompletionDate = (date) => {
+    if (!date) return '';
+    return date.toLocaleDateString('en-GB', {
+      month: 'short',
+      year: 'numeric'
+    });
+  };
   return (
     <GradientCard>
       <SectionHeader>
@@ -173,8 +193,8 @@ const SavingsGoalsOverview = () => {
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ textAlign: 'right', mr: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Box sx={{ textAlign: 'center' }}>
               <Typography
                 variant="caption"
                 sx={{
@@ -187,16 +207,74 @@ const SavingsGoalsOverview = () => {
                   mb: 0.25
                 }}
               >
-                Total Saved
+                Next Milestone
               </Typography>
               <Typography
                 variant="h6"
-                sx={{ fontWeight: 700, fontSize: '1.125rem', color: '#10b981' }}
+                sx={{ fontWeight: 700, fontSize: '1rem', color: '#667eea' }}
               >
-                £{totalSaved.toLocaleString()}
+                {formatCompletionDate(nextMilestone)}
               </Typography>
             </Box>
-            <IconButton size="small" sx={{ color: '#6b7280' }}>
+            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+              <CircularProgress
+                variant="determinate"
+                value={100}
+                size={70}
+                thickness={3}
+                sx={{ color: '#dcfce7', position: 'absolute' }}
+              />
+              <CircularProgress
+                variant="determinate"
+                value={overallProgress}
+                size={70}
+                thickness={3}
+                sx={{
+                  color: '#10b981',
+                  '& .MuiCircularProgress-circle': {
+                    strokeLinecap: 'round'
+                  }
+                }}
+              />
+              <Box
+                sx={{
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  position: 'absolute',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    lineHeight: 1,
+                    color: '#1f2937'
+                  }}
+                >
+                  {overallProgress.toFixed(0)}%
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: '0.65rem',
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    fontWeight: 500
+                  }}
+                >
+                  complete
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton size="small" sx={{ color: '#6b7280', ml: 1 }}>
               {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </IconButton>
           </Box>
@@ -211,7 +289,6 @@ const SavingsGoalsOverview = () => {
               (goal.monthlyContribution / monthlyIncome) * 100;
             const monthlyColor = getIncomePercentageColor(incomePercentage);
             const remaining = goal.target - goal.current;
-
             return (
               <GoalRow key={goal.id}>
                 <Box
@@ -362,44 +439,87 @@ const SavingsGoalsOverview = () => {
                   sx={{
                     ml: 2,
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    flex: '0 0 120px',
-                    minHeight: '60px'
+                    flex: '0 0 140px',
+                    minHeight: '60px',
+                    textAlign: 'center'
                   }}
                 >
                   {goal.onTrack ? (
                     <Box
-                      sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 0.5
+                      }}
                     >
-                      <CheckCircleIcon
-                        sx={{ fontSize: 18, color: '#10b981' }}
-                      />
+                      <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                      >
+                        <CheckCircleIcon
+                          sx={{ fontSize: 18, color: '#10b981' }}
+                        />
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            color: '#166534'
+                          }}
+                        >
+                          On Track
+                        </Typography>
+                      </Box>
                       <Typography
                         variant="caption"
                         sx={{
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          color: '#166534'
+                          fontSize: '0.7rem',
+                          fontWeight: 500,
+                          color: '#059669',
+                          lineHeight: 1.2
                         }}
                       >
-                        On Track
+                        Complete by{' '}
+                        {formatCompletionDate(goal.expectedCompletion)}
                       </Typography>
                     </Box>
                   ) : (
                     <Box
-                      sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 0.5
+                      }}
                     >
-                      <WarningIcon sx={{ fontSize: 18, color: '#f59e0b' }} />
+                      <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                      >
+                        <WarningIcon sx={{ fontSize: 18, color: '#f59e0b' }} />
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            color: '#92400e'
+                          }}
+                        >
+                          Off Track
+                        </Typography>
+                      </Box>
                       <Typography
                         variant="caption"
                         sx={{
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          color: '#92400e'
+                          fontSize: '0.7rem',
+                          fontWeight: 500,
+                          color: '#d97706',
+                          lineHeight: 1.2
                         }}
                       >
-                        Needs Attention
+                        {goal.monthsBehind} months behind schedule
                       </Typography>
                     </Box>
                   )}
@@ -408,9 +528,221 @@ const SavingsGoalsOverview = () => {
             );
           })}
         </CardContent>
+        <Box
+          sx={{
+            bgcolor: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+            borderTop: '1px solid #e8ecf3'
+          }}
+        >
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              cursor: 'pointer'
+            }}
+            onClick={() => setAcceleratorOpen(!acceleratorOpen)}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box
+                sx={{
+                  backgroundColor: '#10b981',
+                  borderRadius: '50%',
+                  p: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <LightbulbIcon sx={{ fontSize: 20, color: 'white' }} />
+              </Box>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 700, fontSize: '1rem', color: '#1f2937' }}
+              >
+                Savings Accelerator Insights
+              </Typography>
+              <Chip
+                label="3 opportunities"
+                size="small"
+                sx={{
+                  backgroundColor: '#dcfce7',
+                  color: '#166534',
+                  fontSize: '0.7rem',
+                  fontWeight: 500,
+                  height: 20
+                }}
+              />
+            </Box>
+            <IconButton size="small" sx={{ color: '#10b981' }}>
+              {acceleratorOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Box>
+          <Collapse in={acceleratorOpen}>
+            <SavingsAcceleratorSection sx={{ mt: 0 }}>
+              <Box sx={{ display: 'flex', gap: 3 }}>
+                <Box
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                    border: '1px solid #bbf7d0'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mb: 1
+                    }}
+                  >
+                    <AttachMoneyIcon sx={{ fontSize: 16, color: '#059669' }} />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        color: '#064e3b',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      Compound Growth Potential
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      color: '#059669',
+                      fontSize: '1.25rem',
+                      mb: 0.5
+                    }}
+                  >
+                    £4,200
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#065f46',
+                      fontSize: '0.75rem',
+                      lineHeight: 1.4
+                    }}
+                  >
+                    Extra £50/month invested could grow to this much by 2030
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                    border: '1px solid #bbf7d0'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mb: 1
+                    }}
+                  >
+                    <SpeedIcon sx={{ fontSize: 16, color: '#059669' }} />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        color: '#064e3b',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      Goal Acceleration
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      color: '#059669',
+                      fontSize: '1.25rem',
+                      mb: 0.5
+                    }}
+                  >
+                    18 months
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#065f46',
+                      fontSize: '0.75rem',
+                      lineHeight: 1.4
+                    }}
+                  >
+                    Emergency fund could be complete 18 months earlier with
+                    focus
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                    border: '1px solid #bbf7d0'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mb: 1
+                    }}
+                  >
+                    <TargetIcon sx={{ fontSize: 16, color: '#059669' }} />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        color: '#064e3b',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      Priority Recommendation
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      color: '#059669',
+                      fontSize: '1rem',
+                      mb: 0.5
+                    }}
+                  >
+                    Emergency Fund First
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#065f46',
+                      fontSize: '0.75rem',
+                      lineHeight: 1.4
+                    }}
+                  >
+                    Complete your safety net before tackling other goals
+                  </Typography>
+                </Box>
+              </Box>
+            </SavingsAcceleratorSection>
+          </Collapse>
+        </Box>
       </Collapse>
     </GradientCard>
   );
 };
-
 export default SavingsGoalsOverview;

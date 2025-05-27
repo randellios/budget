@@ -7,7 +7,11 @@ import {
   Typography,
   LinearProgress,
   Chip,
-  Avatar
+  Avatar,
+  Divider,
+  IconButton,
+  Collapse,
+  CircularProgress
 } from '@mui/material';
 import {
   CreditCard as CreditCardIcon,
@@ -16,7 +20,14 @@ import {
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
   TrendingDown as TrendingDownIcon,
-  AttachMoney as AttachMoneyIcon
+  AttachMoney as AttachMoneyIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
+  Timeline as TimelineIcon,
+  Speed as SpeedIcon,
+  LocalFireDepartment as FireIcon,
+  Shield as ShieldIcon,
+  Lightbulb as LightbulbIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 const GradientCard = styled(Card)(({ theme }) => ({
@@ -30,7 +41,7 @@ const GradientCard = styled(Card)(({ theme }) => ({
     left: 0,
     width: '100%',
     height: 4,
-    background: 'linear-gradient(90deg, #667eea, #764ba2, #10b981, #f59e0b)',
+    background: 'linear-gradient(90deg, #ef4444, #f59e0b, #10b981, #667eea)',
     backgroundSize: '400% 100%',
     animation: 'gradientShift 8s ease infinite'
   },
@@ -51,109 +62,63 @@ const SectionHeader = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between'
 }));
-const IconWrapper = styled(Avatar)(({ theme }) => ({
-  width: 36,
-  height: 36,
-  backgroundColor: '#ef4444',
-  marginRight: theme.spacing(1.5)
+const DebtRow = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(2.5, 3),
+  borderBottom: '1px solid #f1f5f9',
+  position: 'relative',
+  minHeight: '80px',
+  '&:last-child': {
+    borderBottom: 'none'
+  }
 }));
-const DebtCard = styled(Card)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)',
-  border: '1px solid #e8ecf3',
+const ProgressSection = styled(Box)(({ theme }) => ({
+  flex: 1,
+  marginLeft: theme.spacing(2),
+  marginRight: theme.spacing(2)
+}));
+const DebtAcceleratorSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2.5),
-  height: '100%',
+  background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+  border: '1px solid #fca5a5',
   borderRadius: 12,
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-  transition: 'all 0.2s ease-in-out',
-  display: 'flex',
-  flexDirection: 'column',
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.12)'
+  margin: theme.spacing(0, 3, 3, 3)
+}));
+const getPriorityColor = (priority) => {
+  switch (priority) {
+    case 'High':
+      return '#ef4444';
+    case 'Medium':
+      return '#f59e0b';
+    case 'Low':
+      return '#10b981';
+    default:
+      return '#6b7280';
   }
-}));
-const MetricBox = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderRadius: 12,
-  background: 'linear-gradient(135deg, #ffffff 0%, #fafbfc 100%)',
-  border: '1px solid #e8ecf3',
-  textAlign: 'center',
-  minHeight: 70,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  position: 'relative',
-  overflow: 'hidden',
-  transition: 'all 0.2s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-1px)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-    borderColor: '#cbd5e1'
-  },
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    background: 'linear-gradient(90deg, #667eea 0%, #764ba2 50%, #10b981 100%)',
-    opacity: 0.6
+};
+const getPriorityIcon = (priority) => {
+  switch (priority) {
+    case 'High':
+      return FireIcon;
+    case 'Medium':
+      return WarningIcon;
+    case 'Low':
+      return ShieldIcon;
+    default:
+      return WarningIcon;
   }
-}));
-const InterestCard = styled(Box)(({ theme, priority }) => ({
-  padding: theme.spacing(2),
-  borderRadius: 12,
-  background:
-    priority === 'High'
-      ? 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)'
-      : priority === 'Medium'
-        ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)'
-        : 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-  border: `2px solid ${priority === 'High' ? '#f87171' : priority === 'Medium' ? '#fbbf24' : '#60a5fa'}`,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  position: 'relative',
-  overflow: 'hidden',
-  marginBottom: theme.spacing(2),
-  boxShadow: `0 4px 12px ${priority === 'High' ? 'rgba(239, 68, 68, 0.15)' : priority === 'Medium' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.15)'}`,
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 4,
-    height: '100%',
-    background:
-      priority === 'High'
-        ? '#ef4444'
-        : priority === 'Medium'
-          ? '#f59e0b'
-          : '#3b82f6'
-  }
-}));
-const StatusFooter = styled(Box)(({ theme, priority }) => ({
-  marginTop: 'auto',
-  padding: theme.spacing(1.5),
-  borderRadius: 8,
-  backgroundColor:
-    priority === 'High'
-      ? '#fef2f2'
-      : priority === 'Medium'
-        ? '#fef3c7'
-        : '#f0fdf4',
-  border: `1px solid ${priority === 'High' ? '#fca5a5' : priority === 'Medium' ? '#fbbf24' : '#bbf7d0'}`,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: theme.spacing(1)
-}));
+};
 const DebtManagementOverview = () => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [acceleratorOpen, setAcceleratorOpen] = useState(false);
   const totalDebt = 10000;
   const monthlyPayments = 200;
   const totalPaidOff = 22000;
   const overallProgress = 68;
+  const monthsToDebtFree = 50;
+  const totalInterestSavings = 2450;
+  const debtFreeDate = new Date(2029, 4); // May 2029
   const debts = [
     {
       id: 1,
@@ -167,7 +132,9 @@ const DebtManagementOverview = () => {
       totalInterest: 458,
       priority: 'High',
       color: '#ef4444',
-      description: 'High-interest revolving debt'
+      description: 'High-interest revolving debt',
+      payoffDate: new Date(2027, 8),
+      strategy: 'avalanche'
     },
     {
       id: 2,
@@ -181,7 +148,9 @@ const DebtManagementOverview = () => {
       totalInterest: 195,
       priority: 'Medium',
       color: '#f59e0b',
-      description: 'Auto financing'
+      description: 'Auto financing',
+      payoffDate: new Date(2027, 8),
+      strategy: 'avalanche'
     },
     {
       id: 3,
@@ -195,135 +164,242 @@ const DebtManagementOverview = () => {
       totalInterest: 300,
       priority: 'Low',
       color: '#10b981',
-      description: 'Education financing'
+      description: 'Education financing',
+      payoffDate: new Date(2038, 5),
+      strategy: 'avalanche'
     }
   ];
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'High':
-        return '#ef4444';
-      case 'Medium':
-        return '#f59e0b';
-      case 'Low':
-        return '#10b981';
-      default:
-        return '#6b7280';
+  const formatPayoffDate = (date) => {
+    return date.toLocaleDateString('en-GB', {
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+  const getStrategyRecommendation = (debt) => {
+    if (debt.interestRate > 15) {
+      return { text: 'Attack first', color: '#dc2626' };
+    } else if (debt.interestRate > 8) {
+      return { text: 'Pay extra', color: '#d97706' };
+    } else {
+      return { text: 'Minimum only', color: '#059669' };
     }
   };
   return (
     <GradientCard>
       <SectionHeader>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Box>
-            <Typography variant="h5" sx={{ fontSize: '1.375rem' }}>
-              Debt Management Overview
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ mt: 0.25 }}
-            >
-              Monthly Payments: £{monthlyPayments}
-            </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            cursor: 'pointer'
+          }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box>
+              <Typography variant="h5" sx={{ fontSize: '1.375rem' }}>
+                Debt Management Overview
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 0.25 }}
+              >
+                Monthly Payments: £{monthlyPayments}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-        <Box sx={{ textAlign: 'right' }}>
-          <Typography
-            variant="caption"
-            sx={{
-              fontSize: '0.7rem',
-              color: '#6b7280',
-              fontWeight: 500,
-              textTransform: 'uppercase',
-              letterSpacing: '0.3px',
-              display: 'block',
-              mb: 0.25
-            }}
-          >
-            Total Remaining
-          </Typography>
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: 700, fontSize: '1.125rem', color: '#ef4444' }}
-          >
-            £{totalDebt.toLocaleString()}
-          </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              mt: 0.5,
-              justifyContent: 'flex-end'
-            }}
-          >
-            <TrendingDownIcon sx={{ fontSize: 14, color: '#10b981' }} />
-            <Typography
-              variant="caption"
-              sx={{ color: '#10b981', fontWeight: 600, fontSize: '0.75rem' }}
-            >
-              {overallProgress}% paid off
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontSize: '0.7rem',
+                  color: '#6b7280',
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.3px',
+                  display: 'block',
+                  mb: 0.25
+                }}
+              >
+                Debt Free By
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 700, fontSize: '1rem', color: '#10b981' }}
+              >
+                {formatPayoffDate(debtFreeDate)}
+              </Typography>
+            </Box>
+            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+              <CircularProgress
+                variant="determinate"
+                value={100}
+                size={70}
+                thickness={3}
+                sx={{ color: '#fee2e2', position: 'absolute' }}
+              />
+              <CircularProgress
+                variant="determinate"
+                value={overallProgress}
+                size={70}
+                thickness={3}
+                sx={{
+                  color: '#10b981',
+                  '& .MuiCircularProgress-circle': {
+                    strokeLinecap: 'round'
+                  }
+                }}
+              />
+              <Box
+                sx={{
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  position: 'absolute',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    lineHeight: 1,
+                    color: '#1f2937'
+                  }}
+                >
+                  {overallProgress}%
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: '0.65rem',
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    fontWeight: 500
+                  }}
+                >
+                  paid off
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton size="small" sx={{ color: '#6b7280', ml: 1 }}>
+              {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
           </Box>
         </Box>
       </SectionHeader>
-      <CardContent>
-        <Grid container spacing={2}>
-          {debts.map((debt) => {
-            const IconComponent = debt.icon;
+      <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+        <CardContent sx={{ p: 0 }}>
+          {debts.map((debt, index) => {
             const progress =
               ((debt.original - debt.current) / debt.original) * 100;
             const priorityColor = getPriorityColor(debt.priority);
+            const PriorityIcon = getPriorityIcon(debt.priority);
+            const strategy = getStrategyRecommendation(debt);
             return (
-              <Grid item xs={12} md={4} key={debt.id}>
-                <DebtCard>
+              <DebtRow key={debt.id}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flex: '0 0 280px',
+                    minHeight: '60px'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      backgroundColor: `${debt.color}15`,
+                      borderRadius: 2,
+                      p: 1.5,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mr: 2,
+                      border: `1px solid ${debt.color}40`
+                    }}
+                  >
+                    <debt.icon sx={{ fontSize: 20, color: debt.color }} />
+                  </Box>
                   <Box
                     sx={{
                       display: 'flex',
-                      alignItems: 'center',
-                      gap: 1.5,
-                      mb: 2
+                      flexDirection: 'column',
+                      justifyContent: 'center'
                     }}
                   >
-                    <Box
+                    <Typography
+                      variant="h6"
                       sx={{
-                        backgroundColor: `${debt.color}15`,
-                        borderRadius: 2,
-                        p: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
+                        fontWeight: 700,
+                        fontSize: '1.125rem',
+                        mb: 0.5,
+                        lineHeight: 1.2
                       }}
                     >
-                      <IconComponent sx={{ fontSize: 24, color: debt.color }} />
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
+                      {debt.name}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Typography
-                        variant="h6"
-                        sx={{ fontWeight: 700, fontSize: '1rem', mb: 0.5 }}
+                        variant="body1"
+                        sx={{
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          color: debt.color
+                        }}
                       >
-                        {debt.name}
+                        £{debt.monthlyPayment}/month
                       </Typography>
                       <Typography
                         variant="caption"
                         sx={{
                           fontSize: '0.75rem',
-                          color: priorityColor,
-                          fontWeight: 600
+                          fontWeight: 600,
+                          color: '#667eea'
                         }}
                       >
-                        {debt.priority} priority
+                        {debt.interestRate}% APR
                       </Typography>
                     </Box>
                   </Box>
-                  <Box sx={{ mb: 2 }}>
+                </Box>
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  sx={{ height: 50, mx: 2, alignSelf: 'center' }}
+                />
+                <ProgressSection
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    minHeight: '60px'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'baseline',
+                      mb: 1
+                    }}
+                  >
                     <Typography
                       variant="h4"
                       sx={{
                         fontWeight: 'bold',
-                        fontSize: '1.75rem',
+                        fontSize: '1.5rem',
                         color: debt.color,
-                        mb: 0.5
+                        lineHeight: 1.2
                       }}
                     >
                       £{debt.current.toLocaleString()}
@@ -334,285 +410,321 @@ const DebtManagementOverview = () => {
                         sx={{
                           fontSize: '1rem',
                           ml: 1,
+                          fontWeight: 400,
                           textDecoration: 'line-through'
                         }}
                       >
                         £{debt.original.toLocaleString()}
                       </Typography>
                     </Typography>
-                    <LinearProgress
-                      variant="determinate"
-                      value={progress}
-                      sx={{
-                        height: 8,
-                        borderRadius: 4,
-                        backgroundColor: '#f3f4f6',
-                        mb: 1,
-                        '& .MuiLinearProgress-bar': {
-                          backgroundColor: '#10b981',
-                          borderRadius: 4
-                        }
-                      }}
-                    />
                     <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{ fontSize: '0.75rem' }}
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        color: '#10b981',
+                        fontSize: '0.9rem'
+                      }}
                     >
-                      {progress.toFixed(1)}% paid off • £
-                      {(debt.original - debt.current).toLocaleString()} progress
+                      {progress.toFixed(1)}% paid
                     </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', gap: 1.5, mb: 2.5 }}>
-                    <MetricBox sx={{ flex: 1 }}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: 700,
-                          fontSize: '1.25rem',
-                          color: '#1f2937',
-                          mb: 0.25,
-                          lineHeight: 1
-                        }}
-                      >
-                        {debt.monthsRemaining}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontSize: '0.65rem',
-                          color: '#6b7280',
-                          fontWeight: 600,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px'
-                        }}
-                      >
-                        Months Left
-                      </Typography>
-                    </MetricBox>
-                    <MetricBox sx={{ flex: 1 }}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: 700,
-                          fontSize: '1.25rem',
-                          color: debt.color,
-                          mb: 0.25,
-                          lineHeight: 1
-                        }}
-                      >
-                        £{debt.monthlyPayment}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontSize: '0.65rem',
-                          color: '#6b7280',
-                          fontWeight: 600,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px'
-                        }}
-                      >
-                        Monthly
-                      </Typography>
-                    </MetricBox>
-                    <MetricBox sx={{ flex: 1 }}>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'baseline',
-                          justifyContent: 'center',
-                          gap: 0.25,
-                          mb: 0.25
-                        }}
-                      >
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            fontWeight: 700,
-                            fontSize: '1.25rem',
-                            color: '#667eea',
-                            lineHeight: 1
-                          }}
-                        >
-                          {debt.interestRate}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontSize: '0.75rem',
-                            color: '#667eea',
-                            fontWeight: 600
-                          }}
-                        >
-                          %
-                        </Typography>
-                      </Box>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontSize: '0.65rem',
-                          color: '#6b7280',
-                          fontWeight: 600,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px'
-                        }}
-                      >
-                        APR
-                      </Typography>
-                    </MetricBox>
-                  </Box>
-                  <InterestCard priority={debt.priority}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={progress}
+                    sx={{
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: '#f3f4f6',
+                      mb: 1,
+                      '& .MuiLinearProgress-bar': {
+                        backgroundColor: '#10b981',
+                        borderRadius: 4,
+                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+                      }
+                    }}
+                  />
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ fontSize: '0.85rem' }}
+                  >
+                    £{(debt.original - debt.current).toLocaleString()} progress
+                    • {debt.monthsRemaining} months left
+                  </Typography>
+                </ProgressSection>
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  sx={{ height: 50, mx: 2, alignSelf: 'center' }}
+                />
+                <Box
+                  sx={{
+                    ml: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: '0 0 140px',
+                    minHeight: '60px',
+                    textAlign: 'center'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 0.5
+                    }}
+                  >
                     <Box
+                      sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                    >
+                      <PriorityIcon
+                        sx={{ fontSize: 18, color: priorityColor }}
+                      />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          color: strategy.color
+                        }}
+                      >
+                        {strategy.text}
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="caption"
                       sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1.5,
-                        pl: 1
+                        fontSize: '0.7rem',
+                        fontWeight: 500,
+                        color: '#6b7280',
+                        lineHeight: 1.2
                       }}
                     >
-                      <Box
-                        sx={{
-                          backgroundColor: 'rgba(255,255,255,0.3)',
-                          borderRadius: '50%',
-                          p: 1,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                      >
-                        <AttachMoneyIcon
-                          sx={{
-                            fontSize: 18,
-                            color:
-                              debt.priority === 'High'
-                                ? '#dc2626'
-                                : debt.priority === 'Medium'
-                                  ? '#d97706'
-                                  : '#2563eb'
-                          }}
-                        />
-                      </Box>
-                      <Box>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontSize: '0.7rem',
-                            color:
-                              debt.priority === 'High'
-                                ? '#7f1d1d'
-                                : debt.priority === 'Medium'
-                                  ? '#78350f'
-                                  : '#1e3a8a',
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.3px',
-                            display: 'block'
-                          }}
-                        >
-                          Total Interest Cost
-                        </Typography>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            fontWeight: 700,
-                            fontSize: '1.125rem',
-                            color:
-                              debt.priority === 'High'
-                                ? '#dc2626'
-                                : debt.priority === 'Medium'
-                                  ? '#d97706'
-                                  : '#2563eb',
-                            lineHeight: 1
-                          }}
-                        >
-                          £{debt.totalInterest}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Box sx={{ textAlign: 'right' }}>
-                      <Chip
-                        label={
-                          debt.priority === 'High'
-                            ? 'Pay First'
-                            : debt.priority === 'Medium'
-                              ? 'Moderate'
-                              : 'Low Cost'
-                        }
-                        size="small"
-                        sx={{
-                          backgroundColor: 'rgba(255,255,255,0.4)',
-                          color:
-                            debt.priority === 'High'
-                              ? '#7f1d1d'
-                              : debt.priority === 'Medium'
-                                ? '#78350f'
-                                : '#1e3a8a',
-                          fontSize: '0.65rem',
-                          fontWeight: 600,
-                          border: 'none'
-                        }}
-                      />
-                    </Box>
-                  </InterestCard>
-                </DebtCard>
-              </Grid>
+                      Payoff by {formatPayoffDate(debt.payoffDate)}
+                    </Typography>
+                  </Box>
+                </Box>
+              </DebtRow>
             );
           })}
-        </Grid>
-      </CardContent>
-      <Box
-        sx={{
-          px: 3,
-          py: 2,
-          bgcolor: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-          borderTop: '1px solid #e8ecf3'
-        }}
-      >
+        </CardContent>
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
+            bgcolor: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+            borderTop: '1px solid #e8ecf3'
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ fontSize: '0.875rem' }}
-            >
-              Overall Progress: {overallProgress}%
-            </Typography>
-            <Chip
-              label="Debt-Free: May 2038"
-              size="small"
-              sx={{
-                backgroundColor: '#fef3c7',
-                color: '#92400e',
-                border: '1px solid #fbbf24',
-                fontSize: '0.75rem',
-                fontWeight: 500
-              }}
-            />
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              cursor: 'pointer'
+            }}
+            onClick={() => setAcceleratorOpen(!acceleratorOpen)}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box
+                sx={{
+                  backgroundColor: '#ef4444',
+                  borderRadius: '50%',
+                  p: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <LightbulbIcon sx={{ fontSize: 20, color: 'white' }} />
+              </Box>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 700, fontSize: '1rem', color: '#1f2937' }}
+              >
+                Debt Accelerator Insights
+              </Typography>
+              <Chip
+                label="3 strategies"
+                size="small"
+                sx={{
+                  backgroundColor: '#fecaca',
+                  color: '#991b1b',
+                  fontSize: '0.7rem',
+                  fontWeight: 500,
+                  height: 20
+                }}
+              />
+            </Box>
+            <IconButton size="small" sx={{ color: '#ef4444' }}>
+              {acceleratorOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ fontSize: '0.875rem' }}
-            >
-              Total Paid Off:
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 700, color: '#10b981', fontSize: '0.875rem' }}
-            >
-              £{totalPaidOff.toLocaleString()}
-            </Typography>
-          </Box>
+          <Collapse in={acceleratorOpen}>
+            <DebtAcceleratorSection sx={{ mt: 0 }}>
+              <Box sx={{ display: 'flex', gap: 3 }}>
+                <Box
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                    border: '1px solid #fca5a5'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mb: 1
+                    }}
+                  >
+                    <AttachMoneyIcon sx={{ fontSize: 16, color: '#dc2626' }} />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        color: '#7f1d1d',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      Interest Savings Potential
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      color: '#dc2626',
+                      fontSize: '1.25rem',
+                      mb: 0.5
+                    }}
+                  >
+                    £{totalInterestSavings}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#991b1b',
+                      fontSize: '0.75rem',
+                      lineHeight: 1.4
+                    }}
+                  >
+                    Extra £100/month could save this much in interest
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                    border: '1px solid #fca5a5'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mb: 1
+                    }}
+                  >
+                    <TimelineIcon sx={{ fontSize: 16, color: '#dc2626' }} />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        color: '#7f1d1d',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      Debt-Free Timeline
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      color: '#dc2626',
+                      fontSize: '1.25rem',
+                      mb: 0.5
+                    }}
+                  >
+                    {monthsToDebtFree} months
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#991b1b',
+                      fontSize: '0.75rem',
+                      lineHeight: 1.4
+                    }}
+                  >
+                    Current pace puts you debt-free by{' '}
+                    {formatPayoffDate(debtFreeDate)}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                    border: '1px solid #fca5a5'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mb: 1
+                    }}
+                  >
+                    <FireIcon sx={{ fontSize: 16, color: '#dc2626' }} />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        color: '#7f1d1d',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      Strategy Recommendation
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      color: '#dc2626',
+                      fontSize: '1rem',
+                      mb: 0.5
+                    }}
+                  >
+                    Avalanche Method
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#991b1b',
+                      fontSize: '0.75rem',
+                      lineHeight: 1.4
+                    }}
+                  >
+                    Target highest interest rates first for maximum savings
+                  </Typography>
+                </Box>
+              </Box>
+            </DebtAcceleratorSection>
+          </Collapse>
         </Box>
-      </Box>
+      </Collapse>
     </GradientCard>
   );
 };
