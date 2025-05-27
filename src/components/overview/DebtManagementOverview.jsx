@@ -30,6 +30,13 @@ import {
   Lightbulb as LightbulbIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { useAppSelector } from '../../store/hooks';
+import {
+  selectDebts,
+  selectTotalDebtPayments,
+  selectTotalDebtBalance
+} from '../../store/slices/debtsSlice';
+
 const GradientCard = styled(Card)(({ theme }) => ({
   background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
   position: 'relative',
@@ -54,6 +61,7 @@ const GradientCard = styled(Card)(({ theme }) => ({
     }
   }
 }));
+
 const SectionHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
   background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)',
@@ -62,6 +70,7 @@ const SectionHeader = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between'
 }));
+
 const DebtRow = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -73,11 +82,13 @@ const DebtRow = styled(Box)(({ theme }) => ({
     borderBottom: 'none'
   }
 }));
+
 const ProgressSection = styled(Box)(({ theme }) => ({
   flex: 1,
   marginLeft: theme.spacing(2),
   marginRight: theme.spacing(2)
 }));
+
 const DebtAcceleratorSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2.5),
   background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
@@ -85,96 +96,48 @@ const DebtAcceleratorSection = styled(Box)(({ theme }) => ({
   borderRadius: 12,
   margin: theme.spacing(0, 3, 3, 3)
 }));
-const getPriorityColor = (priority) => {
-  switch (priority) {
-    case 'High':
-      return '#ef4444';
-    case 'Medium':
-      return '#f59e0b';
-    case 'Low':
-      return '#10b981';
-    default:
-      return '#6b7280';
-  }
-};
-const getPriorityIcon = (priority) => {
-  switch (priority) {
-    case 'High':
-      return FireIcon;
-    case 'Medium':
-      return WarningIcon;
-    case 'Low':
-      return ShieldIcon;
-    default:
-      return WarningIcon;
-  }
-};
+
 const DebtManagementOverview = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [acceleratorOpen, setAcceleratorOpen] = useState(false);
-  const totalDebt = 10000;
-  const monthlyPayments = 200;
-  const totalPaidOff = 22000;
-  const overallProgress = 68;
-  const monthsToDebtFree = 50;
-  const totalInterestSavings = 2450;
-  const debtFreeDate = new Date(2029, 4); // May 2029
-  const debts = [
-    {
-      id: 1,
-      name: 'Credit Card',
-      icon: CreditCardIcon,
-      current: 2000,
-      original: 5000,
-      interestRate: 22.9,
-      monthlyPayment: 67,
-      monthsRemaining: 32,
-      totalInterest: 458,
-      priority: 'High',
-      color: '#ef4444',
-      description: 'High-interest revolving debt',
-      payoffDate: new Date(2027, 8),
-      strategy: 'avalanche'
-    },
-    {
-      id: 2,
-      name: 'Car Loan',
-      icon: DirectionsCarIcon,
-      current: 3000,
-      original: 10000,
-      interestRate: 6.5,
-      monthlyPayment: 100,
-      monthsRemaining: 32,
-      totalInterest: 195,
-      priority: 'Medium',
-      color: '#f59e0b',
-      description: 'Auto financing',
-      payoffDate: new Date(2027, 8),
-      strategy: 'avalanche'
-    },
-    {
-      id: 3,
-      name: 'Student Loan',
-      icon: SchoolIcon,
-      current: 5000,
-      original: 22000,
-      interestRate: 3.2,
-      monthlyPayment: 33,
-      monthsRemaining: 162,
-      totalInterest: 300,
-      priority: 'Low',
-      color: '#10b981',
-      description: 'Education financing',
-      payoffDate: new Date(2038, 5),
-      strategy: 'avalanche'
-    }
-  ];
+
+  // Get data from Redux store
+  const debts = useAppSelector(selectDebts);
+  const totalDebtPayments = useAppSelector(selectTotalDebtPayments);
+  const totalDebtBalance = useAppSelector(selectTotalDebtBalance);
+
+  // Calculate total original debt (for progress calculation)
+  const totalOriginalDebt = debts.reduce(
+    (total, debt) => total + debt.startingBalance,
+    0
+  );
+  const totalPaidOff = totalOriginalDebt - totalDebtBalance;
+  const overallProgress =
+    totalOriginalDebt > 0 ? (totalPaidOff / totalOriginalDebt) * 100 : 0;
+
+  // Calculate debt-free date (simplified calculation)
+  const averagePayment = totalDebtPayments;
+  const monthsToDebtFree =
+    averagePayment > 0 ? Math.ceil(totalDebtBalance / averagePayment) : 0;
+  const debtFreeDate = new Date();
+  debtFreeDate.setMonth(debtFreeDate.getMonth() + monthsToDebtFree);
+
+  // Calculate potential interest savings (simplified)
+  const averageInterestRate =
+    debts.length > 0
+      ? debts.reduce((sum, debt) => sum + debt.interestRate, 0) / debts.length
+      : 0;
+  const totalInterestSavings = Math.round(
+    totalDebtBalance * (averageInterestRate / 100) * 0.3
+  );
+
   const formatPayoffDate = (date) => {
     return date.toLocaleDateString('en-GB', {
       month: 'short',
       year: 'numeric'
     });
   };
+
   const getStrategyRecommendation = (debt) => {
     if (debt.interestRate > 15) {
       return { text: 'Attack first', color: '#dc2626' };
@@ -183,6 +146,20 @@ const DebtManagementOverview = () => {
     } else {
       return { text: 'Minimum only', color: '#059669' };
     }
+  };
+
+  const getPriorityIcon = (interestRate) => {
+    if (interestRate > 15) return FireIcon;
+    if (interestRate > 8) return WarningIcon;
+    return ShieldIcon;
+  };
+
+  const calculatePayoffDate = (debt) => {
+    if (debt.monthlyPayment <= 0) return null;
+    const monthsToPayoff = Math.ceil(debt.currentBalance / debt.monthlyPayment);
+    const payoffDate = new Date();
+    payoffDate.setMonth(payoffDate.getMonth() + monthsToPayoff);
+    return payoffDate;
   };
   return (
     <GradientCard>
@@ -207,7 +184,7 @@ const DebtManagementOverview = () => {
                 color="text.secondary"
                 sx={{ mt: 0.25 }}
               >
-                Monthly Payments: £{monthlyPayments}
+                Monthly Payments: £{totalDebtPayments}
               </Typography>
             </Box>
           </Box>
@@ -231,7 +208,7 @@ const DebtManagementOverview = () => {
                 variant="h6"
                 sx={{ fontWeight: 700, fontSize: '1rem', color: '#10b981' }}
               >
-                {formatPayoffDate(debtFreeDate)}
+                {monthsToDebtFree > 0 ? formatPayoffDate(debtFreeDate) : 'N/A'}
               </Typography>
             </Box>
             <Box sx={{ position: 'relative', display: 'inline-flex' }}>
@@ -244,7 +221,7 @@ const DebtManagementOverview = () => {
               />
               <CircularProgress
                 variant="determinate"
-                value={overallProgress}
+                value={Math.min(overallProgress, 100)}
                 size={70}
                 thickness={3}
                 sx={{
@@ -277,7 +254,7 @@ const DebtManagementOverview = () => {
                     color: '#1f2937'
                   }}
                 >
-                  {overallProgress}%
+                  {overallProgress.toFixed(0)}%
                 </Typography>
                 <Typography
                   variant="caption"
@@ -302,10 +279,15 @@ const DebtManagementOverview = () => {
         <CardContent sx={{ p: 0 }}>
           {debts.map((debt, index) => {
             const progress =
-              ((debt.original - debt.current) / debt.original) * 100;
-            const priorityColor = getPriorityColor(debt.priority);
-            const PriorityIcon = getPriorityIcon(debt.priority);
+              debt.startingBalance > 0
+                ? ((debt.startingBalance - debt.currentBalance) /
+                    debt.startingBalance) *
+                  100
+                : 0;
             const strategy = getStrategyRecommendation(debt);
+            const PriorityIcon = getPriorityIcon(debt.interestRate);
+            const payoffDate = calculatePayoffDate(debt);
+
             return (
               <DebtRow key={debt.id}>
                 <Box
@@ -318,17 +300,19 @@ const DebtManagementOverview = () => {
                 >
                   <Box
                     sx={{
-                      backgroundColor: `${debt.color}15`,
+                      backgroundColor: `#ef444415`,
                       borderRadius: 2,
                       p: 1.5,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       mr: 2,
-                      border: `1px solid ${debt.color}40`
+                      border: '1px solid #ef444440'
                     }}
                   >
-                    <debt.icon sx={{ fontSize: 20, color: debt.color }} />
+                    <Typography sx={{ fontSize: '20px' }}>
+                      {debt.icon}
+                    </Typography>
                   </Box>
                   <Box
                     sx={{
@@ -354,7 +338,7 @@ const DebtManagementOverview = () => {
                         sx={{
                           fontSize: '1rem',
                           fontWeight: 600,
-                          color: debt.color
+                          color: '#ef4444'
                         }}
                       >
                         £{debt.monthlyPayment}/month
@@ -398,11 +382,11 @@ const DebtManagementOverview = () => {
                       sx={{
                         fontWeight: 'bold',
                         fontSize: '1.5rem',
-                        color: debt.color,
+                        color: '#ef4444',
                         lineHeight: 1.2
                       }}
                     >
-                      £{debt.current.toLocaleString()}
+                      £{debt.currentBalance.toLocaleString()}
                       <Typography
                         component="span"
                         variant="body1"
@@ -414,7 +398,7 @@ const DebtManagementOverview = () => {
                           textDecoration: 'line-through'
                         }}
                       >
-                        £{debt.original.toLocaleString()}
+                        £{debt.startingBalance.toLocaleString()}
                       </Typography>
                     </Typography>
                     <Typography
@@ -430,7 +414,7 @@ const DebtManagementOverview = () => {
                   </Box>
                   <LinearProgress
                     variant="determinate"
-                    value={progress}
+                    value={Math.min(progress, 100)}
                     sx={{
                       height: 8,
                       borderRadius: 4,
@@ -448,8 +432,13 @@ const DebtManagementOverview = () => {
                     color="text.secondary"
                     sx={{ fontSize: '0.85rem' }}
                   >
-                    £{(debt.original - debt.current).toLocaleString()} progress
-                    • {debt.monthsRemaining} months left
+                    £
+                    {(
+                      debt.startingBalance - debt.currentBalance
+                    ).toLocaleString()}{' '}
+                    progress
+                    {debt.monthlyPayment > 0 &&
+                      ` • ${Math.ceil(debt.currentBalance / debt.monthlyPayment)} months left`}
                   </Typography>
                 </ProgressSection>
                 <Divider
@@ -481,7 +470,7 @@ const DebtManagementOverview = () => {
                       sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
                     >
                       <PriorityIcon
-                        sx={{ fontSize: 18, color: priorityColor }}
+                        sx={{ fontSize: 18, color: strategy.color }}
                       />
                       <Typography
                         variant="body2"
@@ -503,7 +492,9 @@ const DebtManagementOverview = () => {
                         lineHeight: 1.2
                       }}
                     >
-                      Payoff by {formatPayoffDate(debt.payoffDate)}
+                      {payoffDate
+                        ? `Payoff by ${formatPayoffDate(payoffDate)}`
+                        : 'No payments set'}
                     </Typography>
                   </Box>
                 </Box>
@@ -604,7 +595,7 @@ const DebtManagementOverview = () => {
                       mb: 0.5
                     }}
                   >
-                    £{totalInterestSavings}
+                    £{totalInterestSavings.toLocaleString()}
                   </Typography>
                   <Typography
                     variant="caption"
@@ -666,7 +657,9 @@ const DebtManagementOverview = () => {
                     }}
                   >
                     Current pace puts you debt-free by{' '}
-                    {formatPayoffDate(debtFreeDate)}
+                    {monthsToDebtFree > 0
+                      ? formatPayoffDate(debtFreeDate)
+                      : 'unknown'}
                   </Typography>
                 </Box>
                 <Box

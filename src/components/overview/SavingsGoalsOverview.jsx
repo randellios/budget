@@ -29,6 +29,15 @@ import {
   CalendarToday as CalendarIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { useAppSelector } from '../../store/hooks';
+import {
+  selectSavingsGoals,
+  selectTotalSavingsContributions,
+  selectTotalSavingsBalance,
+  selectTotalSavingsTarget
+} from '../../store/slices/savingsSlice';
+import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
+
 const GradientCard = styled(Card)(({ theme }) => ({
   background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
   position: 'relative',
@@ -53,6 +62,7 @@ const GradientCard = styled(Card)(({ theme }) => ({
     }
   }
 }));
+
 const SectionHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
   background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)',
@@ -61,6 +71,7 @@ const SectionHeader = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between'
 }));
+
 const GoalRow = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -72,11 +83,13 @@ const GoalRow = styled(Box)(({ theme }) => ({
     borderBottom: 'none'
   }
 }));
+
 const ProgressSection = styled(Box)(({ theme }) => ({
   flex: 1,
   marginLeft: theme.spacing(2),
   marginRight: theme.spacing(2)
 }));
+
 const SavingsAcceleratorSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2.5),
   background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
@@ -84,88 +97,79 @@ const SavingsAcceleratorSection = styled(Box)(({ theme }) => ({
   borderRadius: 12,
   margin: theme.spacing(0, 3, 3, 3)
 }));
-const getPriorityColor = (priority) => {
-  switch (priority) {
-    case 'High':
-      return '#ef4444';
-    case 'Medium':
-      return '#f59e0b';
-    case 'Low':
-      return '#10b981';
-    default:
-      return '#6b7280';
-  }
-};
-const getIncomePercentageColor = (percentage) => {
-  if (percentage >= 10) return '#ef4444';
-  if (percentage >= 5) return '#f59e0b';
-  return '#10b981';
-};
+
 const SavingsGoalsOverview = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [acceleratorOpen, setAcceleratorOpen] = useState(false);
-  const totalSaved = 3500;
-  const monthlyContributions = 200;
-  const monthlyIncome = 5000;
-  const totalTarget = 17000;
-  const overallProgress = (totalSaved / totalTarget) * 100;
-  const nextMilestone = new Date(2025, 11); // December 2025
-  const savingsGoals = [
-    {
-      id: 1,
-      name: 'Emergency Fund',
-      icon: '🎯',
-      current: 1000,
-      target: 5000,
-      priority: 'High',
-      color: '#ef4444',
-      monthlyContribution: 100,
-      monthsToTarget: 40,
-      targetDate: 'Dec 2026',
-      description: 'Essential safety net',
-      onTrack: true,
-      expectedCompletion: new Date(2027, 4)
-    },
-    {
-      id: 2,
-      name: 'Holiday Fund',
-      icon: '🏖️',
-      current: 500,
-      target: 2000,
-      priority: 'Medium',
-      color: '#f59e0b',
-      monthlyContribution: 0,
-      monthsToTarget: null,
-      targetDate: '2025-08',
-      description: 'Next family vacation',
-      onTrack: false,
-      monthsBehind: 15,
-      expectedCompletion: null
-    },
-    {
-      id: 3,
-      name: 'New Car Fund',
-      icon: '🚗',
-      current: 2000,
-      target: 10000,
-      priority: 'Low',
-      color: '#10b981',
-      monthlyContribution: 100,
-      monthsToTarget: 80,
-      targetDate: null,
-      description: 'Vehicle replacement',
-      onTrack: false,
-      monthsBehind: 24,
-      expectedCompletion: new Date(2031, 8)
-    }
-  ];
+
+  // Get data from Redux store
+  const savingsGoals = useAppSelector(selectSavingsGoals);
+  const totalSavingsContributions = useAppSelector(
+    selectTotalSavingsContributions
+  );
+  const totalSavingsBalance = useAppSelector(selectTotalSavingsBalance);
+  const totalSavingsTarget = useAppSelector(selectTotalSavingsTarget);
+  const monthlyIncome = useAppSelector(selectMonthlyIncome);
+
+  // Calculate overall progress
+  const overallProgress =
+    totalSavingsTarget > 0
+      ? (totalSavingsBalance / totalSavingsTarget) * 100
+      : 0;
+
+  // Calculate next milestone (earliest target date)
+  const nextMilestone = savingsGoals.reduce((earliest, goal) => {
+    if (!goal.targetDate) return earliest;
+    const goalDate = new Date(goal.targetDate);
+    if (!earliest || goalDate < earliest) return goalDate;
+    return earliest;
+  }, null);
+
   const formatCompletionDate = (date) => {
-    if (!date) return '';
+    if (!date) return 'Not set';
     return date.toLocaleDateString('en-GB', {
       month: 'short',
       year: 'numeric'
     });
   };
+
+  const calculateGoalStatus = (goal) => {
+    if (!goal.targetDate || !goal.monthlyContribution) {
+      return { onTrack: false, monthsBehind: null };
+    }
+
+    const targetDate = new Date(goal.targetDate);
+    const currentDate = new Date();
+    const monthsRemaining = Math.max(
+      0,
+      (targetDate.getFullYear() - currentDate.getFullYear()) * 12 +
+        (targetDate.getMonth() - currentDate.getMonth())
+    );
+
+    const remainingAmount = goal.targetAmount - goal.currentBalance;
+    const monthsNeeded =
+      goal.monthlyContribution > 0
+        ? Math.ceil(remainingAmount / goal.monthlyContribution)
+        : Infinity;
+
+    const onTrack = monthsNeeded <= monthsRemaining;
+    const monthsBehind = onTrack ? 0 : monthsNeeded - monthsRemaining;
+
+    return { onTrack, monthsBehind };
+  };
+
+  const calculateExpectedCompletion = (goal) => {
+    if (!goal.monthlyContribution || goal.monthlyContribution <= 0) return null;
+
+    const remainingAmount = goal.targetAmount - goal.currentBalance;
+    const monthsNeeded = Math.ceil(remainingAmount / goal.monthlyContribution);
+
+    const completionDate = new Date();
+    completionDate.setMonth(completionDate.getMonth() + monthsNeeded);
+
+    return completionDate;
+  };
+
   return (
     <GradientCard>
       <SectionHeader>
@@ -189,7 +193,7 @@ const SavingsGoalsOverview = () => {
                 color="text.secondary"
                 sx={{ mt: 0.25 }}
               >
-                Monthly Contributions: £{monthlyContributions}
+                Monthly Contributions: £{totalSavingsContributions}
               </Typography>
             </Box>
           </Box>
@@ -226,7 +230,7 @@ const SavingsGoalsOverview = () => {
               />
               <CircularProgress
                 variant="determinate"
-                value={overallProgress}
+                value={Math.min(overallProgress, 100)}
                 size={70}
                 thickness={3}
                 sx={{
@@ -283,12 +287,14 @@ const SavingsGoalsOverview = () => {
       <Collapse in={isExpanded} timeout="auto" unmountOnExit>
         <CardContent sx={{ p: 0 }}>
           {savingsGoals.map((goal, index) => {
-            const progress = (goal.current / goal.target) * 100;
-            const priorityColor = getPriorityColor(goal.priority);
-            const incomePercentage =
-              (goal.monthlyContribution / monthlyIncome) * 100;
-            const monthlyColor = getIncomePercentageColor(incomePercentage);
-            const remaining = goal.target - goal.current;
+            const progress =
+              goal.targetAmount > 0
+                ? (goal.currentBalance / goal.targetAmount) * 100
+                : 0;
+            const remaining = goal.targetAmount - goal.currentBalance;
+            const { onTrack, monthsBehind } = calculateGoalStatus(goal);
+            const expectedCompletion = calculateExpectedCompletion(goal);
+
             return (
               <GoalRow key={goal.id}>
                 <Box
@@ -385,14 +391,14 @@ const SavingsGoalsOverview = () => {
                         lineHeight: 1.2
                       }}
                     >
-                      £{goal.current.toLocaleString()}
+                      £{goal.currentBalance.toLocaleString()}
                       <Typography
                         component="span"
                         variant="body1"
                         color="text.secondary"
                         sx={{ fontSize: '1rem', ml: 1, fontWeight: 400 }}
                       >
-                        / £{goal.target.toLocaleString()}
+                        / £{goal.targetAmount.toLocaleString()}
                       </Typography>
                     </Typography>
                     <Typography
@@ -408,26 +414,27 @@ const SavingsGoalsOverview = () => {
                   </Box>
                   <LinearProgress
                     variant="determinate"
-                    value={progress}
+                    value={Math.min(progress, 100)}
                     sx={{
                       height: 8,
                       borderRadius: 4,
                       backgroundColor: '#f3f4f6',
                       mb: 1,
                       '& .MuiLinearProgress-bar': {
-                        backgroundColor: goal.color,
+                        backgroundColor: '#10b981',
                         borderRadius: 4,
-                        boxShadow: `0 2px 8px ${goal.color}40`
+                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
                       }
                     }}
                   />
                   <Typography
                     variant="caption"
                     color="text.secondary"
-                    sx={{ fontSize: '1rem' }}
+                    sx={{ fontSize: '0.85rem' }}
                   >
-                    {goal.monthsToTarget &&
-                      `${goal.monthsToTarget} months to go`}
+                    £{remaining.toLocaleString()} remaining
+                    {goal.targetDate &&
+                      ` • Target: ${new Date(goal.targetDate).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`}
                   </Typography>
                 </ProgressSection>
                 <Divider
@@ -447,7 +454,7 @@ const SavingsGoalsOverview = () => {
                     textAlign: 'center'
                   }}
                 >
-                  {goal.onTrack ? (
+                  {onTrack ? (
                     <Box
                       sx={{
                         display: 'flex',
@@ -482,8 +489,7 @@ const SavingsGoalsOverview = () => {
                           lineHeight: 1.2
                         }}
                       >
-                        Complete by{' '}
-                        {formatCompletionDate(goal.expectedCompletion)}
+                        Complete by {formatCompletionDate(expectedCompletion)}
                       </Typography>
                     </Box>
                   ) : (
@@ -507,7 +513,9 @@ const SavingsGoalsOverview = () => {
                             color: '#92400e'
                           }}
                         >
-                          Off Track
+                          {goal.monthlyContribution === 0
+                            ? 'No Contributions'
+                            : 'Off Track'}
                         </Typography>
                       </Box>
                       <Typography
@@ -519,7 +527,11 @@ const SavingsGoalsOverview = () => {
                           lineHeight: 1.2
                         }}
                       >
-                        {goal.monthsBehind} months behind schedule
+                        {goal.monthlyContribution === 0
+                          ? 'Add monthly contribution'
+                          : monthsBehind > 0
+                            ? `${monthsBehind} months behind schedule`
+                            : 'No target date set'}
                       </Typography>
                     </Box>
                   )}
@@ -621,7 +633,10 @@ const SavingsGoalsOverview = () => {
                       mb: 0.5
                     }}
                   >
-                    £4,200
+                    £
+                    {Math.round(
+                      totalSavingsContributions * 0.84 * 60
+                    ).toLocaleString()}
                   </Typography>
                   <Typography
                     variant="caption"
@@ -672,7 +687,10 @@ const SavingsGoalsOverview = () => {
                       mb: 0.5
                     }}
                   >
-                    18 months
+                    {Math.round(
+                      (totalSavingsContributions / monthlyIncome) * 100
+                    )}
+                    % of income
                   </Typography>
                   <Typography
                     variant="caption"
@@ -682,8 +700,8 @@ const SavingsGoalsOverview = () => {
                       lineHeight: 1.4
                     }}
                   >
-                    Emergency fund could be complete 18 months earlier with
-                    focus
+                    Current savings rate - consider increasing to 20% for faster
+                    goals
                   </Typography>
                 </Box>
                 <Box

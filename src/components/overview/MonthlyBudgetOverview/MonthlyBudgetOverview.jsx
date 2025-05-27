@@ -67,55 +67,81 @@ import {
   TrendIndicator
 } from './styled';
 import FinancialProgress from './FinancialProgress';
+import { useAppSelector } from '../../../store/hooks';
+import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
+import {
+  selectTotalExpenses,
+  selectEssentialExpenses,
+  selectNonEssentialExpenses
+} from '../../../store/slices/expensesSlice';
+import { selectTotalSavingsContributions } from '../../../store/slices/savingsSlice';
+import { selectTotalDebtPayments } from '../../../store/slices/debtsSlice';
+import {
+  selectBudgetBreakdown,
+  selectRemainingIncome,
+  selectBudgetAllocationPercentage
+} from '../../../store/selectors/budgetSelectors';
+
 const MonthlyBudgetOverview = () => {
   const [recommendationsOpen, setRecommendationsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
-  const monthlyIncome = 5000;
-  const remaining = 330;
+
+  // Get data from Redux store
+  const monthlyIncome = useAppSelector(selectMonthlyIncome);
+  const totalExpenses = useAppSelector(selectTotalExpenses);
+  const essentialExpenses = useAppSelector(selectEssentialExpenses);
+  const nonEssentialExpenses = useAppSelector(selectNonEssentialExpenses);
+  const savingsContributions = useAppSelector(selectTotalSavingsContributions);
+  const debtPayments = useAppSelector(selectTotalDebtPayments);
+  const budgetBreakdown = useAppSelector(selectBudgetBreakdown);
+  const remaining = useAppSelector(selectRemainingIncome);
+  const allocationPercentage = useAppSelector(selectBudgetAllocationPercentage);
+
   const allocated = monthlyIncome - remaining;
-  const allocationPercentage = (allocated / monthlyIncome) * 100;
-  const essentialTarget = monthlyIncome * 0.5;
-  const optionalTarget = monthlyIncome * 0.3;
-  const savingsDebtTarget = monthlyIncome * 0.2;
+
   const cashFlowData = [
     {
       name: 'Essential',
-      amount: 2300,
+      amount: essentialExpenses,
       icon: HomeIcon,
       color: '#ef4444',
       description: 'Housing, utilities, food',
-      target: essentialTarget,
+      target: budgetBreakdown.essential.target,
       category: '50%'
     },
     {
       name: 'Optional',
-      amount: 1170,
+      amount: nonEssentialExpenses,
       icon: ShoppingCartIcon,
       color: '#f59e0b',
       description: 'Entertainment, dining out',
-      target: optionalTarget,
+      target: budgetBreakdown.nonEssential.target,
       category: '30%'
     },
     {
       name: 'Savings & Debts',
-      amount: 1200,
+      amount: savingsContributions + debtPayments,
       icon: SavingsIcon,
       color: '#10b981',
       description: 'Goals, emergency fund & debt payments',
-      target: savingsDebtTarget,
+      target: budgetBreakdown.savingsAndDebts.target,
       category: '20%'
     }
   ];
+
   const totalOutgoings = cashFlowData.reduce(
     (sum, item) => sum + item.amount,
     0
   );
+
   const getTargetStatus = (amount, target) => {
     const percentage = (amount / target) * 100;
     if (percentage <= 90) return { status: 'Under', color: '#059669' };
     if (percentage <= 110) return { status: 'On track', color: '#10b981' };
     return { status: 'Over', color: '#ef4444' };
   };
+
+  // Mock data for charts (you can replace these with real historical data from your store later)
   const emergencyFundHistory = [
     { month: 'Dec', value: 0.8, target: 3 },
     { month: 'Jan', value: 1.0, target: 3 },
@@ -124,6 +150,7 @@ const MonthlyBudgetOverview = () => {
     { month: 'Apr', value: 1.3, target: 3 },
     { month: 'May', value: 1.5, target: 3 }
   ];
+
   const debtHistory = [
     { month: 'Dec', value: 12000, payment: 400 },
     { month: 'Jan', value: 11600, payment: 400 },
@@ -132,6 +159,7 @@ const MonthlyBudgetOverview = () => {
     { month: 'Apr', value: 10400, payment: 400 },
     { month: 'May', value: 10000, payment: 400 }
   ];
+
   const netWorthHistory = [
     { month: 'Dec', value: 10200, change: 450 },
     { month: 'Jan', value: 10800, change: 600 },
@@ -140,6 +168,7 @@ const MonthlyBudgetOverview = () => {
     { month: 'Apr', value: 12900, change: 750 },
     { month: 'May', value: 13650, change: 750 }
   ];
+
   return (
     <GradientCard>
       <SectionHeader>
