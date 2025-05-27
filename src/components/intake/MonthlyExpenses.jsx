@@ -49,6 +49,7 @@ import {
   saveBudgetData,
   clearSaveError
 } from '../../store/slices/apiSlice';
+import ConfirmationModal from '../ConfirmationModal';
 const MonthlyExpenses = () => {
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectExpenseCategories);
@@ -58,6 +59,13 @@ const MonthlyExpenses = () => {
   const saveError = useAppSelector(selectSaveError);
   const [isExpanded, setIsExpanded] = useState(true);
   const [localValues, setLocalValues] = useState({});
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    title: '',
+    message: '',
+    onConfirm: null
+  });
+
   const debouncedUpdateItem = useDebouncedCallback(
     ({ categoryId, itemId, field, value }) => {
       dispatch(updateExpenseItem({ categoryId, itemId, field, value }));
@@ -82,14 +90,20 @@ const MonthlyExpenses = () => {
     dispatch(toggleCategory(categoryId));
   };
   const handleDeleteCategory = (categoryId) => {
-    if (
-      window.confirm(
-        'Are you sure you want to delete this category and all its items?'
-      )
-    ) {
-      dispatch(deleteCategory(categoryId));
-    }
+    const category = categories.find((c) => c.id === categoryId);
+    const itemCount = category?.items?.length || 0;
+
+    setConfirmModal({
+      open: true,
+      title: 'Delete Category',
+      message: `Are you sure you want to delete "${category?.name}"?${itemCount > 0 ? ` This will also delete ${itemCount} expense item${itemCount === 1 ? '' : 's'}.` : ''} This action cannot be undone.`,
+      onConfirm: () => {
+        dispatch(deleteCategory(categoryId));
+        setConfirmModal((prev) => ({ ...prev, open: false }));
+      }
+    });
   };
+
   const handleUpdateCategoryField = (categoryId, field, newValue) => {
     dispatch(updateCategory({ categoryId, field, value: newValue }));
     dispatch(setEditingField(null));
@@ -509,6 +523,17 @@ const MonthlyExpenses = () => {
           />
         </Box>
       )}
+      <ConfirmationModal
+        open={confirmModal.open}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        variant="warning"
+        destructive={true}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </CollapsibleCard>
   );
 };

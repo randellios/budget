@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Box, Typography, IconButton, TextField } from '@mui/material';
+import { Box, Typography, TextField } from '@mui/material';
 const EditableField = ({
   value,
   displayValue,
@@ -32,67 +32,46 @@ const EditableField = ({
       onCancel();
     }
   };
-  const handleSave = () => {
-    const newValue = parseValue(inputRef.current.value);
+  const handleBlur = (e) => {
+    const newValue = parseValue(e.target.value);
     onSave(newValue);
   };
   if (isEditing) {
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <TextField
-          inputRef={inputRef}
-          variant="outlined"
-          size="small"
-          type={inputType}
-          defaultValue={value}
-          placeholder={placeholder}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={handleKeyDown}
-          sx={{
-            minWidth: 120,
-            ...containerStyle,
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: 'white',
-              '& fieldset': {
-                borderColor: '#667eea',
-                borderWidth: 2
-              },
-              '&:hover fieldset': {
-                borderColor: '#5a67d8'
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#667eea'
-              }
+      <TextField
+        inputRef={inputRef}
+        variant="outlined"
+        size="small"
+        type={inputType}
+        defaultValue={value}
+        placeholder={placeholder}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
+        sx={{
+          minWidth: 120,
+          ...containerStyle,
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: 'white',
+            '& fieldset': {
+              borderColor: '#667eea',
+              borderWidth: 2
             },
-            '& .MuiInputBase-input': {
-              fontSize: '14px',
-              fontWeight: 600,
-              ...inputStyle
+            '&:hover fieldset': {
+              borderColor: '#5a67d8'
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#667eea'
             }
-          }}
-          fullWidth
-        />
-        <IconButton
-          size="small"
-          sx={{ color: 'success.main' }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleSave();
-          }}
-        >
-          <Box sx={{ fontSize: '14px' }}>✓</Box>
-        </IconButton>
-        <IconButton
-          size="small"
-          sx={{ color: 'error.main' }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onCancel();
-          }}
-        >
-          <Box sx={{ fontSize: '14px' }}>✕</Box>
-        </IconButton>
-      </Box>
+          },
+          '& .MuiInputBase-input': {
+            fontSize: '14px',
+            fontWeight: 600,
+            ...inputStyle
+          }
+        }}
+        fullWidth
+      />
     );
   }
   return (
