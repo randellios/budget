@@ -88,13 +88,30 @@ const debtsSlice = createSlice({
         debt.currentBalance = Math.max(0, debt.currentBalance - amount);
       }
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase('HYDRATE_DATA', (state, action) => {
+      if (action.payload.debts) {
+        const loadedDebts = action.payload.debts;
+
+        // Replace debts with loaded data
+        if (loadedDebts.debts && Array.isArray(loadedDebts.debts)) {
+          state.debts = loadedDebts.debts;
+        }
+
+        // Update next ID to prevent conflicts
+        if (loadedDebts.nextDebtId) {
+          state.nextDebtId = loadedDebts.nextDebtId;
+        }
+      }
+    });
   }
 });
 
 export const { addDebt, updateDebt, deleteDebt, makePayment } =
   debtsSlice.actions;
 
-// Selectors
+// Selectors remain the same
 export const selectDebts = (state) => state.debts.debts;
 export const selectTotalDebtPayments = createSelector([selectDebts], (debts) =>
   debts.reduce((total, debt) => total + debt.monthlyPayment, 0)

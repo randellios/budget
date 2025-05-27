@@ -73,6 +73,23 @@ const savingsSlice = createSlice({
         goal.currentBalance = Math.max(0, goal.currentBalance + amount);
       }
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase('HYDRATE_DATA', (state, action) => {
+      if (action.payload.savings) {
+        const loadedSavings = action.payload.savings;
+
+        // Replace goals with loaded data
+        if (loadedSavings.goals && Array.isArray(loadedSavings.goals)) {
+          state.goals = loadedSavings.goals;
+        }
+
+        // Update next ID to prevent conflicts
+        if (loadedSavings.nextGoalId) {
+          state.nextGoalId = loadedSavings.nextGoalId;
+        }
+      }
+    });
   }
 });
 
@@ -83,7 +100,7 @@ export const {
   updateGoalBalance
 } = savingsSlice.actions;
 
-// Selectors
+// Selectors remain the same
 export const selectSavingsGoals = (state) => state.savings.goals;
 export const selectTotalSavingsContributions = createSelector(
   [selectSavingsGoals],

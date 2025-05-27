@@ -45,6 +45,33 @@ const uiSlice = createSlice({
     setShowIconPicker: (state, action) => {
       state.showIconPicker = action.payload;
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase('HYDRATE_DATA', (state, action) => {
+      if (action.payload.ui) {
+        const loadedUI = action.payload.ui;
+
+        // Restore UI state
+        if (loadedUI.selectedMonth) {
+          state.selectedMonth = loadedUI.selectedMonth;
+        }
+        if (loadedUI.expandedSections) {
+          state.expandedSections = {
+            ...state.expandedSections,
+            ...loadedUI.expandedSections
+          };
+        }
+        if (loadedUI.expandedCategories) {
+          state.expandedCategories = loadedUI.expandedCategories;
+        }
+        if (loadedUI.expandedDebts) {
+          state.expandedDebts = loadedUI.expandedDebts;
+        }
+        if (loadedUI.expandedSavings) {
+          state.expandedSavings = loadedUI.expandedSavings;
+        }
+      }
+    });
   }
 });
 
@@ -58,7 +85,7 @@ export const {
   setShowIconPicker
 } = uiSlice.actions;
 
-// Selectors
+// Selectors remain the same
 export const selectSelectedMonth = (state) => state.ui.selectedMonth;
 export const selectExpandedSections = (state) => state.ui.expandedSections;
 export const selectExpandedCategories = (state) => state.ui.expandedCategories;

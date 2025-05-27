@@ -12,6 +12,10 @@ export const saveBudgetData = createAsyncThunk(
         expenses: state.expenses,
         savings: state.savings,
         debts: state.debts,
+        ui: {
+          selectedMonth: state.ui.selectedMonth,
+          expandedSections: state.ui.expandedSections
+        },
         lastUpdated: new Date().toISOString()
       };
 
@@ -45,6 +49,23 @@ export const loadBudgetData = createAsyncThunk(
   }
 );
 
+export const clearBudgetData = createAsyncThunk(
+  'api/clearBudgetData',
+  async (_, { rejectWithValue }) => {
+    try {
+      const result = await budgetApi.clearBudgetData();
+
+      if (!result.success) {
+        return rejectWithValue(result.error);
+      }
+
+      return result;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   isSaving: false,
   isLoading: false,
@@ -52,7 +73,8 @@ const initialState = {
   saveError: null,
   loadError: null,
   autoSaveEnabled: true,
-  saveQueue: []
+  saveQueue: [],
+  dataLoaded: false
 };
 
 const apiSlice = createSlice({
@@ -76,6 +98,9 @@ const apiSlice = createSlice({
     },
     clearSaveQueue: (state) => {
       state.saveQueue = [];
+    },
+    setDataLoaded: (state, action) => {
+      state.dataLoaded = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -97,12 +122,21 @@ const apiSlice = createSlice({
         state.isLoading = true;
         state.loadError = null;
       })
-      .addCase(loadBudgetData.fulfilled, (state) => {
+      .addCase(loadBudgetData.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.dataLoaded = true;
+        if (action.payload) {
+          state.lastSaved =
+            action.payload.lastUpdated || new Date().toISOString();
+        }
       })
       .addCase(loadBudgetData.rejected, (state, action) => {
         state.isLoading = false;
         state.loadError = action.payload;
+      })
+      .addCase(clearBudgetData.fulfilled, (state) => {
+        state.lastSaved = null;
+        state.dataLoaded = false;
       });
   }
 });
@@ -112,7 +146,8 @@ export const {
   clearLoadError,
   toggleAutoSave,
   queueSave,
-  clearSaveQueue
+  clearSaveQueue,
+  setDataLoaded
 } = apiSlice.actions;
 
 export const selectIsSaving = (state) => state.api.isSaving;
@@ -122,5 +157,6 @@ export const selectSaveError = (state) => state.api.saveError;
 export const selectLoadError = (state) => state.api.loadError;
 export const selectAutoSaveEnabled = (state) => state.api.autoSaveEnabled;
 export const selectSaveQueue = (state) => state.api.saveQueue;
+export const selectDataLoaded = (state) => state.api.dataLoaded;
 
 export default apiSlice.reducer;

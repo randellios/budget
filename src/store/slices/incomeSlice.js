@@ -14,13 +14,20 @@ const incomeSlice = createSlice({
       state.monthlyIncome = action.payload;
       state.lastUpdated = new Date().toISOString();
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase('HYDRATE_DATA', (state, action) => {
+      if (action.payload.income) {
+        state.monthlyIncome =
+          action.payload.income.monthlyIncome || state.monthlyIncome;
+        state.lastUpdated =
+          action.payload.income.lastUpdated || state.lastUpdated;
+      }
+    });
   }
 });
 
 export const { updateMonthlyIncome } = incomeSlice.actions;
-
-// Selectors
 export const selectMonthlyIncome = (state) => state.income.monthlyIncome;
 export const selectIncomeLastUpdated = (state) => state.income.lastUpdated;
-
 export default incomeSlice.reducer;

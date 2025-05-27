@@ -4,17 +4,24 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
   loadBudgetData,
   selectIsLoading,
-  selectLoadError
+  selectLoadError,
+  selectDataLoaded
 } from '../store/slices/apiSlice';
 
 export const useDataLoader = () => {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(selectIsLoading);
   const loadError = useAppSelector(selectLoadError);
+  const dataLoaded = useAppSelector(selectDataLoaded);
 
-  useEffect(() => {
+  const reloadData = () => {
     dispatch(loadBudgetData());
-  }, [dispatch]);
+  };
 
-  return { isLoading, loadError };
+  return {
+    isLoading,
+    loadError,
+    dataLoaded,
+    reloadData
+  };
 };

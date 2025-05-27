@@ -177,6 +177,29 @@ const expensesSlice = createSlice({
         }
       }
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase('HYDRATE_DATA', (state, action) => {
+      if (action.payload.expenses) {
+        const loadedExpenses = action.payload.expenses;
+
+        // Replace categories with loaded data
+        if (
+          loadedExpenses.categories &&
+          Array.isArray(loadedExpenses.categories)
+        ) {
+          state.categories = loadedExpenses.categories;
+        }
+
+        // Update next IDs to prevent conflicts
+        if (loadedExpenses.nextItemId) {
+          state.nextItemId = loadedExpenses.nextItemId;
+        }
+        if (loadedExpenses.nextCategoryId) {
+          state.nextCategoryId = loadedExpenses.nextCategoryId;
+        }
+      }
+    });
   }
 });
 
@@ -191,7 +214,7 @@ export const {
   toggleItemFlexible
 } = expensesSlice.actions;
 
-// Selectors
+// Selectors remain the same
 export const selectExpenseCategories = (state) => state.expenses.categories;
 export const selectTotalExpenses = createSelector(
   [selectExpenseCategories],

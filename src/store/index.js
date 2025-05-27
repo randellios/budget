@@ -7,6 +7,8 @@ import debtsReducer from './slices/debtsSlice';
 import uiReducer from './slices/uiSlice';
 import apiReducer from './slices/apiSlice';
 import { autoSaveMiddleware } from './middleware/autoSaveMiddleware';
+import { dataHydrationMiddleware } from './middleware/dataHydrationMiddleware';
+import { loadBudgetData } from './slices/apiSlice';
 
 export const store = configureStore({
   reducer: {
@@ -20,7 +22,10 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE']
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'HYDRATE_DATA']
       }
-    }).concat(autoSaveMiddleware)
+    }).concat(autoSaveMiddleware, dataHydrationMiddleware)
 });
+
+// Load initial data
+store.dispatch(loadBudgetData());
