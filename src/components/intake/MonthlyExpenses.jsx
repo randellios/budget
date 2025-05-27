@@ -1,3 +1,4 @@
+// src/components/intake/MonthlyExpenses.jsx (updated)
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
@@ -23,6 +24,7 @@ import {
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
 import CollapsibleCard from '../CollapsibleCard';
+import SaveStatusIndicator from '../SaveStatusIndicator';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import {
   selectExpenseCategories,
@@ -42,12 +44,18 @@ import {
   toggleCategory,
   setEditingField
 } from '../../store/slices/uiSlice';
+import {
+  selectSaveError,
+  saveBudgetData,
+  clearSaveError
+} from '../../store/slices/apiSlice';
 const MonthlyExpenses = () => {
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectExpenseCategories);
   const totalExpenses = useAppSelector(selectTotalExpenses);
   const expandedCategories = useAppSelector(selectExpandedCategories);
   const editingField = useAppSelector(selectEditingField);
+  const saveError = useAppSelector(selectSaveError);
   const [isExpanded, setIsExpanded] = useState(true);
   const [localValues, setLocalValues] = useState({});
   const debouncedUpdateItem = useDebouncedCallback(
@@ -62,11 +70,25 @@ const MonthlyExpenses = () => {
     },
     500
   );
+  useEffect(() => {
+    if (saveError) {
+      const timer = setTimeout(() => {
+        dispatch(clearSaveError());
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [saveError, dispatch]);
   const handleToggleCategory = (categoryId) => {
     dispatch(toggleCategory(categoryId));
   };
   const handleDeleteCategory = (categoryId) => {
-    dispatch(deleteCategory(categoryId));
+    if (
+      window.confirm(
+        'Are you sure you want to delete this category and all its items?'
+      )
+    ) {
+      dispatch(deleteCategory(categoryId));
+    }
   };
   const handleUpdateCategoryField = (categoryId, field, newValue) => {
     dispatch(updateCategory({ categoryId, field, value: newValue }));
@@ -108,7 +130,18 @@ const MonthlyExpenses = () => {
     );
   };
   const handleDeleteItem = (categoryId, itemId) => {
-    dispatch(deleteExpenseItem({ categoryId, itemId }));
+    if (window.confirm('Are you sure you want to delete this expense item?')) {
+      dispatch(deleteExpenseItem({ categoryId, itemId }));
+      const key = `${categoryId}-${itemId}`;
+      setLocalValues((prev) => {
+        const newValues = { ...prev };
+        delete newValues[key];
+        return newValues;
+      });
+    }
+  };
+  const handleManualSave = () => {
+    dispatch(saveBudgetData());
   };
   const getCategoryTotal = (category) =>
     category.items.reduce((total, item) => total + item.amount, 0);
@@ -132,25 +165,62 @@ const MonthlyExpenses = () => {
           >
             <ShoppingCartIcon sx={{ fontSize: 18, color: 'white' }} />
           </Box>
-          <Box>
+          <Box sx={{ flex: 1 }}>
             <Typography
               variant="h6"
               sx={{ fontWeight: 600, fontSize: '1.125rem', color: '#1f2937' }}
             >
               Monthly Expenses
             </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
-            >
-              £{totalExpenses.toLocaleString()} • {categories.length} categories
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
+              >
+                £{totalExpenses.toLocaleString()} • {categories.length}{' '}
+                categories
+              </Typography>
+              <SaveStatusIndicator showInTitle={true} size="small" />
+            </Box>
           </Box>
         </Box>
       }
       isExpanded={isExpanded}
       onToggle={() => setIsExpanded(!isExpanded)}
     >
+      {saveError && (
+        <Box
+          sx={{
+            mb: 2,
+            p: 1.5,
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fca5a5',
+            borderRadius: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: '#dc2626', fontSize: '0.8rem' }}
+          >
+            Failed to save: {saveError}
+          </Typography>
+          <Button
+            size="small"
+            onClick={handleManualSave}
+            sx={{
+              color: '#dc2626',
+              fontSize: '0.7rem',
+              textTransform: 'none',
+              minWidth: 'auto'
+            }}
+          >
+            Retry
+          </Button>
+        </Box>
+      )}
       {categories.map((category) => (
         <Box key={category.id} sx={{ mb: 2 }}>
           <Box
@@ -416,13 +486,16 @@ const MonthlyExpenses = () => {
             justifyContent: 'space-between'
           }}
         >
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ fontSize: '0.75rem' }}
-          >
-            {categories.length} categories • {totalItems} items
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ fontSize: '0.75rem' }}
+            >
+              {categories.length} categories • {totalItems} items
+            </Typography>
+            <SaveStatusIndicator showManualSave={false} size="small" />
+          </Box>
           <Chip
             label={`£${totalExpenses.toLocaleString()}`}
             size="small"
