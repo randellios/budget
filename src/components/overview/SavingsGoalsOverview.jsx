@@ -286,272 +286,423 @@ const SavingsGoalsOverview = () => {
       </SectionHeader>
       <Collapse in={isExpanded} timeout="auto" unmountOnExit>
         <CardContent sx={{ p: 0 }}>
-          {savingsGoals.map((goal, index) => {
-            const progress =
-              goal.targetAmount > 0
-                ? (goal.currentBalance / goal.targetAmount) * 100
-                : 0;
-            const remaining = goal.targetAmount - goal.currentBalance;
-            const { onTrack, monthsBehind } = calculateGoalStatus(goal);
-            const expectedCompletion = calculateExpectedCompletion(goal);
+          <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+            {savingsGoals.map((goal, index) => {
+              const progress =
+                goal.targetAmount > 0
+                  ? (goal.currentBalance / goal.targetAmount) * 100
+                  : 0;
+              const remaining = goal.targetAmount - goal.currentBalance;
+              const monthsToCompletion =
+                goal.monthlyContribution > 0
+                  ? Math.ceil(remaining / goal.monthlyContribution)
+                  : null;
+              const completionDate = monthsToCompletion
+                ? (() => {
+                    const date = new Date();
+                    date.setMonth(date.getMonth() + monthsToCompletion);
+                    return date;
+                  })()
+                : null;
 
-            return (
-              <GoalRow key={goal.id}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flex: '0 0 280px',
-                    minHeight: '60px'
-                  }}
-                >
-                  <Box
-                    sx={{
-                      borderRadius: 2,
-                      p: 1.5,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mr: 2,
-                      fontSize: '20px'
-                    }}
-                  >
-                    {goal.icon}
-                  </Box>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
+              const targetDate = goal.targetDate
+                ? new Date(goal.targetDate)
+                : null;
+              const isOnTrack =
+                targetDate && monthsToCompletion
+                  ? completionDate <= targetDate
+                  : false;
+              const monthsOverUnder =
+                targetDate && monthsToCompletion
+                  ? Math.ceil(
+                      (completionDate.getTime() - targetDate.getTime()) /
+                        (1000 * 60 * 60 * 24 * 30.44)
+                    )
+                  : 0;
+
+              const requiredMonthlyForTarget =
+                targetDate && remaining > 0
+                  ? Math.ceil(
+                      remaining /
+                        Math.max(
+                          1,
+                          Math.ceil(
+                            (targetDate.getTime() - new Date().getTime()) /
+                              (1000 * 60 * 60 * 24 * 30.44)
+                          )
+                        )
+                    )
+                  : 0;
+
+              const getBorderColor = () => {
+                if (goal.monthlyContribution === 0) return '#e2e8f0';
+                if (isOnTrack) return '#10b981';
+                return '#f59e0b';
+              };
+
+              const getStatusChip = () => {
+                if (goal.monthlyContribution === 0) {
+                  return (
+                    <Chip
+                      icon={<WarningIcon />}
+                      label="No Contributions"
+                      size="small"
                       sx={{
-                        fontWeight: 700,
-                        fontSize: '1.125rem',
-                        mb: 0.5,
-                        lineHeight: 1.2
-                      }}
-                    >
-                      {goal.name}
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        bgcolor: '#f0fdf4',
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 2,
-                        border: '2px solid #10b981',
-                        width: 'fit-content'
-                      }}
-                    >
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontSize: '1.25rem',
-                          fontWeight: 800,
-                          color: '#10b981',
-                          display: 'inline'
-                        }}
-                      >
-                        £{goal.monthlyContribution}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontSize: '0.9rem',
-                          fontWeight: 600,
-                          color: '#059669',
-                          display: 'inline',
-                          ml: 0.5
-                        }}
-                      >
-                        /month
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-                <Divider
-                  orientation="vertical"
-                  flexItem
-                  sx={{ height: 50, mx: 2, alignSelf: 'center' }}
-                />
-                <ProgressSection
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    minHeight: '60px'
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'baseline',
-                      mb: 1
-                    }}
-                  >
-                    <Typography
-                      variant="h4"
-                      sx={{
-                        fontWeight: 'bold',
-                        fontSize: '1.5rem',
-                        color: '#10b981',
-                        lineHeight: 1.2
-                      }}
-                    >
-                      £{goal.currentBalance.toLocaleString()}
-                      <Typography
-                        component="span"
-                        variant="body1"
-                        color="text.secondary"
-                        sx={{ fontSize: '1rem', ml: 1, fontWeight: 400 }}
-                      >
-                        / £{goal.targetAmount.toLocaleString()}
-                      </Typography>
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
+                        backgroundColor: '#fef3c7',
+                        color: '#92400e',
+                        border: '1px solid #f59e0b',
                         fontWeight: 600,
-                        color: '#667eea',
-                        fontSize: '0.9rem'
+                        fontSize: '0.75rem'
                       }}
-                    >
-                      {progress.toFixed(1)}%
-                    </Typography>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={Math.min(progress, 100)}
+                    />
+                  );
+                }
+                if (isOnTrack) {
+                  return (
+                    <Chip
+                      icon={<CheckCircleIcon />}
+                      label="On Track"
+                      size="small"
+                      sx={{
+                        backgroundColor: '#dcfce7',
+                        color: '#166534',
+                        border: '1px solid #10b981',
+                        fontWeight: 600,
+                        fontSize: '0.75rem'
+                      }}
+                    />
+                  );
+                }
+                return (
+                  <Chip
+                    icon={<WarningIcon />}
+                    label="Behind Schedule"
+                    size="small"
                     sx={{
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: '#f3f4f6',
-                      mb: 1,
-                      '& .MuiLinearProgress-bar': {
-                        backgroundColor: '#10b981',
-                        borderRadius: 4,
-                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
-                      }
+                      backgroundColor: '#fef3c7',
+                      color: '#92400e',
+                      border: '1px solid #f59e0b',
+                      fontWeight: 600,
+                      fontSize: '0.75rem'
                     }}
                   />
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ fontSize: '0.85rem' }}
-                  >
-                    £{remaining.toLocaleString()} remaining
-                    {goal.targetDate &&
-                      ` • Target: ${new Date(goal.targetDate).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`}
-                  </Typography>
-                </ProgressSection>
-                <Divider
-                  orientation="vertical"
-                  flexItem
-                  sx={{ height: 50, mx: 2, alignSelf: 'center' }}
-                />
+                );
+              };
+
+              return (
                 <Box
-                  sx={{
-                    ml: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flex: '0 0 140px',
-                    minHeight: '60px',
-                    textAlign: 'center'
-                  }}
+                  key={goal.id}
+                  sx={{ flex: 1, minWidth: '300px', maxWidth: '350px' }}
                 >
-                  {onTrack ? (
+                  <Card
+                    sx={{
+                      height: '100%',
+                      border: `2px solid ${getBorderColor()}`,
+                      borderRadius: 3,
+                      bgcolor: '#ffffff',
+                      position: 'relative'
+                    }}
+                  >
+                    {/* Status Chip - Positioned at top right */}
                     <Box
                       sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 0.5
+                        position: 'absolute',
+                        top: 12,
+                        right: 12,
+                        zIndex: 1
                       }}
                     >
+                      {getStatusChip()}
+                    </Box>
+
+                    <CardContent
+                      sx={{
+                        p: 3,
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}
+                    >
+                      {/* Title & Icon */}
                       <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1.5,
+                          mb: 2,
+                          pr: 5
+                        }}
                       >
-                        <CheckCircleIcon
-                          sx={{ fontSize: 18, color: '#10b981' }}
+                        <Typography sx={{ fontSize: '20px' }}>
+                          {goal.icon}
+                        </Typography>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: '1.125rem',
+                            color: '#1f2937',
+                            lineHeight: 1.2
+                          }}
+                        >
+                          {goal.name}
+                        </Typography>
+                      </Box>
+
+                      {/* Monthly Contribution - Most Prominent */}
+                      <Box sx={{ textAlign: 'center', mb: 3 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontSize: '0.7rem',
+                            color: '#6b7280',
+                            fontWeight: 500,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            display: 'block',
+                            mb: 0.5
+                          }}
+                        >
+                          Monthly Contribution
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'inline-flex',
+                            alignItems: 'baseline',
+                            bgcolor: '#f0fdf4',
+                            px: 2.5,
+                            py: 1.5,
+                            borderRadius: 2,
+                            border: '2px solid #10b981'
+                          }}
+                        >
+                          <Typography
+                            variant="h4"
+                            sx={{
+                              fontSize: '1.75rem',
+                              fontWeight: 800,
+                              color: '#10b981'
+                            }}
+                          >
+                            £{goal.monthlyContribution}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontSize: '0.9rem',
+                              fontWeight: 600,
+                              color: '#059669',
+                              ml: 0.5
+                            }}
+                          >
+                            /mo
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      {/* Completion Timeline */}
+                      <Box
+                        sx={{
+                          textAlign: 'center',
+                          mb: 3,
+                          p: 2,
+                          bgcolor: '#f0f9ff',
+                          borderRadius: 2,
+                          border: '1px solid #0ea5e9'
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontSize: '0.7rem',
+                            color: '#0369a1',
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            display: 'block',
+                            mb: 0.5
+                          }}
+                        >
+                          🎉 Will Complete By
+                        </Typography>
+                        <Typography
+                          variant="h5"
+                          sx={{
+                            fontWeight: 800,
+                            fontSize: '1.25rem',
+                            color: '#0c4a6e',
+                            mb: 0.5,
+                            background:
+                              'linear-gradient(135deg, #0ea5e9, #0369a1)',
+                            backgroundClip: 'text',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                          }}
+                        >
+                          {goal.monthlyContribution > 0 && completionDate
+                            ? completionDate.toLocaleDateString('en-GB', {
+                                month: 'short',
+                                year: 'numeric'
+                              })
+                            : targetDate
+                              ? targetDate.toLocaleDateString('en-GB', {
+                                  month: 'short',
+                                  year: 'numeric'
+                                })
+                              : 'Not set'}
+                        </Typography>
+                        {goal.monthlyContribution > 0 && monthsToCompletion && (
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontSize: '0.85rem',
+                              color: '#0369a1',
+                              fontWeight: 600
+                            }}
+                          >
+                            Only {monthsToCompletion} months to go! 🚀
+                          </Typography>
+                        )}
+                      </Box>
+
+                      {/* Budget Status */}
+                      {goal.monthlyContribution > 0 && targetDate && (
+                        <Box sx={{ mb: 2 }}>
+                          {!isOnTrack ? (
+                            <Box
+                              sx={{
+                                p: 1.5,
+                                bgcolor: '#fef2f2',
+                                borderRadius: 2,
+                                border: '1px solid #fca5a5',
+                                textAlign: 'center'
+                              }}
+                            >
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontSize: '0.75rem',
+                                  fontWeight: 500,
+                                  color: '#991b1b',
+                                  mb: 0.25
+                                }}
+                              >
+                                NEED £
+                                {requiredMonthlyForTarget -
+                                  goal.monthlyContribution}{' '}
+                                MORE/MONTH
+                              </Typography>
+                              <Typography
+                                variant="body1"
+                                sx={{
+                                  fontSize: '1rem',
+                                  fontWeight: 700,
+                                  color: '#dc2626'
+                                }}
+                              >
+                                £{requiredMonthlyForTarget}/month required
+                              </Typography>
+                            </Box>
+                          ) : (
+                            <Box
+                              sx={{
+                                p: 1.5,
+                                bgcolor: '#f0fdf4',
+                                borderRadius: 2,
+                                border: '1px solid #bbf7d0',
+                                textAlign: 'center'
+                              }}
+                            >
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontSize: '0.75rem',
+                                  fontWeight: 500,
+                                  color: '#166534',
+                                  mb: 0.25
+                                }}
+                              >
+                                SAVING £
+                                {goal.monthlyContribution -
+                                  requiredMonthlyForTarget}{' '}
+                                EXTRA/MONTH
+                              </Typography>
+                              <Typography
+                                variant="body1"
+                                sx={{
+                                  fontSize: '0.9rem',
+                                  fontWeight: 600,
+                                  color: '#059669'
+                                }}
+                              >
+                                Could reduce to £{requiredMonthlyForTarget}
+                                /month
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      )}
+
+                      {/* Progress Section */}
+                      <Box sx={{ mt: 'auto' }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'baseline',
+                            mb: 1
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: 700,
+                              fontSize: '1.125rem',
+                              color: '#10b981'
+                            }}
+                          >
+                            £{goal.currentBalance.toLocaleString()}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 600,
+                              color: '#667eea',
+                              fontSize: '0.9rem'
+                            }}
+                          >
+                            {progress.toFixed(0)}%
+                          </Typography>
+                        </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={Math.min(progress, 100)}
+                          sx={{
+                            height: 6,
+                            borderRadius: 3,
+                            backgroundColor: '#f3f4f6',
+                            mb: 1,
+                            '& .MuiLinearProgress-bar': {
+                              backgroundColor: '#10b981',
+                              borderRadius: 3
+                            }
+                          }}
                         />
                         <Typography
-                          variant="body2"
-                          sx={{
-                            fontSize: '0.8rem',
-                            fontWeight: 600,
-                            color: '#166534'
-                          }}
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ fontSize: '0.8rem' }}
                         >
-                          On Track
+                          £{remaining.toLocaleString()} of £
+                          {goal.targetAmount.toLocaleString()} remaining
                         </Typography>
                       </Box>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontSize: '0.7rem',
-                          fontWeight: 500,
-                          color: '#059669',
-                          lineHeight: 1.2
-                        }}
-                      >
-                        Complete by {formatCompletionDate(expectedCompletion)}
-                      </Typography>
-                    </Box>
-                  ) : (
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 0.5
-                      }}
-                    >
-                      <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-                      >
-                        <WarningIcon sx={{ fontSize: 18, color: '#f59e0b' }} />
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontSize: '0.8rem',
-                            fontWeight: 600,
-                            color: '#92400e'
-                          }}
-                        >
-                          {goal.monthlyContribution === 0
-                            ? 'No Contributions'
-                            : 'Off Track'}
-                        </Typography>
-                      </Box>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontSize: '0.7rem',
-                          fontWeight: 500,
-                          color: '#d97706',
-                          lineHeight: 1.2
-                        }}
-                      >
-                        {goal.monthlyContribution === 0
-                          ? 'Add monthly contribution'
-                          : monthsBehind > 0
-                            ? `${monthsBehind} months behind schedule`
-                            : 'No target date set'}
-                      </Typography>
-                    </Box>
-                  )}
+                    </CardContent>
+                  </Card>
                 </Box>
-              </GoalRow>
-            );
-          })}
+              );
+            })}
+          </Box>
         </CardContent>
         <Box
           sx={{
