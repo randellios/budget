@@ -43,6 +43,7 @@ import {
   selectRemainingIncome,
   selectBudgetAllocationPercentage
 } from '../../../store/selectors/budgetSelectors';
+import TemperatureGauge from './TemperatureGauge';
 
 const MonthlyBudgetOverview = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -519,35 +520,11 @@ const MonthlyBudgetOverview = () => {
                         </Typography>
                       </Box>
 
-                      <Box sx={{ position: 'relative', mb: 2 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={Math.min(progressPercentage, 100)}
-                          sx={{
-                            height: 12,
-                            borderRadius: 6,
-                            backgroundColor: '#f3f4f6',
-                            '& .MuiLinearProgress-bar': {
-                              backgroundColor: category.color,
-                              borderRadius: 6,
-                              boxShadow: `0 2px 8px ${category.color}40`
-                            }
-                          }}
-                        />
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            left: `${Math.min(category.targetPercentage, 100)}%`,
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            width: 2,
-                            height: 16,
-                            backgroundColor: '#374151',
-                            borderRadius: 1,
-                            zIndex: 1
-                          }}
-                        />
-                      </Box>
+                      <TemperatureGauge
+                        percentage={actualPercentage}
+                        targetPercentage={category.targetPercentage}
+                        isReverse={category.title === 'Savings & Debts'}
+                      />
                     </Box>
                   </Box>
 
