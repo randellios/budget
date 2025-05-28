@@ -142,7 +142,7 @@ const BudgetOverview = () => {
       </Box>
 
       {/* Right Side - Available Balance */}
-      <Box sx={{ flex: 1, textAlign: 'right' }}>
+      {/* <Box sx={{ flex: 1, textAlign: 'right' }}>
         <Typography
           variant="caption"
           sx={{
@@ -194,7 +194,7 @@ const BudgetOverview = () => {
             />
           )}
         </Box>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
