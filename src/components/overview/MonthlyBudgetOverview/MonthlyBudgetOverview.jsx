@@ -56,12 +56,10 @@ const MonthlyBudgetOverview = () => {
   const remaining = useAppSelector(selectRemainingIncome);
   const allocationPercentage = useAppSelector(selectBudgetAllocationPercentage);
 
-  // Get actual category data
   const expenseCategories = useAppSelector(selectExpenseCategories);
   const savingsGoals = useAppSelector(selectSavingsGoals);
   const debts = useAppSelector(selectDebts);
 
-  // Helper function to get categories for each budget type
   const getEssentialCategories = () => {
     return expenseCategories
       .filter((cat) =>
@@ -80,21 +78,16 @@ const MonthlyBudgetOverview = () => {
 
   const getSavingsAndDebtCategories = () => {
     const categories = [];
-
-    // Add savings goals with contributions
     savingsGoals.forEach((goal) => {
       if (goal.monthlyContribution > 0) {
         categories.push({ name: goal.name, icon: goal.icon });
       }
     });
-
-    // Add debts with payments
     debts.forEach((debt) => {
       if (debt.monthlyPayment > 0) {
         categories.push({ name: debt.name, icon: debt.icon });
       }
     });
-
     return categories;
   };
 
@@ -184,61 +177,44 @@ const MonthlyBudgetOverview = () => {
               {remaining.toLocaleString()}
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  fontSize: '0.7rem',
-                  color: '#6b7280',
-                  fontWeight: 500,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.3px',
-                  display: 'block',
-                  mb: 0.25
-                }}
-              >
-                Allocated
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '1rem',
-                  color: remaining >= 0 ? '#10b981' : '#ef4444'
-                }}
-              >
-                {Math.round(allocationPercentage)}%
-              </Typography>
-            </Box>
-            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-              <CircularProgress
-                variant="determinate"
-                value={100}
-                size={60}
-                thickness={4}
-                sx={{ color: '#f3f4f6', position: 'absolute' }}
-              />
-              <CircularProgress
-                variant="determinate"
-                value={Math.min(allocationPercentage, 100)}
-                size={60}
-                thickness={4}
-                sx={{
-                  color: remaining >= 0 ? '#10b981' : '#ef4444',
-                  '& .MuiCircularProgress-circle': { strokeLinecap: 'round' }
-                }}
-              />
-            </Box>
-            <IconButton size="small" sx={{ color: '#6b7280', ml: 1 }}>
-              {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </IconButton>
-          </Box>
         </Box>
       </SectionHeader>
 
       <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-        <CardContent sx={{ p: 3 }}>
+        <CardContent sx={{ p: 3, pt: 0 }}>
+          {remaining !== 0 && (
+            <Box
+              sx={{
+                mt: 3,
+                p: 2,
+                borderRadius: 2,
+                backgroundColor: remaining > 0 ? '#f0fdf4' : '#fef2f2',
+                border: `1px solid ${remaining > 0 ? '#bbf7d0' : '#fca5a5'}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 2
+              }}
+            >
+              {remaining > 0 ? (
+                <CheckCircleIcon sx={{ fontSize: 24, color: '#10b981' }} />
+              ) : (
+                <WarningIcon sx={{ fontSize: 24, color: '#ef4444' }} />
+              )}
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 700,
+                  color: remaining > 0 ? '#166534' : '#991b1b',
+                  textAlign: 'center'
+                }}
+              >
+                {remaining > 0
+                  ? `£${remaining.toLocaleString()} available to allocate`
+                  : `£${Math.abs(remaining).toLocaleString()} over budget - adjust spending or increase income`}
+              </Typography>
+            </Box>
+          )}
           <Box
             sx={{
               display: 'grid',
@@ -250,10 +226,7 @@ const MonthlyBudgetOverview = () => {
             {budgetCategories.map((category, index) => {
               const actualPercentage =
                 monthlyIncome > 0 ? (category.amount / monthlyIncome) * 100 : 0;
-              const progressPercentage =
-                category.target > 0
-                  ? (category.amount / category.target) * 100
-                  : 0;
+              const progressPercentage = actualPercentage;
               const statusInfo = getStatusIndicator(
                 category.amount,
                 category.target
@@ -300,26 +273,9 @@ const MonthlyBudgetOverview = () => {
                           {category.title}
                         </Typography>
                       </Box>
-                      <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-                      >
-                        <StatusIcon
-                          sx={{ fontSize: 16, color: statusInfo.color }}
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontSize: '0.7rem',
-                            fontWeight: 600,
-                            color: statusInfo.color
-                          }}
-                        >
-                          {statusInfo.status}
-                        </Typography>
-                      </Box>
                     </Box>
 
-                    <Box sx={{ mb: 3, minHeight: '60px' }}>
+                    <Box sx={{ mb: 3 }}>
                       {category.categories.length > 0 ? (
                         <Box
                           sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}
@@ -432,15 +388,6 @@ const MonthlyBudgetOverview = () => {
                         </Typography>
                       </Box>
 
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ fontSize: '0.8rem', display: 'block', mb: 2 }}
-                      >
-                        Target: £{category.target.toLocaleString()} (
-                        {category.targetPercentage}%)
-                      </Typography>
-
                       <Box sx={{ position: 'relative', mb: 2 }}>
                         <LinearProgress
                           variant="determinate"
@@ -459,87 +406,17 @@ const MonthlyBudgetOverview = () => {
                         <Box
                           sx={{
                             position: 'absolute',
-                            right: 8,
+                            left: `${Math.min(category.targetPercentage, 100)}%`,
                             top: '50%',
                             transform: 'translateY(-50%)',
                             width: 2,
-                            height: 8,
+                            height: 16,
                             backgroundColor: '#374151',
                             borderRadius: 1,
-                            opacity: progressPercentage > 85 ? 1 : 0.5
+                            zIndex: 1
                           }}
                         />
                       </Box>
-
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontSize: '0.75rem',
-                            fontWeight: 500,
-                            color:
-                              progressPercentage > 100 ? '#ef4444' : '#059669'
-                          }}
-                        >
-                          {progressPercentage > 100
-                            ? `£${(category.amount - category.target).toLocaleString()} over target`
-                            : `£${(category.target - category.amount).toLocaleString()} under target`}
-                        </Typography>
-                        <Chip
-                          label={`${Math.round(progressPercentage)}%`}
-                          size="small"
-                          sx={{
-                            backgroundColor:
-                              progressPercentage > 100 ? '#fee2e2' : '#dcfce7',
-                            color:
-                              progressPercentage > 100 ? '#991b1b' : '#166534',
-                            fontSize: '0.7rem',
-                            fontWeight: 600,
-                            height: 22
-                          }}
-                        />
-                      </Box>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        p: 1.5,
-                        borderRadius: 2,
-                        backgroundColor: category.bgColor,
-                        border: `1px solid ${category.borderColor}`
-                      }}
-                    >
-                      {actualPercentage > category.targetPercentage ? (
-                        <TrendingUpIcon
-                          sx={{ fontSize: 16, color: '#ef4444' }}
-                        />
-                      ) : (
-                        <TrendingDownIcon
-                          sx={{ fontSize: 16, color: '#10b981' }}
-                        />
-                      )}
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontSize: '0.75rem',
-                          fontWeight: 500,
-                          color: '#374151',
-                          lineHeight: 1.3
-                        }}
-                      >
-                        {actualPercentage > category.targetPercentage
-                          ? `${(actualPercentage - category.targetPercentage).toFixed(1)}% above 50/30/20 rule`
-                          : `${(category.targetPercentage - actualPercentage).toFixed(1)}% below 50/30/20 rule`}
-                      </Typography>
                     </Box>
                   </Box>
 
@@ -558,40 +435,6 @@ const MonthlyBudgetOverview = () => {
               );
             })}
           </Box>
-
-          {remaining !== 0 && (
-            <Box
-              sx={{
-                mt: 3,
-                p: 2,
-                borderRadius: 2,
-                backgroundColor: remaining > 0 ? '#f0fdf4' : '#fef2f2',
-                border: `1px solid ${remaining > 0 ? '#bbf7d0' : '#fca5a5'}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2
-              }}
-            >
-              {remaining > 0 ? (
-                <CheckCircleIcon sx={{ fontSize: 24, color: '#10b981' }} />
-              ) : (
-                <WarningIcon sx={{ fontSize: 24, color: '#ef4444' }} />
-              )}
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  color: remaining > 0 ? '#166534' : '#991b1b',
-                  textAlign: 'center'
-                }}
-              >
-                {remaining > 0
-                  ? `£${remaining.toLocaleString()} available to allocate`
-                  : `£${Math.abs(remaining).toLocaleString()} over budget - adjust spending or increase income`}
-              </Typography>
-            </Box>
-          )}
         </CardContent>
       </Collapse>
     </GradientCard>
