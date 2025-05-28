@@ -99,9 +99,9 @@ const MonthlyBudgetOverview = () => {
       target: monthlyIncome * 0.5,
       targetPercentage: 50,
       icon: HomeIcon,
-      color: '#ef4444',
-      bgColor: '#fef2f2',
-      borderColor: '#fca5a5',
+      color: '#667eea', // Changed to match your theme's primary color
+      bgColor: '#f0f4ff', // Light purple-blue background
+      borderColor: '#c7d2fe', // Light purple-blue border
       categories: getEssentialCategories()
     },
     {
