@@ -44,6 +44,7 @@ import {
   selectBudgetAllocationPercentage
 } from '../../../store/selectors/budgetSelectors';
 import TemperatureGauge from './TemperatureGauge';
+import FinancialSpeculator from './FinancialSpeculator';
 
 const MonthlyBudgetOverview = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -543,6 +544,7 @@ const MonthlyBudgetOverview = () => {
               );
             })}
           </Box>
+          <FinancialSpeculator />
         </CardContent>
       </Collapse>
     </GradientCard>
