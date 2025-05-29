@@ -99,9 +99,9 @@ const MonthlyBudgetOverview = () => {
       target: monthlyIncome * 0.5,
       targetPercentage: 50,
       icon: HomeIcon,
-      color: '#667eea', // Changed to match your theme's primary color
-      bgColor: '#f0f4ff', // Light purple-blue background
-      borderColor: '#c7d2fe', // Light purple-blue border
+      color: '#667eea',
+      bgColor: '#f0f4ff',
+      borderColor: '#c7d2fe',
       categories: getEssentialCategories()
     },
     {
@@ -175,9 +175,129 @@ const MonthlyBudgetOverview = () => {
 
       <Collapse in={isExpanded} timeout="auto" unmountOnExit>
         <CardContent sx={{ p: 3, pt: 0 }}>
+          {/* Budget Allocation Status */}
           <AllocationStatus />
-          <ExpenseDivision />
-          <FinancialSnapshot />
+
+          {/* 50/30/20 Budget Breakdown Section */}
+          <Box sx={{ mt: 4, mb: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 2,
+                  background:
+                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '18px',
+                  fontWeight: 'bold'
+                }}
+              >
+                📊
+              </Box>
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: '1.5rem',
+                    color: '#1f2937',
+                    lineHeight: 1.2
+                  }}
+                >
+                  50/30/20 Budget Breakdown
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#6b7280',
+                    fontSize: '0.9rem',
+                    fontWeight: 500
+                  }}
+                >
+                  Essential expenses • Optional spending • Savings & debt
+                  payments
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                p: 3,
+                bgcolor: '#ffffff',
+                borderRadius: 3,
+                border: '1px solid #e5e7eb',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <ExpenseDivision />
+            </Box>
+          </Box>
+
+          {/* Divider */}
+          <Divider sx={{ my: 4, borderColor: '#e5e7eb' }} />
+
+          {/* Financial Position Section */}
+          <Box sx={{ mt: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 2,
+                  background:
+                    'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '18px',
+                  fontWeight: 'bold'
+                }}
+              >
+                💰
+              </Box>
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: '1.5rem',
+                    color: '#1f2937',
+                    lineHeight: 1.2
+                  }}
+                >
+                  Your Financial Position
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#6b7280',
+                    fontSize: '0.9rem',
+                    fontWeight: 500
+                  }}
+                >
+                  Track your progress across savings, emergency fund, and debt
+                  freedom
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                p: 3,
+                bgcolor: '#ffffff',
+                borderRadius: 3,
+                border: '1px solid #e5e7eb',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <FinancialSnapshot />
+            </Box>
+          </Box>
         </CardContent>
       </Collapse>
     </GradientCard>

@@ -356,7 +356,7 @@ const FinancialSnapshot = () => {
   );
 
   return (
-    <Box sx={{ mt: 4, pt: 3, borderTop: '2px solid #e2e8f0' }}>
+    <Box>
       {/* Header */}
       <Box
         sx={{
@@ -367,16 +367,6 @@ const FinancialSnapshot = () => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: 800,
-              color: '#1f2937',
-              fontSize: '1.375rem'
-            }}
-          >
-            Your Financial Position
-          </Typography>
           <Chip
             label={timeHorizon === 0 ? 'Right Now' : `In ${timeHorizon} months`}
             size="small"
