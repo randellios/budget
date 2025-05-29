@@ -218,8 +218,8 @@ const MonthlyBudgetOverview = () => {
                     fontWeight: 500
                   }}
                 >
-                  Essential expenses • Optional spending • Savings & debt
-                  payments
+                  Divide your income into optimal percentages for balanced
+                  financial health
                 </Typography>
               </Box>
             </Box>
@@ -280,8 +280,8 @@ const MonthlyBudgetOverview = () => {
                     fontWeight: 500
                   }}
                 >
-                  Track your progress across savings, emergency fund, and debt
-                  freedom
+                  Monitor your wealth building journey and financial security
+                  milestones
                 </Typography>
               </Box>
             </Box>
