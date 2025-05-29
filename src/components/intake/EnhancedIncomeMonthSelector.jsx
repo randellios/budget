@@ -280,48 +280,6 @@ const EnhancedIncomeMonthSelector = () => {
               <EditIcon sx={{ fontSize: 16, color: '#667eea', opacity: 0.7 }} />
             </Box>
           )}
-
-          {/* Current Month Badge */}
-          {isCurrentMonth() && (
-            <Box
-              sx={{
-                position: 'absolute',
-                top: -6,
-                right: -6,
-                transform: 'rotate(12deg)'
-              }}
-            >
-              <Box
-                sx={{
-                  px: 1.5,
-                  py: 0.25,
-                  background: 'linear-gradient(135deg, #10b981, #34d399)',
-                  color: 'white',
-                  borderRadius: 1.5,
-                  fontSize: '0.65rem',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  boxShadow: '0 3px 8px rgba(16, 185, 129, 0.3)',
-                  border: '1.5px solid white',
-                  '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    top: '50%',
-                    left: -3,
-                    transform: 'translateY(-50%)',
-                    width: 0,
-                    height: 0,
-                    borderTop: '3px solid transparent',
-                    borderBottom: '3px solid transparent',
-                    borderRight: '3px solid #10b981'
-                  }
-                }}
-              >
-                Current
-              </Box>
-            </Box>
-          )}
         </Box>
       </Box>
     </Box>
