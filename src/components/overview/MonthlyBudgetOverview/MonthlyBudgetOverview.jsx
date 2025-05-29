@@ -156,7 +156,7 @@ const MonthlyBudgetOverview = () => {
         {/* Budget Allocation Status */}
 
         {/* 50/30/20 Budget Breakdown Section */}
-        <Box sx={{ mt: 6, mb: 4 }}>
+        <Box sx={{ mt: 2, mb: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <Box
               sx={{
