@@ -66,36 +66,102 @@ const FinancialSnapshot = () => {
         })()
       : null;
 
-  // Status helpers
+  // Status helpers with gradient colors
   const getSavingsStatus = (savings) => {
     if (savings >= 25000)
-      return { status: 'Excellent', color: '#10b981', emoji: '🌟' };
+      return {
+        status: 'Excellent',
+        gradient: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+        color: '#10b981',
+        emoji: '💰'
+      };
     if (savings >= 10000)
-      return { status: 'Strong', color: '#667eea', emoji: '💪' };
+      return {
+        status: 'Strong',
+        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: '#667eea',
+        emoji: '💪'
+      };
     if (savings >= 3000)
-      return { status: 'Building', color: '#f59e0b', emoji: '🚀' };
+      return {
+        status: 'Building',
+        gradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+        color: '#f59e0b',
+        emoji: '🚀'
+      };
     if (savings >= 500)
-      return { status: 'Starting', color: '#06b6d4', emoji: '🌱' };
-    return { status: 'Beginning', color: '#8b5cf6', emoji: '✨' };
+      return {
+        status: 'Starting',
+        gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+        color: '#06b6d4',
+        emoji: '🌱'
+      };
+    return {
+      status: 'Beginning',
+      gradient: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
+      color: '#8b5cf6',
+      emoji: '✨'
+    };
   };
 
   const getEmergencyStatus = (months) => {
-    if (months >= 6) return { status: 'Secure', color: '#10b981', emoji: '🛡️' };
+    if (months >= 6)
+      return {
+        status: 'Secure',
+        gradient: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+        color: '#10b981',
+        emoji: '🛡️'
+      };
     if (months >= 3)
-      return { status: 'Protected', color: '#667eea', emoji: '🏠' };
+      return {
+        status: 'Protected',
+        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: '#667eea',
+        emoji: '🏠'
+      };
     if (months >= 1)
-      return { status: 'Building', color: '#f59e0b', emoji: '🔨' };
-    return { status: 'Vulnerable', color: '#ef4444', emoji: '⚠️' };
+      return {
+        status: 'Building',
+        gradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+        color: '#f59e0b',
+        emoji: '🔨'
+      };
+    return {
+      status: 'Vulnerable',
+      gradient: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+      color: '#ef4444',
+      emoji: '⚠️'
+    };
   };
 
   const getDebtStatus = (months, balance) => {
     if (balance === 0)
-      return { status: 'Debt Free', color: '#10b981', emoji: '🎉' };
+      return {
+        status: 'Debt Free',
+        gradient: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+        color: '#10b981',
+        emoji: '🎉'
+      };
     if (months <= 12)
-      return { status: 'Nearly Free', color: '#667eea', emoji: '🏃‍♂️' };
+      return {
+        status: 'Nearly Free',
+        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: '#667eea',
+        emoji: '🏃‍♂️'
+      };
     if (months <= 24)
-      return { status: 'On Track', color: '#f59e0b', emoji: '📈' };
-    return { status: 'Long Journey', color: '#ef4444', emoji: '🗻' };
+      return {
+        status: 'On Track',
+        gradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+        color: '#f59e0b',
+        emoji: '📈'
+      };
+    return {
+      status: 'Long Journey',
+      gradient: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+      color: '#ef4444',
+      emoji: '🗻'
+    };
   };
 
   // Current statuses
@@ -110,105 +176,182 @@ const FinancialSnapshot = () => {
     timeHorizon === 0 ? totalDebtBalance : projectedDebt
   );
 
-  // Reusable card component
-  const StatusCard = ({ status, children }) => (
+  const StatusCard = ({
+    status,
+    title,
+    mainValue,
+    subValue,
+    progressValue,
+    progressLabel,
+    timeHorizonData
+  }) => (
     <Box
       sx={{
-        borderRadius: 3,
-        background: `linear-gradient(135deg, ${status.color}, ${status.color}e8)`,
-        p: 2.5,
-        color: 'white',
+        borderRadius: 4,
+        background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
+        border: `2px solid ${status.color}`,
+        p: 0,
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: `0 8px 32px ${status.color}40, 0 4px 16px ${status.color}20`,
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          inset: 0,
-          background:
-            'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)',
-          borderRadius: 3
-        },
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '2px',
-          background: 'rgba(255, 255, 255, 0.3)',
-          borderRadius: '3px 3px 0 0'
-        }
-      }}
-    >
-      <Box sx={{ position: 'relative', zIndex: 1 }}>{children}</Box>
-    </Box>
-  );
-
-  const CardHeader = ({ emoji, title, status }) => (
-    <Box
-      sx={{
+        boxShadow: `0 8px 32px ${status.color}20, 0 4px 16px ${status.color}10`,
+        minHeight: '280px',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        mb: 2
+        flexDirection: 'column'
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography sx={{ fontSize: '20px' }}>{emoji}</Typography>
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: 700,
-            color: 'white',
-            fontSize: '0.95rem',
-            textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-          }}
-        >
-          {title}
-        </Typography>
-      </Box>
-      <Chip
-        label={status}
-        size="small"
+      {/* Icon Header with Gradient */}
+      <Box
         sx={{
-          backgroundColor: 'rgba(255, 255, 255, 0.25)',
+          background: status.gradient,
           color: 'white',
-          fontWeight: 600,
-          fontSize: '0.7rem',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}
-      />
-    </Box>
-  );
-
-  const CardProgress = ({ value, label }) => (
-    <Box>
-      <LinearProgress
-        variant="determinate"
-        value={value}
-        sx={{
-          height: 4,
-          borderRadius: 2,
-          backgroundColor: 'rgba(255, 255, 255, 0.2)',
-          '& .MuiLinearProgress-bar': {
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            borderRadius: 2
+          textAlign: 'center',
+          py: 1,
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            background:
+              'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%)',
+            borderRadius: '4px 4px 0 0'
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '2px',
+            background: 'rgba(255, 255, 255, 0.4)',
+            borderRadius: '4px 4px 0 0'
           }
         }}
-      />
-      <Typography
-        variant="caption"
-        sx={{
-          color: 'rgba(255, 255, 255, 0.7)',
-          fontSize: '0.65rem',
-          mt: 0.5,
-          display: 'block'
-        }}
       >
-        {label}
-      </Typography>
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <Typography
+            sx={{
+              fontSize: '48px',
+              mb: 1,
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+              textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+            }}
+          >
+            {status.emoji}
+          </Typography>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+              fontSize: '1.25rem',
+              color: 'white',
+              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))'
+            }}
+          >
+            {title}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Content */}
+      <Box sx={{ p: 3, flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Main Value */}
+        <Box sx={{ textAlign: 'center', mb: 2 }}>
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 900,
+              fontSize: '2.25rem',
+              color: status.color,
+              lineHeight: 1,
+              mb: 0.5
+            }}
+          >
+            {mainValue}
+          </Typography>
+          {subValue && (
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: '0.9rem',
+                color: '#6b7280',
+                fontWeight: 500
+              }}
+            >
+              {subValue}
+            </Typography>
+          )}
+        </Box>
+
+        {/* Time Horizon Info */}
+        {timeHorizon > 0 && timeHorizonData && (
+          <Box
+            sx={{
+              mb: 3,
+              p: 2,
+              bgcolor: `${status.color}08`,
+              borderRadius: 2,
+              border: `1px solid ${status.color}20`,
+              textAlign: 'center'
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: status.color,
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                display: 'block',
+                mb: 0.5
+              }}
+            >
+              By {projectionDate}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                color: status.color,
+                fontSize: '0.9rem'
+              }}
+            >
+              {timeHorizonData}
+            </Typography>
+          </Box>
+        )}
+
+        {/* Progress Bar */}
+        <Box sx={{ mt: 'auto' }}>
+          <LinearProgress
+            variant="determinate"
+            value={Math.min(progressValue, 100)}
+            sx={{
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: '#f3f4f6',
+              mb: 1,
+              '& .MuiLinearProgress-bar': {
+                background: status.gradient,
+                borderRadius: 4,
+                boxShadow: `0 2px 8px ${status.color}40`
+              }
+            }}
+          />
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: '0.75rem',
+              color: '#6b7280',
+              textAlign: 'center',
+              display: 'block'
+            }}
+          >
+            {progressLabel}
+          </Typography>
+        </Box>
+      </Box>
     </Box>
   );
 
@@ -220,7 +363,7 @@ const FinancialSnapshot = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          mb: 3
+          mb: 4
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -229,13 +372,9 @@ const FinancialSnapshot = () => {
             sx={{
               fontWeight: 800,
               color: '#1f2937',
-              fontSize: '1.25rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1
+              fontSize: '1.375rem'
             }}
           >
-            <Box sx={{ fontSize: '24px' }}>📊</Box>
             Your Financial Position
           </Typography>
           <Chip
@@ -305,386 +444,94 @@ const FinancialSnapshot = () => {
       </Box>
 
       {/* Cards Grid */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 3 }}>
-        {/* Savings Card */}
-        <Box
-          sx={{
-            borderRadius: 3,
-            background: `linear-gradient(135deg, ${savingsStatus.color} 0%, ${savingsStatus.color}cc 40%, ${savingsStatus.color}99 100%)`,
-            p: 2.5,
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: `0 8px 32px ${savingsStatus.color}40, 0 4px 16px ${savingsStatus.color}20`,
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              inset: 0,
-              background:
-                'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%)',
-              borderRadius: 3
-            },
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: '2px',
-              background: 'rgba(255, 255, 255, 0.4)',
-              borderRadius: '3px 3px 0 0'
-            }
-          }}
-        >
-          <Box sx={{ position: 'relative', zIndex: 1 }}>
-            {/* Card Header */}
-            <Box
-              sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}
-            >
-              <Typography sx={{ fontSize: '24px' }}>
-                {savingsStatus.emoji}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  color: 'white',
-                  fontSize: '1.1rem',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.2)'
-                }}
-              >
-                Total Savings
-              </Typography>
-            </Box>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4 }}>
+        <StatusCard
+          status={savingsStatus}
+          title="Total Savings"
+          mainValue={`£${(timeHorizon === 0 ? totalSavingsBalance : projectedSavings).toLocaleString()}`}
+          subValue={`£${savingsContributions}/mo growth rate`}
+          progressValue={Math.min(
+            ((timeHorizon === 0 ? totalSavingsBalance : projectedSavings) /
+              25000) *
+              100,
+            100
+          )}
+          progressLabel="Progress to £25k target"
+          timeHorizonData={
+            timeHorizon > 0
+              ? `+£${(projectedSavings - totalSavingsBalance).toLocaleString()} growth`
+              : null
+          }
+        />
 
-            <Typography
-              variant="h3"
-              sx={{
-                fontWeight: 900,
-                fontSize: '1.75rem',
-                color: 'white',
-                mb: 1,
-                lineHeight: 1,
-                textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-              }}
-            >
-              £
-              {(timeHorizon === 0
-                ? totalSavingsBalance
-                : projectedSavings
-              ).toLocaleString()}
-            </Typography>
+        <StatusCard
+          status={emergencyStatus}
+          title="Emergency Fund"
+          mainValue={`${timeHorizon === 0 ? emergencyMonths : projectedEmergencyMonths} months`}
+          subValue={`£${(timeHorizon === 0 ? emergencyGoal?.currentBalance || 0 : projectedEmergencyBalance).toLocaleString()} saved`}
+          progressValue={Math.min(
+            ((timeHorizon === 0 ? emergencyMonths : projectedEmergencyMonths) /
+              6) *
+              100,
+            100
+          )}
+          progressLabel="Target: 6 months coverage"
+          timeHorizonData={
+            timeHorizon > 0
+              ? `${projectedEmergencyMonths} months coverage`
+              : null
+          }
+        />
 
-            {/* Status Chip */}
-            <Box sx={{ mb: 2 }}>
-              <Chip
-                label={savingsStatus.status}
-                size="small"
-                sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                  color: 'white',
-                  fontWeight: 600,
-                  fontSize: '0.7rem',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)'
-                }}
-              />
-            </Box>
-
-            {timeHorizon > 0 && (
-              <Box
-                sx={{
-                  mb: 2,
-                  p: 1.5,
-                  bgcolor: 'rgba(255, 255, 255, 0.15)',
-                  borderRadius: 2
-                }}
-              >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    fontSize: '0.7rem',
-                    display: 'block'
-                  }}
-                >
-                  Growth by {projectionDate}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ fontWeight: 700, color: 'white', fontSize: '0.85rem' }}
-                >
-                  +£{(projectedSavings - totalSavingsBalance).toLocaleString()}
-                </Typography>
-              </Box>
-            )}
-
-            <CardProgress
-              value={Math.min(
-                ((timeHorizon === 0 ? totalSavingsBalance : projectedSavings) /
-                  25000) *
-                  100,
-                100
-              )}
-              label={`£${savingsContributions}/mo growth rate`}
-            />
-          </Box>
-        </Box>
-
-        {/* Emergency Card */}
-        <Box
-          sx={{
-            borderRadius: 3,
-            background: `linear-gradient(135deg, ${emergencyStatus.color} 0%, ${emergencyStatus.color}cc 40%, ${emergencyStatus.color}99 100%)`,
-            p: 2.5,
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: `0 8px 32px ${emergencyStatus.color}40, 0 4px 16px ${emergencyStatus.color}20`,
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              inset: 0,
-              background:
-                'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%)',
-              borderRadius: 3
-            },
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: '2px',
-              background: 'rgba(255, 255, 255, 0.4)',
-              borderRadius: '3px 3px 0 0'
-            }
-          }}
-        >
-          <Box sx={{ position: 'relative', zIndex: 1 }}>
-            {/* Card Header */}
-            <Box
-              sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}
-            >
-              <Typography sx={{ fontSize: '24px' }}>
-                {emergencyStatus.emoji}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  color: 'white',
-                  fontSize: '1.1rem',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.2)'
-                }}
-              >
-                Emergency Fund
-              </Typography>
-            </Box>
-
-            <Typography
-              variant="h3"
-              sx={{
-                fontWeight: 900,
-                fontSize: '1.75rem',
-                color: 'white',
-                mb: 1,
-                lineHeight: 1,
-                textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-              }}
-            >
-              {timeHorizon === 0 ? emergencyMonths : projectedEmergencyMonths}{' '}
-              months
-            </Typography>
-
-            {/* Status Chip */}
-            <Box sx={{ mb: 2 }}>
-              <Chip
-                label={emergencyStatus.status}
-                size="small"
-                sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                  color: 'white',
-                  fontWeight: 600,
-                  fontSize: '0.7rem',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)'
-                }}
-              />
-            </Box>
-
-            <Typography
-              variant="body2"
-              sx={{
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontSize: '0.8rem',
-                mb: 2
-              }}
-            >
-              £
-              {(timeHorizon === 0
-                ? emergencyGoal?.currentBalance || 0
-                : projectedEmergencyBalance
-              ).toLocaleString()}{' '}
-              saved
-            </Typography>
-
-            <CardProgress
-              value={Math.min(
-                ((timeHorizon === 0
-                  ? emergencyMonths
-                  : projectedEmergencyMonths) /
-                  6) *
-                  100,
-                100
-              )}
-              label="Target: 6 months coverage"
-            />
-          </Box>
-        </Box>
-
-        {/* Debt Card */}
-        <Box
-          sx={{
-            borderRadius: 3,
-            background: `linear-gradient(135deg, ${debtStatus.color} 0%, ${debtStatus.color}cc 40%, ${debtStatus.color}99 100%)`,
-            p: 2.5,
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: `0 8px 32px ${debtStatus.color}40, 0 4px 16px ${debtStatus.color}20`,
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              inset: 0,
-              background:
-                'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%)',
-              borderRadius: 3
-            },
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: '2px',
-              background: 'rgba(255, 255, 255, 0.4)',
-              borderRadius: '3px 3px 0 0'
-            }
-          }}
-        >
-          <Box sx={{ position: 'relative', zIndex: 1 }}>
-            {/* Card Header */}
-            <Box
-              sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}
-            >
-              <Typography sx={{ fontSize: '24px' }}>
-                {debtStatus.emoji}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  color: 'white',
-                  fontSize: '1.1rem',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.2)'
-                }}
-              >
-                Debt Freedom
-              </Typography>
-            </Box>
-
-            <Typography
-              variant="h3"
-              sx={{
-                fontWeight: 900,
-                fontSize:
-                  (timeHorizon === 0 ? totalDebtBalance : projectedDebt) === 0
-                    ? '1.5rem'
-                    : '1.75rem',
-                color: 'white',
-                mb: 1,
-                lineHeight: 1,
-                textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-              }}
-            >
-              {(timeHorizon === 0 ? totalDebtBalance : projectedDebt) === 0
+        <StatusCard
+          status={debtStatus}
+          title="Debt Freedom"
+          mainValue={
+            (timeHorizon === 0 ? totalDebtBalance : projectedDebt) === 0
+              ? 'Achieved!'
+              : timeHorizon >= debtFreeMonths && debtFreeMonths > 0
                 ? 'Achieved!'
-                : timeHorizon >= debtFreeMonths && debtFreeMonths > 0
-                  ? 'Achieved!'
-                  : `${Math.max(0, debtFreeMonths - timeHorizon)} months`}
-            </Typography>
-
-            {/* Status Chip */}
-            <Box sx={{ mb: 2 }}>
-              <Chip
-                label={debtStatus.status}
-                size="small"
-                sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                  color: 'white',
-                  fontWeight: 600,
-                  fontSize: '0.7rem',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)'
-                }}
-              />
-            </Box>
-
-            <Typography
-              variant="body2"
-              sx={{
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontSize: '0.8rem',
-                mb: 2
-              }}
-            >
-              £
-              {(timeHorizon === 0
-                ? totalDebtBalance
-                : projectedDebt
-              ).toLocaleString()}{' '}
-              remaining
-            </Typography>
-
-            <CardProgress
-              value={
-                totalDebtBalance > 0
-                  ? Math.min(
-                      ((totalDebtBalance -
-                        (timeHorizon === 0
-                          ? totalDebtBalance
-                          : projectedDebt)) /
-                        totalDebtBalance) *
-                        100,
-                      100
-                    )
-                  : 100
-              }
-              label={`£${debtPayments}/mo payments`}
-            />
-          </Box>
-        </Box>
+                : `${Math.max(0, debtFreeMonths - timeHorizon)} months`
+          }
+          subValue={`£${(timeHorizon === 0 ? totalDebtBalance : projectedDebt).toLocaleString()} remaining`}
+          progressValue={
+            totalDebtBalance > 0
+              ? Math.min(
+                  ((totalDebtBalance -
+                    (timeHorizon === 0 ? totalDebtBalance : projectedDebt)) /
+                    totalDebtBalance) *
+                    100,
+                  100
+                )
+              : 100
+          }
+          progressLabel={`£${debtPayments}/mo payments`}
+          timeHorizonData={
+            timeHorizon > 0
+              ? `£${projectedDebt.toLocaleString()} remaining`
+              : null
+          }
+        />
       </Box>
 
       {/* Insights */}
       {timeHorizon > 0 && (
         <Box
           sx={{
-            mt: 2,
-            p: 2,
+            mt: 3,
+            p: 3,
             bgcolor: '#f0f9ff',
-            borderRadius: 2,
+            borderRadius: 3,
             border: '1px solid #0ea5e9'
           }}
         >
           <Typography
-            variant="body2"
+            variant="body1"
             sx={{
               color: '#0369a1',
               fontWeight: 600,
               textAlign: 'center',
-              fontSize: '0.85rem'
+              fontSize: '0.95rem'
             }}
           >
             🎯 By {projectionDate}, you'll have grown your savings by £
