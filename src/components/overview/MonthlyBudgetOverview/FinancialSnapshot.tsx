@@ -444,7 +444,7 @@ const FinancialSnapshot = () => {
       </Box>
 
       {/* Cards Grid */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
         <StatusCard
           status={savingsStatus}
           title="Total Savings"
