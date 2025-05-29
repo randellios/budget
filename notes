@@ -1,0 +1,12 @@
+add a savings / debt ration display in overview
+to right of available (make it shorter) add some sort of health
+
+I WANT TO KNOW ABOUT MY FINANCES -
+how much money I have = TOTAL SAVINGS
+Buffer
+
+add intelligent suggestions under 50 30
+such as save x on interest
+if you put x extra into savings
+
+I want the financial speculator to be a bit different. The focus of the component (displite the name) is to give you a snapshot of your fianances based on current state. It's to work in conjunction with the user making live adjustments to their budget. The speculator is a cool feature to have, but I don't want it to be "the feature". I'd rather the feature was your financial position. But yes, it would then be awesome to be able to see where you'd be in the future. So with that in mind can you give it some thought, and come up with an appropriate solution. I'd like

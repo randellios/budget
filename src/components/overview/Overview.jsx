@@ -5,11 +5,11 @@ import SavingsGoalsOverview from './SavingsGoalsOverview';
 
 const Overview = () => {
   return (
-    <Box display="flex" flexDirection="column" gap={5}>
+    <>
       <MonthlyBudgetOverview />
       <SavingsGoalsOverview />
       <DebtManagementOverview />
-    </Box>
+    </>
   );
 };
 

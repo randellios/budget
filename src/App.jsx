@@ -78,10 +78,10 @@ export default function Dashboard() {
               bgcolor: 'background.default'
             }}
           >
-            <Box display="flex">
+            <Box Box display="flex" flexDirection="column" gap={5}>
               <Overview />
 
-              <Box width="400px" pl={3}>
+              {/* <Box width="400px" pl={3}>
                 <Box
                   sx={{
                     position: 'sticky',
@@ -98,7 +98,7 @@ export default function Dashboard() {
                 </Box>
 
                 <Box />
-              </Box>
+              </Box> */}
             </Box>
           </Box>
 

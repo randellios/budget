@@ -161,14 +161,16 @@ const FinancialSnapshot = () => {
         })()
       : null;
 
-  const GradientCard = ({ children, gradient }) => (
+  const GradientCard = ({ children, gradient, emoji }) => (
     <Box
       sx={{
         position: 'relative',
         borderRadius: 3,
         p: '4px',
         background: gradient,
-        height: '100%'
+        height: '100%',
+        boxShadow:
+          '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06)'
       }}
     >
       <Box
@@ -180,14 +182,63 @@ const FinancialSnapshot = () => {
           position: 'relative',
           height: '100%',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          overflow: 'hidden'
         }}
       >
-        {children}
+        {/* Subtle background pattern */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -20,
+            right: -20,
+            width: 80,
+            height: 80,
+            opacity: 0.03,
+            fontSize: '4rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transform: 'rotate(15deg)',
+            zIndex: 0
+          }}
+        >
+          {emoji}
+        </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: -10,
+            left: -10,
+            width: 40,
+            height: 40,
+            opacity: 0.02,
+            fontSize: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transform: 'rotate(-10deg)',
+            zIndex: 0
+          }}
+        >
+          {emoji}
+        </Box>
+
+        {/* Content with higher z-index */}
+        <Box
+          sx={{
+            position: 'relative',
+            zIndex: 1,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          {children}
+        </Box>
       </Box>
     </Box>
   );
-
   return (
     <Box sx={{ mt: 4, pt: 3, borderTop: '2px solid #e2e8f0' }}>
       {/* Header Section */}
@@ -283,12 +334,15 @@ const FinancialSnapshot = () => {
         sx={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr 1fr',
-          gap: 3,
+          gap: 6,
           alignItems: 'stretch'
         }}
       >
         {/* Total Savings Card */}
-        <GradientCard gradient={currentSavingsStatus.gradient}>
+        <GradientCard
+          gradient={currentSavingsStatus.gradient}
+          emoji={currentSavingsStatus.emoji}
+        >
           <Box
             sx={{
               display: 'flex',
@@ -401,7 +455,10 @@ const FinancialSnapshot = () => {
         </GradientCard>
 
         {/* Emergency Fund Card */}
-        <GradientCard gradient={currentEmergencyStatus.gradient}>
+        <GradientCard
+          gradient={currentEmergencyStatus.gradient}
+          emoji={currentEmergencyStatus.emoji}
+        >
           <Box
             sx={{
               display: 'flex',
@@ -501,7 +558,10 @@ const FinancialSnapshot = () => {
         </GradientCard>
 
         {/* Debt Freedom Card */}
-        <GradientCard gradient={currentDebtStatus.gradient}>
+        <GradientCard
+          gradient={currentDebtStatus.gradient}
+          emoji={currentDebtStatus.emoji}
+        >
           <Box
             sx={{
               display: 'flex',
