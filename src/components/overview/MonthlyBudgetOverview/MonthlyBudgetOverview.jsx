@@ -47,6 +47,7 @@ import TemperatureGauge from './TemperatureGauge';
 import FinancialSnapshot from './FinancialSnapshot';
 import AllocationStatus from './AllocationStatus';
 import ExpenseDivision from './ExpenseDivision';
+import SavingsDebtProgress from '../SavingsDebtProgress';
 
 const MonthlyBudgetOverview = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -273,6 +274,8 @@ const MonthlyBudgetOverview = () => {
             <FinancialSnapshot />
           </Box>
         </Box>
+
+        <SavingsDebtProgress />
       </CardContent>
     </Collapse>
   );
