@@ -7,8 +7,8 @@ const Overview = () => {
   return (
     <>
       <MonthlyBudgetOverview />
-      <SavingsGoalsOverview />
-      <DebtManagementOverview />
+      {/* <SavingsGoalsOverview />
+      <DebtManagementOverview /> */}
     </>
   );
 };

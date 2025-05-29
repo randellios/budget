@@ -150,157 +150,131 @@ const MonthlyBudgetOverview = () => {
   );
 
   return (
-    <GradientCard>
-      <SectionHeader>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-            cursor: 'pointer'
-          }}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <Box>
-            <Typography
-              variant="h5"
-              sx={{ fontSize: '1.375rem', color: '#1f2937' }}
+    <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+      <CardContent sx={{ p: 3, pt: 0 }}>
+        {/* Budget Allocation Status */}
+        <AllocationStatus />
+
+        {/* 50/30/20 Budget Breakdown Section */}
+        <Box sx={{ mt: 6, mb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '18px',
+                fontWeight: 'bold'
+              }}
             >
-              Monthly Snapshot
-            </Typography>
+              📊
+            </Box>
+            <Box>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '1.5rem',
+                  color: '#1f2937',
+                  lineHeight: 1.2
+                }}
+              >
+                50/30/20 Budget Breakdown
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#6b7280',
+                  fontSize: '0.9rem',
+                  fontWeight: 500
+                }}
+              >
+                Divide your income into optimal percentages for balanced
+                financial health
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              p: 3,
+              bgcolor: '#ffffff',
+              borderRadius: 3,
+              border: '1px solid #e5e7eb',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+            }}
+          >
+            <ExpenseDivision />
           </Box>
         </Box>
-      </SectionHeader>
 
-      <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-        <CardContent sx={{ p: 3, pt: 0 }}>
-          {/* Budget Allocation Status */}
-          <AllocationStatus />
+        {/* Divider */}
+        {/* <Divider sx={{ my: 6, borderColor: '#e5e7eb' }} /> */}
 
-          {/* 50/30/20 Budget Breakdown Section */}
-          <Box sx={{ mt: 4, mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 2,
-                  background:
-                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '18px',
-                  fontWeight: 'bold'
-                }}
-              >
-                📊
-              </Box>
-              <Box>
-                <Typography
-                  variant="h5"
-                  sx={{
-                    fontWeight: 800,
-                    fontSize: '1.5rem',
-                    color: '#1f2937',
-                    lineHeight: 1.2
-                  }}
-                >
-                  50/30/20 Budget Breakdown
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: '#6b7280',
-                    fontSize: '0.9rem',
-                    fontWeight: 500
-                  }}
-                >
-                  Divide your income into optimal percentages for balanced
-                  financial health
-                </Typography>
-              </Box>
-            </Box>
-
+        {/* Financial Position Section */}
+        <Box sx={{ mt: 8 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <Box
               sx={{
-                p: 3,
-                bgcolor: '#ffffff',
-                borderRadius: 3,
-                border: '1px solid #e5e7eb',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+                width: 40,
+                height: 40,
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '18px',
+                fontWeight: 'bold'
               }}
             >
-              <ExpenseDivision />
+              💰
+            </Box>
+            <Box>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '1.5rem',
+                  color: '#1f2937',
+                  lineHeight: 1.2
+                }}
+              >
+                Your Financial Position
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#6b7280',
+                  fontSize: '0.9rem',
+                  fontWeight: 500
+                }}
+              >
+                Monitor your wealth building journey and financial security
+                milestones
+              </Typography>
             </Box>
           </Box>
 
-          {/* Divider */}
-          <Divider sx={{ my: 4, borderColor: '#e5e7eb' }} />
-
-          {/* Financial Position Section */}
-          <Box sx={{ mt: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 2,
-                  background:
-                    'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '18px',
-                  fontWeight: 'bold'
-                }}
-              >
-                💰
-              </Box>
-              <Box>
-                <Typography
-                  variant="h5"
-                  sx={{
-                    fontWeight: 800,
-                    fontSize: '1.5rem',
-                    color: '#1f2937',
-                    lineHeight: 1.2
-                  }}
-                >
-                  Your Financial Position
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: '#6b7280',
-                    fontSize: '0.9rem',
-                    fontWeight: 500
-                  }}
-                >
-                  Monitor your wealth building journey and financial security
-                  milestones
-                </Typography>
-              </Box>
-            </Box>
-
-            <Box
-              sx={{
-                p: 3,
-                bgcolor: '#ffffff',
-                borderRadius: 3,
-                border: '1px solid #e5e7eb',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
-              }}
-            >
-              <FinancialSnapshot />
-            </Box>
+          <Box
+            sx={{
+              p: 3,
+              bgcolor: '#ffffff',
+              borderRadius: 3,
+              border: '1px solid #e5e7eb',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+            }}
+          >
+            <FinancialSnapshot />
           </Box>
-        </CardContent>
-      </Collapse>
-    </GradientCard>
+        </Box>
+      </CardContent>
+    </Collapse>
   );
 };
 

@@ -75,7 +75,7 @@ export default function Dashboard() {
               p: 3,
               width: '100%',
               margin: '0 auto',
-              bgcolor: 'background.default'
+              bgcolor: '#fdfdfd'
             }}
           >
             <Box Box display="flex" flexDirection="column" gap={5}>
