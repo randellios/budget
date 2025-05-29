@@ -362,74 +362,186 @@ const FinancialSnapshot = () => {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
           mb: 4
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Chip
-            label={timeHorizon === 0 ? 'Right Now' : `In ${timeHorizon} months`}
-            size="small"
-            sx={{
-              backgroundColor: '#f0f9ff',
-              color: '#0369a1',
-              fontWeight: 600,
-              border: '1px solid #0ea5e9',
-              fontSize: '0.75rem'
-            }}
-          />
-        </Box>
-
-        {/* Time Horizon Slider */}
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: 2,
-            minWidth: '280px'
+            gap: 4
           }}
         >
-          <Typography
-            variant="body2"
-            sx={{ color: '#64748b', fontWeight: 600, fontSize: '0.75rem' }}
-          >
-            Now
-          </Typography>
-          <Slider
-            value={timeHorizon}
-            onChange={(_, value) => setTimeHorizon(value)}
-            min={0}
-            max={60}
-            step={3}
+          {/* Current Status Indicator */}
+          <Box
             sx={{
-              flex: 1,
-              color: '#0ea5e9',
-              height: 4,
-              '& .MuiSlider-thumb': {
-                backgroundColor: '#0ea5e9',
-                border: '2px solid #ffffff',
-                boxShadow: '0 2px 6px rgba(14, 165, 233, 0.4)',
-                width: 16,
-                height: 16
-              },
-              '& .MuiSlider-track': {
-                backgroundColor: '#0ea5e9',
-                height: 4,
-                borderRadius: 2
-              },
-              '& .MuiSlider-rail': {
-                backgroundColor: '#bae6fd',
-                height: 4,
-                borderRadius: 2
-              }
+              display: 'flex',
+              flexDirection: 'column',
+              // alignItems: 'center',
+              width: '180px' // Fixed width to prevent jumping
             }}
-          />
-          <Typography
-            variant="body2"
-            sx={{ color: '#64748b', fontWeight: 600, fontSize: '0.75rem' }}
           >
-            5yr
-          </Typography>
+            <Box
+              sx={{
+                px: 2,
+                py: 1,
+                bgcolor: timeHorizon === 0 ? '#10b981' : '#0ea5e9',
+                borderRadius: 2
+                // width: '100%' // Fixed width
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'white',
+                  fontWeight: 700,
+                  fontSize: '0.8rem'
+                }}
+              >
+                Projection: {timeHorizon === 0 ? 'Now' : `${projectionDate}`}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Slider Container */}
+          <Box sx={{ minWidth: '500px', position: 'relative' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                mb: 0.5 // Reduced from 1 to 0.5
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  color: '#374151',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  width: '60px' // Fixed width
+                }}
+              >
+                Timeline:
+              </Typography>
+
+              <Box sx={{ flex: 1, position: 'relative' }}>
+                <Slider
+                  value={timeHorizon}
+                  onChange={(_, value) => setTimeHorizon(value)}
+                  min={0}
+                  max={60}
+                  step={1}
+                  sx={{
+                    color: '#0ea5e9',
+                    height: 8,
+                    padding: 0,
+                    '& .MuiSlider-thumb': {
+                      backgroundColor: '#0ea5e9',
+                      border: '3px solid #ffffff',
+                      boxShadow:
+                        '0 0 0 4px rgba(14, 165, 233, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15)',
+                      width: 20,
+                      height: 20,
+                      transition:
+                        'box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        boxShadow:
+                          '0 0 0 6px rgba(14, 165, 233, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2)'
+                      }
+                    },
+                    '& .MuiSlider-track': {
+                      background:
+                        'linear-gradient(90deg, #10b981 0%, #0ea5e9 50%, #6366f1 100%)',
+                      height: 8,
+                      borderRadius: 4,
+                      border: 'none'
+                    },
+                    '& .MuiSlider-rail': {
+                      backgroundColor: '#e2e8f0',
+                      height: 8,
+                      borderRadius: 4,
+                      opacity: 1
+                    }
+                  }}
+                />
+
+                {/* Gradient Overlay on Track */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: 0,
+                    right: `${100 - (timeHorizon / 60) * 100}%`,
+                    height: '8px',
+                    transform: 'translateY(-50%)',
+                    background:
+                      'linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
+                    borderRadius: 4,
+                    pointerEvents: 'none'
+                  }}
+                />
+              </Box>
+
+              <Typography
+                variant="caption"
+                sx={{
+                  color: '#6b7280',
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  width: '70px', // Fixed width
+                  textAlign: 'right'
+                }}
+              >
+                {timeHorizon} months
+              </Typography>
+            </Box>
+
+            {/* Year Markers */}
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                ml: '76px',
+                mr: '86px' // Adjusted to account for fixed width
+              }}
+            >
+              {[0, 1, 2, 3, 4, 5].map((year) => (
+                <Box
+                  key={year}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    opacity: timeHorizon >= year * 12 ? 1 : 0.4,
+                    transition: 'opacity 0.2s ease'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 2,
+                      height: 6, // Reduced from 8 to 6
+                      bgcolor: timeHorizon >= year * 12 ? '#0ea5e9' : '#cbd5e1',
+                      borderRadius: 1,
+                      mb: 0.25, // Reduced from 0.5 to 0.25
+                      transition: 'background-color 0.2s ease'
+                    }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: timeHorizon >= year * 12 ? '#0369a1' : '#9ca3af',
+                      fontSize: '0.65rem',
+                      fontWeight: 600,
+                      transition: 'color 0.2s ease'
+                    }}
+                  >
+                    {year}y
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
         </Box>
       </Box>
 
