@@ -377,29 +377,45 @@ const FinancialSnapshot = () => {
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              // alignItems: 'center',
-              width: '180px' // Fixed width to prevent jumping
+              width: '200px'
             }}
           >
             <Box
               sx={{
-                px: 2,
-                py: 1,
-                bgcolor: timeHorizon === 0 ? '#10b981' : '#0ea5e9',
-                borderRadius: 2
-                // width: '100%' // Fixed width
+                display: 'flex',
+                alignItems: 'center'
               }}
             >
-              <Typography
-                variant="body2"
-                sx={{
-                  color: 'white',
-                  fontWeight: 700,
-                  fontSize: '0.8rem'
-                }}
-              >
-                Projection: {timeHorizon === 0 ? 'Now' : `${projectionDate}`}
-              </Typography>
+              <Box sx={{ flex: 1 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: timeHorizon === 0 ? '#059669' : '#0369a1',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    display: 'block',
+                    lineHeight: 1,
+                    mb: 0.25
+                  }}
+                >
+                  {timeHorizon === 0 ? 'Current Status' : 'Projecting'}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: '#1f2937',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    lineHeight: 1
+                  }}
+                >
+                  {timeHorizon === 0
+                    ? 'Today'
+                    : `${projectionDate} (+${timeHorizon}mo)`}
+                </Typography>
+              </Box>
             </Box>
           </Box>
 
@@ -410,21 +426,20 @@ const FinancialSnapshot = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 2,
-                mb: 0.5 // Reduced from 1 to 0.5
+                mb: 0.5
               }}
             >
               <Typography
                 variant="caption"
                 sx={{
-                  color: '#374151',
+                  color: '#6b7280',
                   fontSize: '0.75rem',
-                  fontWeight: 600,
-                  width: '60px' // Fixed width
+                  fontWeight: 500,
+                  width: '120px'
                 }}
               >
-                Timeline:
+                Drag to project →
               </Typography>
-
               <Box sx={{ flex: 1, position: 'relative' }}>
                 <Slider
                   value={timeHorizon}
@@ -482,19 +497,6 @@ const FinancialSnapshot = () => {
                   }}
                 />
               </Box>
-
-              <Typography
-                variant="caption"
-                sx={{
-                  color: '#6b7280',
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                  width: '70px', // Fixed width
-                  textAlign: 'right'
-                }}
-              >
-                {timeHorizon} months
-              </Typography>
             </Box>
 
             {/* Year Markers */}
@@ -502,8 +504,7 @@ const FinancialSnapshot = () => {
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                ml: '76px',
-                mr: '86px' // Adjusted to account for fixed width
+                ml: '136px'
               }}
             >
               {[0, 1, 2, 3, 4, 5].map((year) => (
@@ -520,10 +521,10 @@ const FinancialSnapshot = () => {
                   <Box
                     sx={{
                       width: 2,
-                      height: 6, // Reduced from 8 to 6
+                      height: 6,
                       bgcolor: timeHorizon >= year * 12 ? '#0ea5e9' : '#cbd5e1',
                       borderRadius: 1,
-                      mb: 0.25, // Reduced from 0.5 to 0.25
+                      mb: 0.25,
                       transition: 'background-color 0.2s ease'
                     }}
                   />
@@ -544,7 +545,6 @@ const FinancialSnapshot = () => {
           </Box>
         </Box>
       </Box>
-
       {/* Cards Grid */}
       <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
         <StatusCard
