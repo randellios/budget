@@ -154,7 +154,6 @@ const MonthlyBudgetOverview = () => {
     <Collapse in={isExpanded} timeout="auto" unmountOnExit>
       <CardContent sx={{ p: 3, pt: 0 }}>
         {/* Budget Allocation Status */}
-        <AllocationStatus />
 
         {/* 50/30/20 Budget Breakdown Section */}
         <Box sx={{ mt: 6, mb: 4 }}>
@@ -185,7 +184,7 @@ const MonthlyBudgetOverview = () => {
                   lineHeight: 1.2
                 }}
               >
-                50/30/20 Budget Breakdown
+                Budget Breakdown
               </Typography>
               <Typography
                 variant="body2"
@@ -210,6 +209,8 @@ const MonthlyBudgetOverview = () => {
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
             }}
           >
+            <AllocationStatus />
+
             <ExpenseDivision />
           </Box>
         </Box>
