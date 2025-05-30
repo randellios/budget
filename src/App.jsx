@@ -43,7 +43,7 @@ export default function Dashboard() {
           sx={{
             width: '530px',
             bgcolor: '#f1f5f9',
-            borderRight: '1px solid #e0e0e0',
+            borderRight: '1px solid #f2f4fd',
             display: 'flex',
             flexDirection: 'column',
             position: 'fixed',

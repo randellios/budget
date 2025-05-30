@@ -162,7 +162,7 @@ const MonthlyIncome = () => {
                     fontSize: '1.25rem',
                     fontWeight: 700,
                     color: '#667eea',
-                    backgroundColor: 'white',
+                    // backgroundColor: 'white',
                     outline: 'none',
                     fontFamily: 'inherit',
                     textAlign: 'right',

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Typography, TextField, IconButton } from '@mui/material';
+import { Box, Typography, TextField, IconButton, Card } from '@mui/material';
 import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
@@ -87,201 +87,216 @@ const EnhancedIncomeMonthSelector = () => {
         top: '-10px',
         zIndex: 100,
         mx: -2,
-        mb: 2,
-        background: 'linear-gradient(135deg, #ffffff 0%, #fdfdfd 100%)',
-        border: '2px solid #667eea',
-        borderLeft: 'none',
-        borderRight: 'none',
-        boxShadow:
-          '0 6px 24px rgba(102, 126, 234, 0.12), 0 3px 12px rgba(102, 126, 234, 0.08)',
-        backdropFilter: 'blur(20px)',
-        px: 3,
-        py: 2
+        // background: 'linear-gradient(135deg, #ffffff 0%, #fdfdfd 100%)',
+        // border: '2px solid #667eea',
+        // borderLeft: 'none',
+        // borderRight: 'none',
+        // boxShadow:
+        //   '0 6px 24px rgba(102, 126, 234, 0.12), 0 3px 12px rgba(102, 126, 234, 0.08)',
+        // backdropFilter: 'blur(20px)',
+        px: 2,
+        pt: 2
       }}
     >
-      {/* Single Row Layout */}
-      <Box
+      <Card
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          position: 'relative'
+          background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
+          border: '1px solid #e8ecf3',
+          borderRadius: 3,
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+          mb: 2,
+          p: 2,
+          overflow: 'hidden'
         }}
       >
-        {/* Left - Month Navigation */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1 }}>
-          <IconButton
-            onClick={() => navigateMonth(-1)}
-            size="small"
-            sx={{
-              bgcolor: 'white',
-              boxShadow: '0 3px 8px rgba(0,0,0,0.08)',
-              border: '1px solid #e2e8f0',
-              width: 32,
-              height: 32,
-              '&:hover': {
-                bgcolor: '#f8fafc',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                transform: 'translateY(-1px)'
-              },
-              transition: 'all 0.2s ease'
-            }}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            position: 'relative'
+          }}
+        >
+          {/* Left - Month Navigation */}
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1 }}
           >
-            <ChevronLeftIcon sx={{ fontSize: 18 }} />
-          </IconButton>
-
-          <Box sx={{ textAlign: 'center', minWidth: '140px' }}>
-            <Typography
-              variant="h6"
+            <IconButton
+              onClick={() => navigateMonth(-1)}
+              size="small"
               sx={{
-                fontWeight: 800,
-                fontSize: '1.5rem',
-                color: '#1e293b',
-                lineHeight: 1
+                bgcolor: 'white',
+                boxShadow: '0 3px 8px rgba(0,0,0,0.08)',
+                border: '1px solid #e2e8f0',
+                width: 32,
+                height: 32,
+                '&:hover': {
+                  bgcolor: '#f8fafc',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                  transform: 'translateY(-1px)'
+                },
+                transition: 'all 0.2s ease'
               }}
             >
-              {months[currentDate.getMonth()]}
-            </Typography>
+              <ChevronLeftIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+
+            <Box sx={{ textAlign: 'center', minWidth: '140px' }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '1.5rem',
+                  color: '#1e293b',
+                  lineHeight: 1
+                }}
+              >
+                {months[currentDate.getMonth()]}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: '#64748b',
+                  fontSize: '1rem',
+                  fontWeight: 500
+                }}
+              >
+                {currentDate.getFullYear()}
+              </Typography>
+            </Box>
+
+            <IconButton
+              onClick={() => navigateMonth(1)}
+              size="small"
+              sx={{
+                bgcolor: 'white',
+                boxShadow: '0 3px 8px rgba(0,0,0,0.08)',
+                border: '1px solid #e2e8f0',
+                width: 32,
+                height: 32,
+                '&:hover': {
+                  bgcolor: '#f8fafc',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                  transform: 'translateY(-1px)'
+                },
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <ChevronRightIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Box>
+
+          {/* Right - Monthly Income */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+              position: 'relative'
+            }}
+          >
             <Typography
               variant="caption"
               sx={{
                 color: '#64748b',
-                fontSize: '1rem',
-                fontWeight: 500
+                fontSize: '0.75rem',
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '0.6px',
+                mb: 0.5
               }}
             >
-              {currentDate.getFullYear()}
+              Monthly Income
             </Typography>
-          </Box>
 
-          <IconButton
-            onClick={() => navigateMonth(1)}
-            size="small"
-            sx={{
-              bgcolor: 'white',
-              boxShadow: '0 3px 8px rgba(0,0,0,0.08)',
-              border: '1px solid #e2e8f0',
-              width: 32,
-              height: 32,
-              '&:hover': {
-                bgcolor: '#f8fafc',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                transform: 'translateY(-1px)'
-              },
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <ChevronRightIcon sx={{ fontSize: 18 }} />
-          </IconButton>
-        </Box>
-
-        {/* Right - Monthly Income */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-            position: 'relative'
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              color: '#64748b',
-              fontSize: '0.75rem',
-              fontWeight: 500,
-              textTransform: 'uppercase',
-              letterSpacing: '0.6px',
-              mb: 0.5
-            }}
-          >
-            Monthly Income
-          </Typography>
-
-          {isEditing ? (
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography
-                sx={{
-                  fontSize: '1.5rem',
-                  fontWeight: 700,
-                  color: '#667eea',
-                  mr: 0.75
-                }}
-              >
-                £
-              </Typography>
-              <TextField
-                inputRef={inputRef}
-                type="number"
-                value={tempValue}
-                onChange={(e) => setTempValue(e.target.value)}
-                onBlur={handleSave}
-                onKeyDown={handleKeyDown}
-                variant="outlined"
-                size="small"
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
-                    borderRadius: 2,
-                    '& fieldset': {
-                      borderColor: '#667eea',
-                      borderWidth: 2
-                    },
-                    '&:hover fieldset': {
-                      borderColor: '#5a67d8'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#667eea',
-                      boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)'
-                    }
-                  },
-                  '& input': {
+            {isEditing ? (
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography
+                  sx={{
                     fontSize: '1.5rem',
                     fontWeight: 700,
                     color: '#667eea',
-                    textAlign: 'center',
-                    width: '120px',
-                    padding: '8px 12px'
-                  }
-                }}
-              />
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                cursor: 'pointer',
-                px: 2,
-                py: 0.75,
-                borderRadius: 2,
-                bgcolor: 'rgba(102, 126, 234, 0.08)',
-                border: '2px solid rgba(102, 126, 234, 0.2)',
-                '&:hover': {
-                  bgcolor: 'rgba(102, 126, 234, 0.12)',
-                  border: '2px solid rgba(102, 126, 234, 0.4)',
-                  transform: 'scale(1.02)'
-                },
-                transition: 'all 0.2s ease'
-              }}
-              onClick={handleStartEdit}
-            >
-              <Typography
-                variant="h5"
+                    mr: 0.75
+                  }}
+                >
+                  £
+                </Typography>
+                <TextField
+                  inputRef={inputRef}
+                  type="number"
+                  value={tempValue}
+                  onChange={(e) => setTempValue(e.target.value)}
+                  onBlur={handleSave}
+                  onKeyDown={handleKeyDown}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'white',
+                      borderRadius: 2,
+                      '& fieldset': {
+                        borderColor: '#667eea',
+                        borderWidth: 2
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#5a67d8'
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#667eea',
+                        boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)'
+                      }
+                    },
+                    '& input': {
+                      fontSize: '1.5rem',
+                      fontWeight: 700,
+                      color: '#667eea',
+                      textAlign: 'center',
+                      width: '120px',
+                      padding: '8px 12px'
+                    }
+                  }}
+                />
+              </Box>
+            ) : (
+              <Box
                 sx={{
-                  fontWeight: 800,
-                  fontSize: '1.5rem',
-                  color: '#667eea',
-                  mr: 1
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  px: 2,
+                  py: 0.75,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(102, 126, 234, 0.08)',
+                  border: '2px solid rgba(102, 126, 234, 0.2)',
+                  '&:hover': {
+                    bgcolor: 'rgba(102, 126, 234, 0.12)',
+                    border: '2px solid rgba(102, 126, 234, 0.4)',
+                    transform: 'scale(1.02)'
+                  },
+                  transition: 'all 0.2s ease'
                 }}
+                onClick={handleStartEdit}
               >
-                £{monthlyIncome.toLocaleString()}
-              </Typography>
-              <EditIcon sx={{ fontSize: 16, color: '#667eea', opacity: 0.7 }} />
-            </Box>
-          )}
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: '1.5rem',
+                    color: '#667eea',
+                    mr: 1
+                  }}
+                >
+                  £{monthlyIncome.toLocaleString()}
+                </Typography>
+                <EditIcon
+                  sx={{ fontSize: 16, color: '#667eea', opacity: 0.7 }}
+                />
+              </Box>
+            )}
+          </Box>
         </Box>
-      </Box>
+      </Card>
+      {/* Single Row Layout */}
     </Box>
   );
 };

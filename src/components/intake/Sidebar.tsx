@@ -7,7 +7,7 @@ import Debts from './Debts';
 
 const Sidebar = () => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       <EnhancedIncomeMonthSelector />
       <MonthlyExpenses />
       <SavingGoals />
