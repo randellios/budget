@@ -248,7 +248,7 @@ const Debts = () => {
           }
         }}
       >
-        <Box sx={{ p: 3, position: 'relative', zIndex: 1 }}>
+        <Box sx={{ p: 2, position: 'relative', zIndex: 1 }}>
           <Box
             sx={{
               display: 'flex',
@@ -256,11 +256,11 @@ const Debts = () => {
               justifyContent: 'space-between'
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Box
                 sx={{
-                  width: 48,
-                  height: 48,
+                  width: 36,
+                  height: 36,
                   borderRadius: 2,
                   background: 'rgba(255, 255, 255, 0.2)',
                   display: 'flex',
@@ -269,14 +269,14 @@ const Debts = () => {
                   border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
-                <CreditCardIcon sx={{ fontSize: 24, color: 'white' }} />
+                <CreditCardIcon sx={{ fontSize: 20, color: 'white' }} />
               </Box>
               <Box>
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   sx={{
                     fontWeight: 800,
-                    fontSize: '1.5rem',
+                    fontSize: '1.25rem',
                     color: 'white',
                     lineHeight: 1.2,
                     textShadow: '0 2px 4px rgba(0,0,0,0.1)'
@@ -288,9 +288,9 @@ const Debts = () => {
                   variant="body2"
                   sx={{
                     color: 'rgba(255, 255, 255, 0.9)',
-                    fontSize: '0.9rem',
+                    fontSize: '0.8rem',
                     fontWeight: 500,
-                    mt: 0.5
+                    mt: 0.25
                   }}
                 >
                   {debtData.length} debts • {debtPercentage.toFixed(1)}% of
@@ -300,10 +300,10 @@ const Debts = () => {
             </Box>
             <Box sx={{ textAlign: 'right' }}>
               <Typography
-                variant="h3"
+                variant="h4"
                 sx={{
                   fontWeight: 900,
-                  fontSize: '2.25rem',
+                  fontSize: '1.75rem',
                   color: 'white',
                   lineHeight: 1,
                   textShadow: '0 2px 4px rgba(0,0,0,0.2)'
@@ -315,7 +315,7 @@ const Debts = () => {
                 variant="caption"
                 sx={{
                   color: 'rgba(255, 255, 255, 0.8)',
-                  fontSize: '0.75rem',
+                  fontSize: '0.65rem',
                   fontWeight: 500,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'

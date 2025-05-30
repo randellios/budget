@@ -222,7 +222,7 @@ const SavingGoals = () => {
           }
         }}
       >
-        <Box sx={{ p: 3, position: 'relative', zIndex: 1 }}>
+        <Box sx={{ p: 2, position: 'relative', zIndex: 1 }}>
           <Box
             sx={{
               display: 'flex',
@@ -230,11 +230,11 @@ const SavingGoals = () => {
               justifyContent: 'space-between'
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Box
                 sx={{
-                  width: 48,
-                  height: 48,
+                  width: 36,
+                  height: 36,
                   borderRadius: 2,
                   background: 'rgba(255, 255, 255, 0.2)',
                   display: 'flex',
@@ -243,14 +243,14 @@ const SavingGoals = () => {
                   border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
-                <TargetIcon sx={{ fontSize: 24, color: 'white' }} />
+                <TargetIcon sx={{ fontSize: 20, color: 'white' }} />
               </Box>
               <Box>
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   sx={{
                     fontWeight: 800,
-                    fontSize: '1.5rem',
+                    fontSize: '1.25rem',
                     color: 'white',
                     lineHeight: 1.2,
                     textShadow: '0 2px 4px rgba(0,0,0,0.1)'
@@ -262,9 +262,9 @@ const SavingGoals = () => {
                   variant="body2"
                   sx={{
                     color: 'rgba(255, 255, 255, 0.9)',
-                    fontSize: '0.9rem',
+                    fontSize: '0.8rem',
                     fontWeight: 500,
-                    mt: 0.5
+                    mt: 0.25
                   }}
                 >
                   {goalData.length} goals • {savingsPercentage.toFixed(1)}% of
@@ -274,10 +274,10 @@ const SavingGoals = () => {
             </Box>
             <Box sx={{ textAlign: 'right' }}>
               <Typography
-                variant="h3"
+                variant="h4"
                 sx={{
                   fontWeight: 900,
-                  fontSize: '2.25rem',
+                  fontSize: '1.75rem',
                   color: 'white',
                   lineHeight: 1,
                   textShadow: '0 2px 4px rgba(0,0,0,0.2)'
@@ -289,7 +289,7 @@ const SavingGoals = () => {
                 variant="caption"
                 sx={{
                   color: 'rgba(255, 255, 255, 0.8)',
-                  fontSize: '0.75rem',
+                  fontSize: '0.65rem',
                   fontWeight: 500,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
@@ -349,7 +349,7 @@ const SavingGoals = () => {
               <Card
                 key={goal.id}
                 sx={{
-                  mb: goalIndex === goalData.length - 1 ? 0 : 3,
+                  mb: goalIndex === goalData.length - 1 ? 0 : 2.5,
                   border: '2px solid #e2e8f0',
                   borderRadius: 3,
                   overflow: 'hidden',
@@ -398,7 +398,7 @@ const SavingGoals = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    p: 2,
+                    p: 1.5,
                     background:
                       'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
                     cursor: 'pointer',
@@ -464,7 +464,7 @@ const SavingGoals = () => {
                           displayVariant="h6"
                           displayTypographyProps={{
                             fontWeight: 700,
-                            fontSize: '1.25rem',
+                            fontSize: '1.1rem',
                             color: '#1f2937'
                           }}
                         />
@@ -488,18 +488,12 @@ const SavingGoals = () => {
                         variant="h4"
                         sx={{
                           fontWeight: 800,
-                          fontSize: '1.5rem',
+                          fontSize: '1.2rem',
                           color: '#10b981',
                           lineHeight: 1
                         }}
                       >
                         £{goal.monthlyContribution.toLocaleString()}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: '#6b7280', fontSize: '0.75rem' }}
-                      >
-                        monthly
                       </Typography>
                     </Box>
                     <IconButton
