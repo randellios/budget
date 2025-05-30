@@ -284,18 +284,6 @@ const Debts = () => {
                 >
                   Debts
                 </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.9)',
-                    fontSize: '0.8rem',
-                    fontWeight: 500,
-                    mt: 0.25
-                  }}
-                >
-                  {debtData.length} debts • {debtPercentage.toFixed(1)}% of
-                  income
-                </Typography>
               </Box>
             </Box>
             <Box sx={{ textAlign: 'right' }}>

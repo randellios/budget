@@ -53,6 +53,8 @@ import {
 } from '../../store/slices/apiSlice';
 import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
 import ConfirmationModal from '../ConfirmationModal';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 const availableIcons = [
   '🎯',
@@ -258,18 +260,6 @@ const SavingGoals = () => {
                 >
                   Savings Goals
                 </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.9)',
-                    fontSize: '0.8rem',
-                    fontWeight: 500,
-                    mt: 0.25
-                  }}
-                >
-                  {goalData.length} goals • {savingsPercentage.toFixed(1)}% of
-                  income
-                </Typography>
               </Box>
             </Box>
             <Box sx={{ textAlign: 'right' }}>
@@ -468,17 +458,6 @@ const SavingGoals = () => {
                             color: '#1f2937'
                           }}
                         />
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: '#6b7280',
-                            fontSize: '0.8rem',
-                            display: 'block',
-                            ml: 1
-                          }}
-                        >
-                          {progress.toFixed(1)}% complete
-                        </Typography>
                       </Box>
                     </Box>
                   </Box>
@@ -560,7 +539,14 @@ const SavingGoals = () => {
                           onFocus={handleInputFocus}
                           InputProps={{
                             startAdornment: (
-                              <Typography variant="body2" sx={{ mr: 0.5 }}>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  mr: 0.5,
+                                  color: '#10b981',
+                                  fontWeight: 700
+                                }}
+                              >
                                 £
                               </Typography>
                             )
@@ -571,35 +557,32 @@ const SavingGoals = () => {
                               backgroundColor: 'white',
                               borderRadius: 2,
                               '& fieldset': {
-                                borderColor: '#10b981',
-                                borderWidth: 2
+                                borderColor: '#e2e8f0',
+                                borderWidth: '2px'
                               },
-                              '&:hover fieldset': {
-                                borderColor: '#059669'
-                              },
+                              '&:hover fieldset': { borderColor: '#cbd5e1' },
                               '&.Mui-focused fieldset': {
                                 borderColor: '#10b981',
+                                borderWidth: 2,
                                 boxShadow: '0 0 0 3px rgba(16, 185, 129, 0.1)'
                               }
                             },
                             '& .MuiInputBase-input': {
-                              color: '#10b981',
-                              fontWeight: 700,
                               fontSize: '1.1rem',
+                              fontWeight: 600,
                               textAlign: 'right',
-                              padding: '8px 12px'
+                              padding: '8px 12px',
+                              color: '#374151'
                             }
                           }}
                         />
                       </Box>
-
                       <Box sx={{ display: 'flex', gap: 2 }}>
                         <Box sx={{ flex: 1 }}>
                           <Typography
                             variant="caption"
                             color="text.secondary"
                             sx={{
-                              minWidth: '120px',
                               fontWeight: 500,
                               fontSize: '0.8rem',
                               display: 'block',
@@ -627,7 +610,14 @@ const SavingGoals = () => {
                             onFocus={handleInputFocus}
                             InputProps={{
                               startAdornment: (
-                                <Typography variant="body2" sx={{ mr: 0.5 }}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    mr: 0.5,
+                                    color: '#667eea',
+                                    fontWeight: 700
+                                  }}
+                                >
                                   £
                                 </Typography>
                               )
@@ -638,22 +628,22 @@ const SavingGoals = () => {
                                 borderRadius: 2,
                                 '& fieldset': {
                                   borderColor: '#e2e8f0',
-                                  borderWidth: 2
+                                  borderWidth: '2px'
                                 },
-                                '&:hover fieldset': {
-                                  borderColor: '#cbd5e1'
-                                },
+                                '&:hover fieldset': { borderColor: '#cbd5e1' },
                                 '&.Mui-focused fieldset': {
                                   borderColor: '#667eea',
+                                  borderWidth: 2,
                                   boxShadow:
                                     '0 0 0 3px rgba(102, 126, 234, 0.1)'
                                 }
                               },
                               '& .MuiInputBase-input': {
-                                fontSize: '1rem',
+                                fontSize: '1.1rem',
                                 fontWeight: 600,
                                 textAlign: 'right',
-                                padding: '8px 12px'
+                                padding: '8px 12px',
+                                color: '#374151'
                               }
                             }}
                             fullWidth
@@ -664,7 +654,6 @@ const SavingGoals = () => {
                             variant="caption"
                             color="text.secondary"
                             sx={{
-                              minWidth: '120px',
                               fontWeight: 500,
                               fontSize: '0.8rem',
                               display: 'block',
@@ -692,7 +681,14 @@ const SavingGoals = () => {
                             onFocus={handleInputFocus}
                             InputProps={{
                               startAdornment: (
-                                <Typography variant="body2" sx={{ mr: 0.5 }}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    mr: 0.5,
+                                    color: '#667eea',
+                                    fontWeight: 700
+                                  }}
+                                >
                                   £
                                 </Typography>
                               )
@@ -703,29 +699,28 @@ const SavingGoals = () => {
                                 borderRadius: 2,
                                 '& fieldset': {
                                   borderColor: '#e2e8f0',
-                                  borderWidth: 2
+                                  borderWidth: '2px'
                                 },
-                                '&:hover fieldset': {
-                                  borderColor: '#cbd5e1'
-                                },
+                                '&:hover fieldset': { borderColor: '#cbd5e1' },
                                 '&.Mui-focused fieldset': {
                                   borderColor: '#667eea',
+                                  borderWidth: 2,
                                   boxShadow:
                                     '0 0 0 3px rgba(102, 126, 234, 0.1)'
                                 }
                               },
                               '& .MuiInputBase-input': {
-                                fontSize: '1rem',
+                                fontSize: '1.1rem',
                                 fontWeight: 600,
                                 textAlign: 'right',
-                                padding: '8px 12px'
+                                padding: '8px 12px',
+                                color: '#374151'
                               }
                             }}
                             fullWidth
                           />
                         </Box>
                       </Box>
-
                       <Box
                         sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
                       >
@@ -740,43 +735,57 @@ const SavingGoals = () => {
                         >
                           Target Date:
                         </Typography>
-                        <TextField
-                          variant="outlined"
-                          size="small"
-                          type="month"
-                          value={getGoalValue(
-                            goal.id,
-                            'targetDate',
-                            goal.targetDate
-                          )}
-                          onChange={(e) =>
+                        <DatePicker
+                          value={
+                            getGoalValue(goal.id, 'targetDate', goal.targetDate)
+                              ? dayjs(
+                                  getGoalValue(
+                                    goal.id,
+                                    'targetDate',
+                                    goal.targetDate
+                                  )
+                                )
+                              : null
+                          }
+                          onChange={(newValue) =>
                             handleGoalAmountChange(
                               goal.id,
                               'targetDate',
-                              e.target.value
+                              newValue ? newValue.format('YYYY-MM') : ''
                             )
                           }
-                          sx={{
-                            flex: 1,
-                            '& .MuiOutlinedInput-root': {
-                              backgroundColor: 'white',
-                              borderRadius: 2,
-                              '& fieldset': {
-                                borderColor: '#e2e8f0',
-                                borderWidth: 2
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#cbd5e1'
-                              },
-                              '&.Mui-focused fieldset': {
-                                borderColor: '#667eea',
-                                boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)'
+                          enableAccessibleFieldDOMStructure={false}
+                          views={['year', 'month']}
+                          slots={{ textField: TextField }}
+                          slotProps={{
+                            textField: {
+                              size: 'small',
+                              sx: {
+                                flex: 1,
+                                '& .MuiOutlinedInput-root': {
+                                  backgroundColor: 'white',
+                                  borderRadius: 2,
+                                  '& fieldset': {
+                                    borderColor: '#e2e8f0',
+                                    borderWidth: '2px'
+                                  },
+                                  '&:hover fieldset': {
+                                    borderColor: '#cbd5e1'
+                                  },
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#667eea',
+                                    borderWidth: 2,
+                                    boxShadow:
+                                      '0 0 0 3px rgba(102, 126, 234, 0.1)'
+                                  }
+                                },
+                                '& .MuiInputBase-input': {
+                                  fontSize: '1.1rem',
+                                  fontWeight: 600,
+                                  padding: '8px 12px',
+                                  color: '#374151'
+                                }
                               }
-                            },
-                            '& .MuiInputBase-input': {
-                              fontSize: '1rem',
-                              fontWeight: 600,
-                              padding: '8px 12px'
                             }
                           }}
                         />

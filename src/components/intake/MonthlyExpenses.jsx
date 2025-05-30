@@ -576,18 +576,6 @@ const MonthlyExpenses = () => {
                 >
                   Monthly Expenses
                 </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.9)',
-                    fontSize: '0.8rem',
-                    fontWeight: 500,
-                    mt: 0.25
-                  }}
-                >
-                  {categories.length} categories •{' '}
-                  {expensePercentage.toFixed(1)}% of income
-                </Typography>
               </Box>
             </Box>
             <Box sx={{ textAlign: 'right' }}>
