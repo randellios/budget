@@ -212,15 +212,20 @@ const SavingGoals = () => {
     >
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-          color: 'white',
+          background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
+          color: '#1f2937',
           position: 'relative',
+          border: '1px solid #e2e8f0',
+          borderRadius: '12px 12px 0 0',
           '&::before': {
             content: '""',
             position: 'absolute',
-            inset: 0,
-            background:
-              'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)'
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '3px',
+            background: '#10b981',
+            borderRadius: '12px 12px 0 0'
           }
         }}
       >
@@ -235,27 +240,26 @@ const SavingGoals = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Box
                 sx={{
-                  width: 36,
-                  height: 36,
+                  width: 32,
+                  height: 32,
                   borderRadius: 2,
-                  background: 'rgba(255, 255, 255, 0.2)',
+                  background: '#f0fdf4',
+                  border: '1px solid #bbf7d0',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid rgba(255, 255, 255, 0.3)'
+                  justifyContent: 'center'
                 }}
               >
-                <TargetIcon sx={{ fontSize: 20, color: 'white' }} />
+                <TargetIcon sx={{ fontSize: 18, color: '#10b981' }} />
               </Box>
               <Box>
                 <Typography
                   variant="h6"
                   sx={{
-                    fontWeight: 800,
-                    fontSize: '1.25rem',
-                    color: 'white',
-                    lineHeight: 1.2,
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    fontWeight: 600,
+                    fontSize: '1.1rem',
+                    color: '#374151',
+                    lineHeight: 1.2
                   }}
                 >
                   Savings Goals
@@ -272,25 +276,23 @@ const SavingGoals = () => {
                 }}
               >
                 <Typography
-                  variant="h4"
+                  variant="h5"
                   sx={{
-                    fontWeight: 900,
-                    fontSize: '1.75rem',
-                    color: 'white',
-                    lineHeight: 1,
-                    textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    fontWeight: 700,
+                    fontSize: '1.5rem',
+                    color: '#10b981',
+                    lineHeight: 1
                   }}
                 >
                   £{totalSavings.toLocaleString()}
                 </Typography>
                 <Typography
-                  variant="h6"
+                  variant="body2"
                   sx={{
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    color: 'rgba(255, 255, 255, 0.9)',
-                    lineHeight: 1,
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    fontWeight: 500,
+                    fontSize: '0.9rem',
+                    color: '#9ca3af',
+                    lineHeight: 1
                   }}
                 >
                   /mo
@@ -300,7 +302,6 @@ const SavingGoals = () => {
           </Box>
         </Box>
       </Box>
-
       <CardContent sx={{ p: 0 }}>
         {saveError && (
           <Box
@@ -336,7 +337,7 @@ const SavingGoals = () => {
           </Box>
         )}
 
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 2 }}>
           {goalData.map((goal, goalIndex) => {
             const isExpanded = expandedSavings[goal.id];
             const progress =
