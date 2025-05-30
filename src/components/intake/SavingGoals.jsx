@@ -398,7 +398,7 @@ const SavingGoals = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    p: 3,
+                    p: 2,
                     background:
                       'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
                     cursor: 'pointer',

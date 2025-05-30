@@ -28,22 +28,6 @@ const MonthlyBudgetOverview = () => {
       <CardContent sx={{ p: 3, pt: 0 }}>
         <Box sx={{ mt: 2, mb: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '18px',
-                fontWeight: 'bold'
-              }}
-            >
-              📊
-            </Box>
             <Box>
               <Typography
                 variant="h5"
@@ -126,22 +110,6 @@ const MonthlyBudgetOverview = () => {
 
         <Box sx={{ mt: 8 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '18px',
-                fontWeight: 'bold'
-              }}
-            >
-              💰
-            </Box>
             <Box>
               <Typography
                 variant="h5"

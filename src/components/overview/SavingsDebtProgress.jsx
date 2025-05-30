@@ -78,21 +78,6 @@ const SavingsDebtProgress = () => {
         {/* Savings Goals */}
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow:
-                  '0 8px 20px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
-              }}
-            >
-              <Typography sx={{ fontSize: '20px' }}>🎯</Typography>
-            </Box>
             <Box>
               <Typography
                 variant="h5"
@@ -109,7 +94,7 @@ const SavingsDebtProgress = () => {
                 variant="body2"
                 sx={{ color: '#6b7280', fontSize: '0.9rem', fontWeight: 500 }}
               >
-                Building your future 🚀
+                Building your future
               </Typography>
             </Box>
           </Box>
@@ -374,21 +359,6 @@ const SavingsDebtProgress = () => {
         {/* Debts */}
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow:
-                  '0 8px 20px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
-              }}
-            >
-              <Typography sx={{ fontSize: '20px' }}>💳</Typography>
-            </Box>
             <Box>
               <Typography
                 variant="h5"
@@ -405,7 +375,7 @@ const SavingsDebtProgress = () => {
                 variant="body2"
                 sx={{ color: '#6b7280', fontSize: '0.9rem', fontWeight: 500 }}
               >
-                Breaking free! 💪
+                Breaking free!
               </Typography>
             </Box>
           </Box>

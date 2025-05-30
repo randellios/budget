@@ -23,7 +23,6 @@ import {
   selectTotalDebtPayments,
   selectDebts
 } from '../../../store/slices/debtsSlice';
-
 import TemperatureGauge from './TemperatureGauge';
 
 const ExpenseDivision = () => {

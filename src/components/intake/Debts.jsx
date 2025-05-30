@@ -428,7 +428,7 @@ const Debts = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    p: 3,
+                    p: 2,
                     background: `linear-gradient(135deg, ${priorityInfo.color}08 0%, ${priorityInfo.color}04 100%)`,
                     cursor: 'pointer',
                     '&:hover': {
