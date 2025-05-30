@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
-
+import { Box, Typography } from '@mui/material';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import Sidebar from './components/intake/Sidebar';
 import Header from './components/Header';
@@ -22,7 +21,67 @@ export default function Dashboard() {
           bgcolor: 'background.default'
         }}
       >
-        {/* Header - Now positioned across full width */}
+        {/* Sidebar */}
+        <Box
+          component="aside"
+          sx={{
+            width: '530px',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'fixed',
+            height: '100vh',
+            zIndex: 1200
+          }}
+        >
+          {/* Logo/Brand Section - Fixed */}
+          <Box sx={{ p: 3, bgcolor: '#cbd5e1', borderTopRightRadius: '24px' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 2,
+                  background:
+                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '18px',
+                  fontWeight: 'bold'
+                }}
+              >
+                B
+              </Box>
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: 700, color: 'white' }}
+                >
+                  Budget Dashboard
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+                  Manage your finances with ease
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Scrollable Content Area */}
+          <Box
+            sx={{
+              flex: 1,
+              bgcolor: '#cbd5e1',
+              overflow: 'auto',
+              px: 2,
+              py: 2
+            }}
+          >
+            <Sidebar />
+          </Box>
+        </Box>
+
+        {/* Header - Behind sidebar */}
         <Box
           component="header"
           sx={{
@@ -37,25 +96,6 @@ export default function Dashboard() {
           <Header />
         </Box>
 
-        {/* Sidebar */}
-        <Box
-          component="aside"
-          sx={{
-            width: '530px',
-            bgcolor: '#f1f5f9',
-            borderRight: '1px solid #f2f4fd',
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'fixed',
-            height: '100vh',
-            overflow: 'auto',
-            paddingTop: '60px', // Add padding to account for header height
-            px: 2
-          }}
-        >
-          <Sidebar />
-        </Box>
-
         {/* Main Content Area */}
         <Box
           sx={{
@@ -64,10 +104,9 @@ export default function Dashboard() {
             display: 'flex',
             flexDirection: 'column',
             minHeight: '100vh',
-            paddingTop: '64px' // Add padding to account for header height
+            paddingTop: '64px'
           }}
         >
-          {/* Main Content */}
           <Box
             component="main"
             sx={{
@@ -78,38 +117,13 @@ export default function Dashboard() {
               bgcolor: '#fdfdfd'
             }}
           >
-            <Box Box display="flex" flexDirection="column" gap={5}>
+            <Box display="flex" flexDirection="column" gap={5}>
               <Overview />
-
-              {/* <Box width="400px" pl={3}>
-                <Box
-                  sx={{
-                    position: 'sticky',
-                    top: '80px'
-                  }}
-                >
-                  <Box display="flex" flexDirection="column" gap={3}>
-                    <MonthSelector
-                      selectedMonth={selectedMonth}
-                      onMonthChange={setSelectedMonth}
-                    />
-                    <AutoBalance />
-                  </Box>
-                </Box>
-
-                <Box />
-              </Box> */}
             </Box>
           </Box>
-
-          {/* Footer */}
           <Box
             component="footer"
-            sx={{
-              position: 'sticky',
-              bottom: 0,
-              textAlign: 'center'
-            }}
+            sx={{ position: 'sticky', bottom: 0, textAlign: 'center' }}
           >
             <Footer />
           </Box>

@@ -1,34 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  CardHeader,
-  Typography,
-  LinearProgress,
-  Chip,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Avatar,
-  Divider,
-  Alert,
-  Stack,
-  Paper,
-  IconButton
-} from '@mui/material';
-import {
-  Assessment as AssessmentIcon,
-  TrackChanges as TrackChangesIcon,
-  CreditCard as CreditCardIcon,
-  Add as AddIcon,
-  TrendingUp as TrendingUpIcon,
-  Warning as WarningIcon,
-  CheckCircle as CheckCircleIcon
-} from '@mui/icons-material';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+import { Box, Typography, Chip, IconButton } from '@mui/material';
 
 const Header = () => {
   return (
@@ -38,9 +9,6 @@ const Header = () => {
         borderBottom: '1px solid #e3e8ef',
         px: 3,
         py: 1,
-        position: 'sticky',
-        top: 0,
-        zIndex: 1000,
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
       }}
     >
@@ -52,33 +20,11 @@ const Header = () => {
           margin: '0 auto'
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box
-            sx={{
-              width: 40,
-              height: 40,
-              borderRadius: 2,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '18px',
-              fontWeight: 'bold'
-            }}
-          >
-            B
-          </Box>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b' }}>
-              Budget Dashboard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Manage your finances with ease
-            </Typography>
-          </Box>
+        <Box sx={{ marginLeft: '530px' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
+            Financial Overview
+          </Typography>
         </Box>
-
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Chip
             icon={
