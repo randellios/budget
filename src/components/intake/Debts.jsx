@@ -287,30 +287,39 @@ const Debts = () => {
               </Box>
             </Box>
             <Box sx={{ textAlign: 'right' }}>
-              <Typography
-                variant="h4"
+              <Box
                 sx={{
-                  fontWeight: 900,
-                  fontSize: '1.75rem',
-                  color: 'white',
-                  lineHeight: 1,
-                  textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  justifyContent: 'flex-end',
+                  gap: 0.5
                 }}
               >
-                £{totalDebtPayments.toLocaleString()}
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  fontSize: '0.65rem',
-                  fontWeight: 500,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}
-              >
-                Monthly payments
-              </Typography>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 900,
+                    fontSize: '1.75rem',
+                    color: 'white',
+                    lineHeight: 1,
+                    textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  }}
+                >
+                  £{totalDebtPayments.toLocaleString()}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    lineHeight: 1,
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  /mo
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Box>
@@ -367,7 +376,7 @@ const Debts = () => {
               <Card
                 key={debt.id}
                 sx={{
-                  mb: debtIndex === debtData.length - 1 ? 0 : 3,
+                  mb: debtIndex === debtData.length - 1 ? 0 : 2,
                   border: `2px solid ${priorityInfo.color}40`,
                   borderRadius: 3,
                   overflow: 'hidden',
