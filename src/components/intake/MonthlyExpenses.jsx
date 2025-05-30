@@ -28,7 +28,8 @@ import {
   ContentCopy as ContentCopyIcon,
   KeyboardArrowUp as ArrowUpIcon,
   KeyboardArrowDown as ArrowDownIcon,
-  DragIndicator as DragIcon
+  DragIndicator as DragIcon,
+  Close
 } from '@mui/icons-material';
 import {
   DndContext,
@@ -616,7 +617,82 @@ const MonthlyExpenses = () => {
           </Box>
         </Box>
       </Box>
+      <Box
+        sx={{
+          p: 3,
+          bgcolor: 'rgba(102, 126, 234, 0.03)',
+          borderBottom: '1px solid rgba(102, 126, 234, 0.1)',
+          position: 'relative'
+        }}
+      >
+        <IconButton
+          size="small"
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            color: '#9ca3af',
+            '&:hover': {
+              color: '#6b7280',
+              bgcolor: 'rgba(107, 114, 128, 0.1)'
+            },
 
+            zIndex: 1
+          }}
+        >
+          <Close />
+        </IconButton>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 2
+          }}
+        >
+          <Box
+            sx={{
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              mt: 0.5,
+              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+            }}
+          >
+            <Typography sx={{ fontSize: '14px' }}>💡</Typography>
+          </Box>
+          <Box>
+            <Typography
+              variant="body1"
+              sx={{
+                color: '#1f2937',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                lineHeight: 1.5,
+                mb: 0.5
+              }}
+            >
+              Track Every Expense
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: '#64748b',
+                fontSize: '0.85rem',
+                lineHeight: 1.4
+              }}
+            >
+              Be completely honest here — capture your actual monthly spending
+              across all categories. The more accurate you are, the better your
+              budget will work for you.
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
       <CardContent sx={{ p: 0 }}>
         {saveError && (
           <Box
