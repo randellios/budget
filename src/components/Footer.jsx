@@ -1,45 +1,40 @@
 import React from 'react';
+import { Box, Typography, Button, IconButton } from '@mui/material';
 import {
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  CardHeader,
-  Typography,
-  LinearProgress,
-  Chip,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Avatar,
-  Divider,
-  Alert,
-  Stack,
-  Paper,
-  IconButton
-} from '@mui/material';
-import {
-  Assessment as AssessmentIcon,
-  TrackChanges as TrackChangesIcon,
-  CreditCard as CreditCardIcon,
-  Add as AddIcon,
-  TrendingUp as TrendingUpIcon,
-  Warning as WarningIcon,
-  CheckCircle as CheckCircleIcon
+  GitHub as GitHubIcon,
+  Twitter as TwitterIcon,
+  LinkedIn as LinkedInIcon,
+  Favorite as HeartIcon
 } from '@mui/icons-material';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 
 const Footer = () => (
   <Box
     sx={{
-      bgcolor: 'white',
+      background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
       borderTop: '1px solid #e3e8ef',
       px: 3,
-      py: 2,
-      position: 'sticky',
-      bottom: 0,
-      zIndex: 999
+      py: 3,
+      position: 'relative',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '3px',
+        background:
+          'linear-gradient(90deg, #667eea 0%, #764ba2 30%, #10b981 60%, #f59e0b 100%)',
+        backgroundSize: '400% 100%',
+        animation: 'gradientShift 8s ease infinite'
+      },
+      '@keyframes gradientShift': {
+        '0%, 100%': {
+          backgroundPosition: '0% 50%'
+        },
+        '50%': {
+          backgroundPosition: '100% 50%'
+        }
+      }
     }}
   >
     <Box
@@ -47,60 +42,116 @@ const Footer = () => (
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        maxWidth: '1600px',
-        margin: '0 auto'
+        maxWidth: '1200px',
+        margin: '0 auto',
+        flexWrap: 'wrap',
+        gap: 2
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-        <Typography variant="body2" color="text.secondary">
-          Last updated:{' '}
-          {new Date().toLocaleDateString('en-GB', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          })}
+      {/* Left - Copyright */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography
+          variant="body2"
+          sx={{ color: '#64748b', fontSize: '0.85rem' }}
+        >
+          © 2025 Budget Dashboard. Made with
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box
-            sx={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              bgcolor: '#10b981'
-            }}
-          />
-          <Typography variant="body2" color="text.secondary">
-            Data synced
-          </Typography>
-        </Box>
+        <HeartIcon sx={{ fontSize: 14, color: '#ef4444' }} />
+        <Typography
+          variant="body2"
+          sx={{ color: '#64748b', fontSize: '0.85rem' }}
+        >
+          for better financial wellness
+        </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-        <Typography variant="body2" color="text.secondary">
-          © 2025 Budget Dashboard
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            size="small"
-            sx={{ textTransform: 'none', color: 'text.secondary' }}
-          >
-            Help
-          </Button>
-          <Button
-            size="small"
-            sx={{ textTransform: 'none', color: 'text.secondary' }}
-          >
-            Privacy
-          </Button>
-          <Button
-            size="small"
-            sx={{ textTransform: 'none', color: 'text.secondary' }}
-          >
-            Terms
-          </Button>
-        </Box>
+      {/* Center - Links */}
+      <Box sx={{ display: 'flex', gap: 3 }}>
+        <Button
+          size="small"
+          sx={{
+            textTransform: 'none',
+            color: '#64748b',
+            fontSize: '0.85rem',
+            fontWeight: 500,
+            '&:hover': {
+              color: '#667eea',
+              bgcolor: 'rgba(102, 126, 234, 0.05)'
+            }
+          }}
+        >
+          Privacy Policy
+        </Button>
+        <Button
+          size="small"
+          sx={{
+            textTransform: 'none',
+            color: '#64748b',
+            fontSize: '0.85rem',
+            fontWeight: 500,
+            '&:hover': {
+              color: '#667eea',
+              bgcolor: 'rgba(102, 126, 234, 0.05)'
+            }
+          }}
+        >
+          Terms of Service
+        </Button>
+        <Button
+          size="small"
+          sx={{
+            textTransform: 'none',
+            color: '#64748b',
+            fontSize: '0.85rem',
+            fontWeight: 500,
+            '&:hover': {
+              color: '#667eea',
+              bgcolor: 'rgba(102, 126, 234, 0.05)'
+            }
+          }}
+        >
+          Help & Support
+        </Button>
+      </Box>
+
+      {/* Right - Social */}
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <IconButton
+          size="small"
+          sx={{
+            color: '#9ca3af',
+            '&:hover': {
+              color: '#667eea',
+              bgcolor: 'rgba(102, 126, 234, 0.08)'
+            }
+          }}
+        >
+          <GitHubIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+        <IconButton
+          size="small"
+          sx={{
+            color: '#9ca3af',
+            '&:hover': {
+              color: '#667eea',
+              bgcolor: 'rgba(102, 126, 234, 0.08)'
+            }
+          }}
+        >
+          <TwitterIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+        <IconButton
+          size="small"
+          sx={{
+            color: '#9ca3af',
+            '&:hover': {
+              color: '#667eea',
+              bgcolor: 'rgba(102, 126, 234, 0.08)'
+            }
+          }}
+        >
+          <LinkedInIcon sx={{ fontSize: 18 }} />
+        </IconButton>
       </Box>
     </Box>
   </Box>
