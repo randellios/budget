@@ -1,4 +1,3 @@
-// src/store/slices/expensesSlice.js
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -125,6 +124,24 @@ const expensesSlice = createSlice({
         (cat) => cat.id !== action.payload
       );
     },
+    moveCategoryUp: (state, action) => {
+      const categoryId = action.payload;
+      const index = state.categories.findIndex((cat) => cat.id === categoryId);
+      if (index > 0) {
+        const category = state.categories[index];
+        state.categories.splice(index, 1);
+        state.categories.splice(index - 1, 0, category);
+      }
+    },
+    moveCategoryDown: (state, action) => {
+      const categoryId = action.payload;
+      const index = state.categories.findIndex((cat) => cat.id === categoryId);
+      if (index < state.categories.length - 1) {
+        const category = state.categories[index];
+        state.categories.splice(index, 1);
+        state.categories.splice(index + 1, 0, category);
+      }
+    },
     addExpenseItem: (state, action) => {
       const { categoryId, item } = action.payload;
       const category = state.categories.find((cat) => cat.id === categoryId);
@@ -176,6 +193,27 @@ const expensesSlice = createSlice({
           item.isFlexible = !item.isFlexible;
         }
       }
+    },
+    reorderExpenseItems: (state, action) => {
+      const { sourceCategoryId, targetCategoryId, sourceIndex, targetIndex } =
+        action.payload;
+
+      const sourceCategory = state.categories.find(
+        (cat) => cat.id === sourceCategoryId
+      );
+      const targetCategory = state.categories.find(
+        (cat) => cat.id === targetCategoryId
+      );
+
+      if (!sourceCategory || !targetCategory) return;
+
+      const [draggedItem] = sourceCategory.items.splice(sourceIndex, 1);
+
+      if (sourceCategoryId === targetCategoryId) {
+        targetCategory.items.splice(targetIndex, 0, draggedItem);
+      } else {
+        targetCategory.items.splice(targetIndex, 0, draggedItem);
+      }
     }
   },
   extraReducers: (builder) => {
@@ -183,7 +221,6 @@ const expensesSlice = createSlice({
       if (action.payload.expenses) {
         const loadedExpenses = action.payload.expenses;
 
-        // Replace categories with loaded data
         if (
           loadedExpenses.categories &&
           Array.isArray(loadedExpenses.categories)
@@ -191,7 +228,6 @@ const expensesSlice = createSlice({
           state.categories = loadedExpenses.categories;
         }
 
-        // Update next IDs to prevent conflicts
         if (loadedExpenses.nextItemId) {
           state.nextItemId = loadedExpenses.nextItemId;
         }
@@ -207,14 +243,16 @@ export const {
   addCategory,
   updateCategory,
   deleteCategory,
+  moveCategoryUp,
+  moveCategoryDown,
   addExpenseItem,
   updateExpenseItem,
   deleteExpenseItem,
   toggleItemEssential,
-  toggleItemFlexible
+  toggleItemFlexible,
+  reorderExpenseItems
 } = expensesSlice.actions;
 
-// Selectors remain the same
 export const selectExpenseCategories = (state) => state.expenses.categories;
 export const selectTotalExpenses = createSelector(
   [selectExpenseCategories],
