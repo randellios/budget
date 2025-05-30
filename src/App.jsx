@@ -34,7 +34,7 @@ export default function Dashboard() {
           }}
         >
           {/* Logo/Brand Section - Fixed */}
-          <Box sx={{ p: 3, bgcolor: '#cbd5e1', borderTopRightRadius: '24px' }}>
+          <Box sx={{ p: 3, bgcolor: '#cbd5e1 ', borderTopRightRadius: '24px' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box
                 sx={{
@@ -71,7 +71,7 @@ export default function Dashboard() {
           <Box
             sx={{
               flex: 1,
-              bgcolor: '#cbd5e1',
+              bgcolor: '#cbd5e1 ',
               overflow: 'auto',
               px: 2,
               py: 2
@@ -113,8 +113,8 @@ export default function Dashboard() {
               flexGrow: 1,
               p: 3,
               width: '100%',
-              margin: '0 auto',
-              bgcolor: '#fdfdfd'
+              margin: '0 auto'
+              // bgcolor: '#fdfdfd'
             }}
           >
             <Box display="flex" flexDirection="column" gap={5}>
@@ -123,7 +123,7 @@ export default function Dashboard() {
           </Box>
           <Box
             component="footer"
-            sx={{ position: 'sticky', bottom: 0, textAlign: 'center' }}
+            // sx={{ position: 'sticky', bottom: 0, textAlign: 'center' }}
           >
             <Footer />
           </Box>

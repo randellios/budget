@@ -20,11 +20,7 @@ const Header = () => {
           margin: '0 auto'
         }}
       >
-        <Box sx={{ marginLeft: '530px' }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
-            Financial Overview
-          </Typography>
-        </Box>
+        <Box sx={{ marginLeft: '530px' }}></Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Chip
             icon={
