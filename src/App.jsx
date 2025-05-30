@@ -41,7 +41,7 @@ export default function Dashboard() {
         <Box
           component="aside"
           sx={{
-            width: 500,
+            width: '550px',
             bgcolor: '#f1f5f9',
             borderRight: '1px solid #e0e0e0',
             display: 'flex',
@@ -60,7 +60,7 @@ export default function Dashboard() {
         <Box
           sx={{
             flexGrow: 1,
-            marginLeft: '500px',
+            marginLeft: '550px',
             display: 'flex',
             flexDirection: 'column',
             minHeight: '100vh',

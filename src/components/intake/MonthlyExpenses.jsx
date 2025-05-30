@@ -9,7 +9,12 @@ import {
   Typography,
   Chip,
   Card,
-  CardContent
+  CardContent,
+  Divider,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import { useDebouncedCallback } from 'use-debounce';
 import {
@@ -19,14 +24,17 @@ import {
   Star as StarIcon,
   StarBorder as StarBorderIcon,
   Delete as DeleteIcon,
-  ShoppingCart as ShoppingCartIcon
+  ShoppingCart as ShoppingCartIcon,
+  MoreVert as MoreVertIcon,
+  ContentCopy as ContentCopyIcon
 } from '@mui/icons-material';
 import EditableField from '../EditableField';
-import SaveStatusIndicator from '../SaveStatusIndicator';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import {
   selectExpenseCategories,
   selectTotalExpenses,
+  selectEssentialExpenses,
+  selectNonEssentialExpenses,
   addCategory,
   updateCategory,
   deleteCategory,
@@ -46,16 +54,21 @@ import {
   saveBudgetData,
   clearSaveError
 } from '../../store/slices/apiSlice';
+import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
 import ConfirmationModal from '../ConfirmationModal';
 
 const MonthlyExpenses = () => {
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectExpenseCategories);
   const totalExpenses = useAppSelector(selectTotalExpenses);
+  const monthlyIncome = useAppSelector(selectMonthlyIncome);
   const expandedCategories = useAppSelector(selectExpandedCategories);
   const editingField = useAppSelector(selectEditingField);
   const saveError = useAppSelector(selectSaveError);
   const [localValues, setLocalValues] = useState({});
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [confirmModal, setConfirmModal] = useState({
     open: false,
     title: '',
@@ -98,6 +111,33 @@ const MonthlyExpenses = () => {
     });
   };
 
+  const handleCloneCategory = (categoryId) => {
+    const category = categories.find((c) => c.id === categoryId);
+
+    if (category) {
+      const clonedCategory = dispatch(
+        addCategory({
+          name: `${category.name} (Copy)`
+        })
+      );
+
+      // Clone all items in the category
+      category.items.forEach((item) => {
+        dispatch(
+          addExpenseItem({
+            categoryId: clonedCategory.payload.id,
+            item: {
+              name: item.name,
+              amount: item.amount,
+              isEssential: item.isEssential
+            }
+          })
+        );
+      });
+    }
+    setAnchorEl(null);
+  };
+
   const handleUpdateCategoryField = (categoryId, field, newValue) => {
     dispatch(updateCategory({ categoryId, field, value: newValue }));
     dispatch(setEditingField(null));
@@ -123,6 +163,58 @@ const MonthlyExpenses = () => {
     dispatch(toggleItemEssential({ categoryId, itemId }));
   };
 
+  const handleItemMenuClick = (event, categoryId, itemId) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setSelectedItem({ categoryId, itemId });
+    setSelectedCategory(null);
+  };
+
+  const handleCategoryMenuClick = (event, categoryId) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setSelectedCategory(categoryId);
+    setSelectedItem(null);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedItem(null);
+    setSelectedCategory(null);
+  };
+
+  const handleDeleteItem = (categoryId, itemId) => {
+    if (window.confirm('Are you sure you want to delete this expense item?')) {
+      dispatch(deleteExpenseItem({ categoryId, itemId }));
+      const key = `${categoryId}-${itemId}`;
+      setLocalValues((prev) => {
+        const newValues = { ...prev };
+        delete newValues[key];
+        return newValues;
+      });
+    }
+    setAnchorEl(null);
+  };
+
+  const handleCloneItem = (categoryId, itemId) => {
+    const category = categories.find((c) => c.id === categoryId);
+    const item = category?.items.find((i) => i.id === itemId);
+
+    if (item) {
+      dispatch(
+        addExpenseItem({
+          categoryId,
+          item: {
+            name: `${item.name} (Copy)`,
+            amount: item.amount,
+            isEssential: item.isEssential
+          }
+        })
+      );
+    }
+    setAnchorEl(null);
+  };
+
   const handleAddCategory = () => {
     dispatch(addCategory({ name: 'New Category' }));
   };
@@ -140,24 +232,24 @@ const MonthlyExpenses = () => {
     );
   };
 
-  const handleDeleteItem = (categoryId, itemId) => {
-    if (window.confirm('Are you sure you want to delete this expense item?')) {
-      dispatch(deleteExpenseItem({ categoryId, itemId }));
-      const key = `${categoryId}-${itemId}`;
-      setLocalValues((prev) => {
-        const newValues = { ...prev };
-        delete newValues[key];
-        return newValues;
-      });
-    }
-  };
-
   const handleManualSave = () => {
     dispatch(saveBudgetData());
   };
 
   const getCategoryTotal = (category) =>
     category.items.reduce((total, item) => total + item.amount, 0);
+
+  const getCategoryEssentialTotal = (category) =>
+    category.items
+      .filter((item) => item.isEssential)
+      .reduce((total, item) => total + item.amount, 0);
+
+  const expensePercentage =
+    monthlyIncome > 0 ? (totalExpenses / monthlyIncome) * 100 : 0;
+
+  const handleInputFocus = (event) => {
+    event.target.select();
+  };
 
   return (
     <Card
@@ -166,385 +258,480 @@ const MonthlyExpenses = () => {
         border: '1px solid #e8ecf3',
         borderRadius: 3,
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-        mb: 2
+        mb: 2,
+        overflow: 'hidden'
       }}
     >
-      <CardContent sx={{ p: 0 }}>
-        {/* Header */}
+      {/* Header with gradient */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            background:
+              'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)'
+          }
+        }}
+      >
         <Box
           sx={{
             p: 3,
-            background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)',
-            borderBottom: '1px solid #e8ecf3',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
+            position: 'relative',
+            zIndex: 1
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
-              }}
-            >
-              <ShoppingCartIcon sx={{ fontSize: 20, color: 'white' }} />
-            </Box>
-            <Box>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '1.25rem',
-                  color: '#1f2937',
-                  lineHeight: 1.2
-                }}
-              >
-                Monthly Expenses
-              </Typography>
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}
-              >
-                <Typography
-                  variant="body2"
-                  sx={{ color: '#6b7280', fontSize: '0.9rem', fontWeight: 500 }}
-                >
-                  £{totalExpenses.toLocaleString()} • {categories.length}{' '}
-                  categories
-                </Typography>
-                <SaveStatusIndicator context="expenses" />
-              </Box>
-            </Box>
-          </Box>
-          <Chip
-            label={`£${totalExpenses.toLocaleString()}`}
+          <Box
             sx={{
-              backgroundColor: '#e0e7ff',
-              color: '#3730a3',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              height: 32,
-              px: 1
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
             }}
-          />
-        </Box>
-
-        {/* Content */}
-        <Box sx={{ p: 3 }}>
-          {saveError && (
-            <Box
-              sx={{
-                mb: 3,
-                p: 2,
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fca5a5',
-                borderRadius: 2,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ color: '#dc2626', fontSize: '0.875rem' }}
-              >
-                Failed to save: {saveError}
-              </Typography>
-              <Button
-                size="small"
-                onClick={handleManualSave}
-                sx={{
-                  color: '#dc2626',
-                  fontSize: '0.75rem',
-                  textTransform: 'none',
-                  minWidth: 'auto'
-                }}
-              >
-                Retry
-              </Button>
-            </Box>
-          )}
-
-          {categories.map((category, categoryIndex) => (
-            <Box
-              key={category.id}
-              sx={{
-                mb: categoryIndex === categories.length - 1 ? 0 : 3,
-                border: '1px solid #e2e8f0',
-                borderRadius: 2,
-                overflow: 'hidden',
-                background: '#ffffff'
-              }}
-            >
-              {/* Category Header */}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box
                 sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 2,
+                  background: 'rgba(255, 255, 255, 0.2)',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
-                  p: 2.5,
-                  bgcolor: '#f8fafc',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    bgcolor: '#f1f5f9'
-                  },
-                  transition: 'background-color 0.2s ease'
+                  justifyContent: 'center',
+                  border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
-                onClick={() => handleToggleCategory(category.id)}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <IconButton size="small" sx={{ color: '#64748b' }}>
-                    {expandedCategories[category.id] ? (
-                      <ExpandLessIcon fontSize="small" />
-                    ) : (
-                      <ExpandMoreIcon fontSize="small" />
-                    )}
-                  </IconButton>
-                  <EditableField
-                    value={category.name}
-                    isEditing={editingField === `category-${category.id}-name`}
-                    onStartEdit={() =>
-                      dispatch(setEditingField(`category-${category.id}-name`))
-                    }
-                    onSave={(newValue) =>
-                      handleUpdateCategoryField(category.id, 'name', newValue)
-                    }
-                    onCancel={() => dispatch(setEditingField(null))}
-                    displayVariant="h6"
-                    displayTypographyProps={{
-                      fontWeight: 600,
-                      fontSize: '1.1rem',
-                      color: '#64748b'
-                    }}
-                  />
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 700,
-                      fontSize: '1.125rem',
-                      color: '#667eea'
-                    }}
-                  >
-                    £{getCategoryTotal(category).toLocaleString()}
-                  </Typography>
-                  <Tooltip title="Delete category">
+                <ShoppingCartIcon sx={{ fontSize: 24, color: 'white' }} />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: '1.5rem',
+                    color: 'white',
+                    lineHeight: 1.2,
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  Monthly Expenses
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    fontSize: '0.9rem',
+                    fontWeight: 500,
+                    mt: 0.5
+                  }}
+                >
+                  {categories.length} categories •{' '}
+                  {expensePercentage.toFixed(1)}% of income
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ textAlign: 'right' }}>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 900,
+                  fontSize: '2.25rem',
+                  color: 'white',
+                  lineHeight: 1,
+                  textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                }}
+              >
+                £{totalExpenses.toLocaleString()}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                Total monthly spend
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+
+      <CardContent sx={{ p: 0 }}>
+        {saveError && (
+          <Box
+            sx={{
+              m: 3,
+              p: 2,
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fca5a5',
+              borderRadius: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ color: '#dc2626', fontSize: '0.875rem' }}
+            >
+              Failed to save: {saveError}
+            </Typography>
+            <Button
+              size="small"
+              onClick={handleManualSave}
+              sx={{
+                color: '#dc2626',
+                fontSize: '0.75rem',
+                textTransform: 'none',
+                minWidth: 'auto'
+              }}
+            >
+              Retry
+            </Button>
+          </Box>
+        )}
+
+        <Box sx={{ p: 3 }}>
+          {categories.map((category, categoryIndex) => {
+            const categoryTotal = getCategoryTotal(category);
+            const essentialTotal = getCategoryEssentialTotal(category);
+            const isExpanded = expandedCategories[category.id];
+
+            return (
+              <Card
+                key={category.id}
+                sx={{
+                  mb: categoryIndex === categories.length - 1 ? 0 : 3,
+                  border: '2px solid #e2e8f0',
+                  borderRadius: 3,
+                  overflow: 'hidden',
+                  background: '#ffffff',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)'
+                }}
+              >
+                {/* Category Header */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    p: 3,
+                    background:
+                      'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      background:
+                        'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)'
+                    },
+                    transition: 'background 0.2s ease'
+                  }}
+                  onClick={() => handleToggleCategory(category.id)}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <IconButton
                       size="small"
                       sx={{
-                        color: '#d1d5db',
-                        '&:hover': {
-                          color: '#ef4444',
-                          bgcolor: 'rgba(239, 68, 68, 0.1)'
-                        }
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteCategory(category.id);
+                        bgcolor: 'white',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        border: '1px solid #e2e8f0',
+                        '&:hover': { bgcolor: '#f8fafc' }
                       }}
                     >
-                      <DeleteIcon fontSize="small" />
+                      {isExpanded ? (
+                        <ExpandLessIcon fontSize="small" />
+                      ) : (
+                        <ExpandMoreIcon fontSize="small" />
+                      )}
                     </IconButton>
-                  </Tooltip>
-                </Box>
-              </Box>
-
-              {/* Category Items */}
-              <Collapse
-                in={expandedCategories[category.id]}
-                timeout="auto"
-                unmountOnExit
-              >
-                <Box sx={{ p: 2.5, pt: 0 }}>
-                  {category.items.map((item, itemIndex) => (
-                    <Box
-                      key={item.id}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        py: 2.5,
-                        borderBottom:
-                          itemIndex === category.items.length - 1
-                            ? 'none'
-                            : '1px solid #f1f5f9',
-                        '&:hover': {
-                          bgcolor: '#f8fafc',
-                          borderRadius: 1,
-                          mx: -1,
-                          px: 1
+                    <Box>
+                      <EditableField
+                        value={category.name}
+                        isEditing={
+                          editingField === `category-${category.id}-name`
                         }
+                        onStartEdit={() =>
+                          dispatch(
+                            setEditingField(`category-${category.id}-name`)
+                          )
+                        }
+                        onSave={(newValue) =>
+                          handleUpdateCategoryField(
+                            category.id,
+                            'name',
+                            newValue
+                          )
+                        }
+                        onCancel={() => dispatch(setEditingField(null))}
+                        displayVariant="h6"
+                        displayTypographyProps={{
+                          fontWeight: 700,
+                          fontSize: '1.25rem',
+                          color: '#1f2937'
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          ml: 1
+                          // mt: 0.5
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: '#6b7280',
+                            fontSize: '0.8rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1
+                          }}
+                        >
+                          {category.items.length} items
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography
+                        variant="h4"
+                        sx={{
+                          fontWeight: 800,
+                          fontSize: '1.5rem',
+                          color: '#667eea',
+                          lineHeight: 1
+                        }}
+                      >
+                        £{categoryTotal.toLocaleString()}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: '#6b7280',
+                          fontSize: '0.75rem'
+                        }}
+                      >
+                        monthly total
+                      </Typography>
+                    </Box>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => handleCategoryMenuClick(e, category.id)}
+                      sx={{
+                        color: '#9ca3af',
+                        '&:hover': {
+                          color: '#6b7280',
+                          bgcolor: 'rgba(107, 114, 128, 0.1)'
+                        },
+                        width: 32,
+                        height: 32
                       }}
                     >
-                      {/* Item Name - Takes most space */}
-                      <Box sx={{ flex: 1, mr: 3 }}>
-                        <EditableField
-                          value={item.name}
-                          isEditing={editingField === `item-${item.id}-name`}
-                          onStartEdit={() =>
-                            dispatch(setEditingField(`item-${item.id}-name`))
-                          }
-                          onSave={(newValue) =>
-                            handleUpdateItemField(
-                              category.id,
-                              item.id,
-                              'name',
-                              newValue
-                            )
-                          }
-                          onCancel={() => dispatch(setEditingField(null))}
-                          displayVariant="body1"
-                          displayTypographyProps={{
-                            color: '#374151',
-                            fontSize: '1rem',
-                            fontWeight: 500
-                          }}
-                        />
-                      </Box>
+                      <MoreVertIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Box>
 
-                      {/* Essential Icon */}
-                      <Box sx={{ mr: 2 }}>
+                {/* Category Items */}
+                <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                  <Box>
+                    {category.items.map((item, itemIndex) => (
+                      <Box
+                        key={item.id}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 2,
+                          py: 2.5,
+                          px: 2,
+                          border: '1px solid transparent',
+                          '&:hover': {
+                            bgcolor: '#f8fafc',
+                            borderTop: '1px solid #e2e8f0',
+                            borderBottom: '1px solid #e2e8f0'
+                          }
+                        }}
+                      >
+                        {/* Item Name */}
+                        <Box sx={{ flex: 1 }}>
+                          <EditableField
+                            value={item.name}
+                            isEditing={editingField === `item-${item.id}-name`}
+                            onStartEdit={() =>
+                              dispatch(setEditingField(`item-${item.id}-name`))
+                            }
+                            onSave={(newValue) =>
+                              handleUpdateItemField(
+                                category.id,
+                                item.id,
+                                'name',
+                                newValue
+                              )
+                            }
+                            onCancel={() => dispatch(setEditingField(null))}
+                            displayVariant="body1"
+                            displayTypographyProps={{
+                              color: '#374151',
+                              fontSize: '1rem',
+                              fontWeight: item.isEssential ? 600 : 500
+                            }}
+                          />
+                        </Box>
+
+                        {/* Essential Toggle - Smaller */}
                         <Tooltip
                           title={
                             item.isEssential
                               ? 'Essential expense'
-                              : 'Optional expense'
+                              : 'Mark as essential'
                           }
                         >
                           <IconButton
                             size="small"
                             sx={{
                               color: item.isEssential ? '#f59e0b' : '#d1d5db',
+                              bgcolor: item.isEssential
+                                ? '#fef3c7'
+                                : 'transparent',
+                              border: `1px solid ${item.isEssential ? '#f59e0b' : '#e2e8f0'}`,
                               '&:hover': {
-                                color: item.isEssential ? '#d97706' : '#f59e0b',
-                                bgcolor: 'rgba(245, 158, 11, 0.1)'
+                                color: '#f59e0b',
+                                bgcolor: '#fef3c7'
                               },
-                              width: 36,
-                              height: 36
+                              width: 30,
+                              height: 30
                             }}
                             onClick={() =>
                               handleToggleItemEssential(category.id, item.id)
                             }
                           >
                             {item.isEssential ? (
-                              <StarIcon fontSize="small" />
+                              <StarIcon sx={{ fontSize: 16 }} />
                             ) : (
-                              <StarBorderIcon fontSize="small" />
+                              <StarBorderIcon sx={{ fontSize: 16 }} />
                             )}
                           </IconButton>
                         </Tooltip>
-                      </Box>
 
-                      {/* Delete Icon */}
-                      <Box sx={{ mr: 2 }}>
-                        <Tooltip title="Delete item">
-                          <IconButton
+                        {/* Amount Input */}
+                        <Box sx={{ width: 110 }}>
+                          <TextField
+                            variant="outlined"
                             size="small"
-                            sx={{
-                              color: '#d1d5db',
-                              '&:hover': {
-                                color: '#ef4444',
-                                bgcolor: 'rgba(239, 68, 68, 0.1)'
-                              },
-                              width: 36,
-                              height: 36
-                            }}
-                            onClick={() =>
-                              handleDeleteItem(category.id, item.id)
-                            }
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-
-                      {/* Amount Input - Rightmost */}
-                      <Box sx={{ width: 140 }}>
-                        <TextField
-                          variant="outlined"
-                          size="medium"
-                          type="number"
-                          value={getItemValue(
-                            category.id,
-                            item.id,
-                            item.amount
-                          )}
-                          onChange={(e) =>
-                            handleItemAmountChange(
+                            type="number"
+                            value={getItemValue(
                               category.id,
                               item.id,
-                              parseFloat(e.target.value) || 0
-                            )
-                          }
-                          InputProps={{
-                            startAdornment: (
-                              <Typography
-                                variant="body1"
-                                sx={{
-                                  mr: 0.5,
-                                  color: '#6b7280',
-                                  fontWeight: 600
-                                }}
-                              >
-                                £
-                              </Typography>
-                            )
-                          }}
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              backgroundColor: 'white',
-                              height: '48px',
-                              '& fieldset': {
-                                borderColor: '#e2e8f0',
-                                borderWidth: '1.5px'
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#cbd5e1'
-                              },
-                              '&.Mui-focused fieldset': {
-                                borderColor: '#667eea',
-                                borderWidth: 2
-                              }
-                            },
-                            '& input': {
-                              fontSize: '1rem',
-                              fontWeight: 600,
-                              textAlign: 'right',
-                              padding: '12px 8px'
+                              item.amount
+                            )}
+                            onChange={(e) =>
+                              handleItemAmountChange(
+                                category.id,
+                                item.id,
+                                parseFloat(e.target.value) || 0
+                              )
                             }
+                            onFocus={handleInputFocus}
+                            InputProps={{
+                              startAdornment: (
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    mr: 0.5,
+                                    color: '#667eea',
+                                    fontWeight: 700
+                                  }}
+                                >
+                                  £
+                                </Typography>
+                              )
+                            }}
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                backgroundColor: 'white',
+                                borderRadius: 2,
+                                '& fieldset': {
+                                  borderColor: '#e2e8f0',
+                                  borderWidth: '2px'
+                                },
+                                '&:hover fieldset': {
+                                  borderColor: '#cbd5e1'
+                                },
+                                '&.Mui-focused fieldset': {
+                                  borderColor: '#667eea',
+                                  borderWidth: 2,
+                                  boxShadow:
+                                    '0 0 0 3px rgba(102, 126, 234, 0.1)'
+                                }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: '1.1rem',
+                                fontWeight: 600,
+                                textAlign: 'right',
+                                padding: '8px 12px',
+                                color: '#374151'
+                              }
+                            }}
+                            fullWidth
+                          />
+                        </Box>
+
+                        {/* Actions Menu */}
+                        <IconButton
+                          size="small"
+                          onClick={(e) =>
+                            handleItemMenuClick(e, category.id, item.id)
+                          }
+                          sx={{
+                            color: '#9ca3af',
+                            '&:hover': {
+                              color: '#6b7280',
+                              bgcolor: 'rgba(107, 114, 128, 0.1)'
+                            },
+                            width: 32,
+                            height: 32
                           }}
-                          fullWidth
-                        />
+                        >
+                          <MoreVertIcon fontSize="small" />
+                        </IconButton>
                       </Box>
+                    ))}
+
+                    <Divider sx={{ my: 2 }} />
+
+                    <Box sx={{ px: 3, pb: 3 }}>
+                      <Button
+                        startIcon={<AddIcon />}
+                        sx={{
+                          color: '#667eea',
+                          fontSize: '0.875rem',
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          '&:hover': {
+                            bgcolor: 'rgba(102, 126, 234, 0.08)'
+                          }
+                        }}
+                        onClick={() =>
+                          handleAddItem(category.id, category.name)
+                        }
+                      >
+                        Add {category.name.toLowerCase()} item
+                      </Button>
                     </Box>
-                  ))}
-                  <Button
-                    size="small"
-                    startIcon={<AddIcon />}
-                    sx={{
-                      mt: 2,
-                      color: '#667eea',
-                      fontSize: '0.875rem',
-                      textTransform: 'none',
-                      fontWeight: 500,
-                      '&:hover': {
-                        bgcolor: 'rgba(102, 126, 234, 0.08)'
-                      }
-                    }}
-                    onClick={() => handleAddItem(category.id, category.name)}
-                  >
-                    Add {category.name.toLowerCase()}
-                  </Button>
-                </Box>
-              </Collapse>
-            </Box>
-          ))}
+                  </Box>
+                </Collapse>
+              </Card>
+            );
+          })}
 
           <Button
             fullWidth
@@ -552,25 +739,88 @@ const MonthlyExpenses = () => {
             startIcon={<AddIcon />}
             sx={{
               mt: 3,
-              py: 1.5,
-              color: '#6b7280',
+              py: 2,
+              color: '#667eea',
               borderColor: '#e2e8f0',
               backgroundColor: '#f8fafc',
               textTransform: 'none',
               fontSize: '0.875rem',
-              fontWeight: 500,
+              fontWeight: 600,
+              border: '2px dashed #cbd5e1',
               '&:hover': {
                 backgroundColor: '#f1f5f9',
-                borderColor: '#cbd5e1',
-                color: '#374151'
+                borderColor: '#667eea',
+                color: '#5a67d8'
               }
             }}
             onClick={handleAddCategory}
           >
-            Add Category
+            Add New Category
           </Button>
         </Box>
       </CardContent>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        PaperProps={{
+          sx: {
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
+            borderRadius: 2,
+            minWidth: 160
+          }
+        }}
+      >
+        {selectedItem && (
+          <>
+            <MenuItem
+              onClick={() =>
+                handleCloneItem(selectedItem.categoryId, selectedItem.itemId)
+              }
+            >
+              <ListItemIcon>
+                <ContentCopyIcon sx={{ color: '#667eea' }} />
+              </ListItemIcon>
+              <ListItemText>Clone Item</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={() =>
+                handleDeleteItem(selectedItem.categoryId, selectedItem.itemId)
+              }
+              sx={{ color: '#ef4444' }}
+            >
+              <ListItemIcon>
+                <DeleteIcon sx={{ color: '#ef4444' }} />
+              </ListItemIcon>
+              <ListItemText>Delete Item</ListItemText>
+            </MenuItem>
+          </>
+        )}
+        {selectedCategory && (
+          <>
+            <MenuItem onClick={() => handleCloneCategory(selectedCategory)}>
+              <ListItemIcon>
+                <ContentCopyIcon sx={{ color: '#667eea' }} />
+              </ListItemIcon>
+              <ListItemText>Clone Category</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleDeleteCategory(selectedCategory);
+                setAnchorEl(null);
+              }}
+              sx={{ color: '#ef4444' }}
+            >
+              <ListItemIcon>
+                <DeleteIcon sx={{ color: '#ef4444' }} />
+              </ListItemIcon>
+              <ListItemText>Delete Category</ListItemText>
+            </MenuItem>
+          </>
+        )}
+      </Menu>
 
       <ConfirmationModal
         open={confirmModal.open}
