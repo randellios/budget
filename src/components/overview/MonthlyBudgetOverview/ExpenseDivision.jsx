@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
-import { Box, Typography, Chip, Divider } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Chip,
+  Divider,
+  LinearProgress,
+  Tooltip
+} from '@mui/material';
 import {
   Home as HomeIcon,
   ShoppingCart as ShoppingCartIcon,
   Savings as SavingsIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon
+  TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon,
+  Balance as BalanceIcon,
+  Psychology as PsychologyIcon,
+  Info as InfoIcon
 } from '@mui/icons-material';
 import { useAppSelector } from '../../../store/hooks';
 import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
@@ -24,6 +33,7 @@ import {
   selectDebts
 } from '../../../store/slices/debtsSlice';
 import TemperatureGauge from './TemperatureGauge';
+import AdvancedFinancialHealth from './AdvancedFinancialHealth';
 
 const ExpenseDivision = () => {
   const monthlyIncome = useAppSelector(selectMonthlyIncome);
@@ -36,274 +46,491 @@ const ExpenseDivision = () => {
   const savingsGoals = useAppSelector(selectSavingsGoals);
   const debts = useAppSelector(selectDebts);
 
-  const getEssentialCategories = () => {
-    return expenseCategories
-      .filter((cat) =>
-        cat.items.some((item) => item.isEssential && item.amount > 0)
-      )
-      .map((cat) => ({ name: cat.name, icon: cat.icon }));
+  // Calculate insights and recommendations
+  const getBudgetAnalysis = () => {
+    const essential = {
+      current: essentialExpenses,
+      target: monthlyIncome * 0.5,
+      percentage:
+        monthlyIncome > 0 ? (essentialExpenses / monthlyIncome) * 100 : 0
+    };
+
+    const optional = {
+      current: nonEssentialExpenses,
+      target: monthlyIncome * 0.3,
+      percentage:
+        monthlyIncome > 0 ? (nonEssentialExpenses / monthlyIncome) * 100 : 0
+    };
+
+    const savingsDebt = {
+      current: savingsContributions + debtPayments,
+      target: monthlyIncome * 0.2,
+      percentage:
+        monthlyIncome > 0
+          ? ((savingsContributions + debtPayments) / monthlyIncome) * 100
+          : 0
+    };
+
+    return { essential, optional, savingsDebt };
   };
 
-  const getNonEssentialCategories = () => {
-    return expenseCategories
-      .filter((cat) =>
-        cat.items.some((item) => !item.isEssential && item.amount > 0)
-      )
-      .map((cat) => ({ name: cat.name, icon: cat.icon }));
+  const getTopSpendingInsights = () => {
+    const allItems = [];
+
+    expenseCategories.forEach((cat) => {
+      cat.items.forEach((item) => {
+        if (item.amount > 0) {
+          allItems.push({
+            name: item.name,
+            category: cat.name,
+            amount: item.amount,
+            isEssential: item.isEssential,
+            percentageOfIncome:
+              monthlyIncome > 0 ? (item.amount / monthlyIncome) * 100 : 0
+          });
+        }
+      });
+    });
+
+    return allItems.sort((a, b) => b.amount - a.amount).slice(0, 5);
   };
 
-  const getSavingsAndDebtCategories = () => {
-    const categories = [];
-    savingsGoals.forEach((goal) => {
-      if (goal.monthlyContribution > 0) {
-        categories.push({ name: goal.name, icon: goal.icon });
-      }
-    });
-    debts.forEach((debt) => {
-      if (debt.monthlyPayment > 0) {
-        categories.push({ name: debt.name, icon: debt.icon });
-      }
-    });
-    return categories;
+  const getBudgetHealth = () => {
+    const analysis = getBudgetAnalysis();
+    const totalAllocated =
+      analysis.essential.current +
+      analysis.optional.current +
+      analysis.savingsDebt.current;
+    const remaining = monthlyIncome - totalAllocated;
+
+    let score = 100;
+    let issues = [];
+
+    // Check essential expenses (max 25 points deduction)
+    const essentialVariance = Math.abs(analysis.essential.percentage - 50);
+    if (essentialVariance > 15) {
+      score -= 25;
+      issues.push({
+        category: 'essential',
+        severity: 'high',
+        variance: essentialVariance
+      });
+    } else if (essentialVariance > 10) {
+      score -= 15;
+      issues.push({
+        category: 'essential',
+        severity: 'medium',
+        variance: essentialVariance
+      });
+    } else if (essentialVariance > 5) {
+      score -= 8;
+      issues.push({
+        category: 'essential',
+        severity: 'low',
+        variance: essentialVariance
+      });
+    }
+
+    // Check optional expenses (max 20 points deduction)
+    const optionalVariance = Math.abs(analysis.optional.percentage - 30);
+    if (optionalVariance > 15) {
+      score -= 20;
+      issues.push({
+        category: 'optional',
+        severity: 'high',
+        variance: optionalVariance
+      });
+    } else if (optionalVariance > 10) {
+      score -= 12;
+      issues.push({
+        category: 'optional',
+        severity: 'medium',
+        variance: optionalVariance
+      });
+    } else if (optionalVariance > 5) {
+      score -= 6;
+      issues.push({
+        category: 'optional',
+        severity: 'low',
+        variance: optionalVariance
+      });
+    }
+
+    // Check savings/debt (max 30 points deduction - most important)
+    const savingsVariance = Math.abs(analysis.savingsDebt.percentage - 20);
+    if (savingsVariance > 15) {
+      score -= 30;
+      issues.push({
+        category: 'savings',
+        severity: 'high',
+        variance: savingsVariance
+      });
+    } else if (savingsVariance > 10) {
+      score -= 18;
+      issues.push({
+        category: 'savings',
+        severity: 'medium',
+        variance: savingsVariance
+      });
+    } else if (savingsVariance > 5) {
+      score -= 10;
+      issues.push({
+        category: 'savings',
+        severity: 'low',
+        variance: savingsVariance
+      });
+    }
+
+    // Check for over-spending (max 25 points deduction)
+    if (remaining < -200) {
+      score -= 25;
+      issues.push({
+        category: 'overspending',
+        severity: 'high',
+        amount: Math.abs(remaining)
+      });
+    } else if (remaining < 0) {
+      score -= 15;
+      issues.push({
+        category: 'overspending',
+        severity: 'medium',
+        amount: Math.abs(remaining)
+      });
+    }
+
+    score = Math.max(score, 0);
+
+    let status, color, description;
+    if (score >= 90) {
+      status = 'Excellent';
+      color = '#10b981';
+      description =
+        'Your budget follows best practices and sets you up for financial success.';
+    } else if (score >= 75) {
+      status = 'Good';
+      color = '#667eea';
+      description = 'Solid budget with room for minor improvements.';
+    } else if (score >= 60) {
+      status = 'Fair';
+      color = '#f59e0b';
+      description =
+        'Budget needs some adjustments to optimize your financial health.';
+    } else {
+      status = 'Needs Work';
+      color = '#ef4444';
+      description =
+        'Significant budget improvements needed for financial stability.';
+    }
+
+    return { score, status, color, description, issues };
   };
+
+  const getOptimizationTips = () => {
+    const budgetHealth = getBudgetHealth();
+    const analysis = getBudgetAnalysis();
+    const tips = [];
+
+    budgetHealth.issues.forEach((issue) => {
+      let tip = {};
+
+      switch (issue.category) {
+        case 'essential':
+          if (analysis.essential.percentage > 50) {
+            tip = {
+              title: `Reduce Essential Expenses`,
+              description: `Your essentials are ${issue.variance.toFixed(1)}% over the 50% target`,
+              action: `Lower essentials by £${(analysis.essential.current - analysis.essential.target).toFixed(0)}`,
+              points: `+${issue.severity === 'high' ? 25 : issue.severity === 'medium' ? 15 : 8} points`,
+              priority: issue.severity,
+              icon: '🏠'
+            };
+          } else {
+            tip = {
+              title: `Increase Essential Budget`,
+              description: `You may be under-budgeting for necessities`,
+              action: `Review if all essential expenses are captured`,
+              points: `+${issue.severity === 'high' ? 25 : issue.severity === 'medium' ? 15 : 8} points`,
+              priority: issue.severity,
+              icon: '🏠'
+            };
+          }
+          break;
+
+        case 'optional':
+          if (analysis.optional.percentage > 30) {
+            tip = {
+              title: `Cut Discretionary Spending`,
+              description: `Lifestyle spending is ${issue.variance.toFixed(1)}% over the 30% target`,
+              action: `Reduce optional expenses by £${(analysis.optional.current - analysis.optional.target).toFixed(0)}`,
+              points: `+${issue.severity === 'high' ? 20 : issue.severity === 'medium' ? 12 : 6} points`,
+              priority: issue.severity,
+              icon: '🛍️'
+            };
+          } else {
+            tip = {
+              title: `Enjoy Life More`,
+              description: `You have room for more lifestyle spending`,
+              action: `Could spend £${(analysis.optional.target - analysis.optional.current).toFixed(0)} more on wants`,
+              points: `+${issue.severity === 'high' ? 20 : issue.severity === 'medium' ? 12 : 6} points`,
+              priority: issue.severity,
+              icon: '🎉'
+            };
+          }
+          break;
+
+        case 'savings':
+          if (analysis.savingsDebt.percentage < 20) {
+            tip = {
+              title: `Boost Future Wealth`,
+              description: `Only ${analysis.savingsDebt.percentage.toFixed(1)}% going to savings/debt`,
+              action: `Increase by £${(analysis.savingsDebt.target - analysis.savingsDebt.current).toFixed(0)} monthly`,
+              points: `+${issue.severity === 'high' ? 30 : issue.severity === 'medium' ? 18 : 10} points`,
+              priority: issue.severity,
+              icon: '💰'
+            };
+          } else {
+            tip = {
+              title: `Optimize Allocation`,
+              description: `High savings rate - ensure emergency fund is covered first`,
+              action: `Review if savings/debt balance is optimal`,
+              points: `+${issue.severity === 'high' ? 30 : issue.severity === 'medium' ? 18 : 10} points`,
+              priority: issue.severity,
+              icon: '⚖️'
+            };
+          }
+          break;
+
+        case 'overspending':
+          tip = {
+            title: `Stop Overspending`,
+            description: `You're spending £${issue.amount.toFixed(0)} more than you earn`,
+            action: `Cut expenses or increase income to balance budget`,
+            points: `+${issue.severity === 'high' ? 25 : 15} points`,
+            priority: 'high',
+            icon: '🚨'
+          };
+          break;
+      }
+
+      if (tip.title) tips.push(tip);
+    });
+
+    // Sort by priority (high first)
+    tips.sort((a, b) => {
+      const priorityOrder = { high: 3, medium: 2, low: 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    });
+
+    return tips;
+  };
+
+  const analysis = getBudgetAnalysis();
+  const topSpending = getTopSpendingInsights();
+  const budgetHealth = getBudgetHealth();
+  const optimizationTips = getOptimizationTips();
 
   const budgetCategories = [
     {
       title: 'Essential',
-      amount: essentialExpenses,
-      target: monthlyIncome * 0.5,
+      subtitle: 'Must-have expenses',
+      amount: analysis.essential.current,
+      target: analysis.essential.target,
+      percentage: analysis.essential.percentage,
       targetPercentage: 50,
       icon: HomeIcon,
-      color: '#667eea', // Changed to match your theme's primary color
-      bgColor: '#f0f4ff', // Light purple-blue background
-      borderColor: '#c7d2fe', // Light purple-blue border
-      categories: getEssentialCategories()
+      color: '#667eea'
     },
     {
       title: 'Optional',
-      amount: nonEssentialExpenses,
-      target: monthlyIncome * 0.3,
+      subtitle: 'Lifestyle & wants',
+      amount: analysis.optional.current,
+      target: analysis.optional.target,
+      percentage: analysis.optional.percentage,
       targetPercentage: 30,
       icon: ShoppingCartIcon,
-      color: '#f59e0b',
-      bgColor: '#fef9e7',
-      borderColor: '#fbbf24',
-      categories: getNonEssentialCategories()
+      color: '#f59e0b'
     },
     {
-      title: 'Savings & Debts',
-      amount: savingsContributions + debtPayments,
-      target: monthlyIncome * 0.2,
+      title: 'Future Wealth',
+      subtitle: 'Savings & debt payments',
+      amount: analysis.savingsDebt.current,
+      target: analysis.savingsDebt.target,
+      percentage: analysis.savingsDebt.percentage,
       targetPercentage: 20,
       icon: SavingsIcon,
-      color: '#10b981',
-      bgColor: '#f0fdf4',
-      borderColor: '#bbf7d0',
-      categories: getSavingsAndDebtCategories()
+      color: '#10b981'
     }
   ];
 
-  const getStatusIndicator = (amount, target) => {
-    const percentage = target > 0 ? (amount / target) * 100 : 0;
-    if (percentage <= 80) {
-      return {
-        icon: CheckCircleIcon,
-        color: '#10b981',
-        status: 'Under Target'
-      };
-    } else if (percentage <= 110) {
-      return { icon: CheckCircleIcon, color: '#667eea', status: 'On Track' };
-    } else if (percentage <= 130) {
-      return { icon: WarningIcon, color: '#f59e0b', status: 'Over Target' };
-    }
-    return { icon: ErrorIcon, color: '#ef4444', status: 'Significantly Over' };
-  };
-
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: '1fr auto 1fr auto 1fr',
-        gap: 0,
-        alignItems: 'start'
-      }}
-    >
-      {budgetCategories.map((category, index) => {
-        const actualPercentage =
-          monthlyIncome > 0 ? (category.amount / monthlyIncome) * 100 : 0;
-        const progressPercentage = actualPercentage;
-        const statusInfo = getStatusIndicator(category.amount, category.target);
-        const IconComponent = category.icon;
-        const StatusIcon = statusInfo.icon;
+    <Box>
+      {/* 50/30/20 Analysis */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: '1fr auto 1fr auto 1fr',
+          gap: 0,
+          alignItems: 'stretch',
+          mb: 4
+        }}
+      >
+        {budgetCategories.map((category, index) => {
+          const variance = category.percentage - category.targetPercentage;
+          const isOver = variance > 5;
+          const isUnder = variance < -5;
 
-        return (
-          <React.Fragment key={index}>
-            <Box sx={{ p: 3 }}>
+          return (
+            <React.Fragment key={index}>
               <Box
                 sx={{
+                  p: 3,
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  mb: 2
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box
-                    sx={{
-                      backgroundColor: category.color,
-                      borderRadius: 2,
-                      p: 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <IconComponent sx={{ fontSize: 20, color: 'white' }} />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 700,
-                      fontSize: '1.125rem',
-                      color: '#1f2937'
-                    }}
-                  >
-                    {category.title}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                {category.categories.length > 0 ? (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {category.categories.slice(0, 4).map((cat, catIndex) => (
-                      <Chip
-                        key={catIndex}
-                        label={
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5
-                            }}
-                          >
-                            <Typography sx={{ fontSize: '12px' }}>
-                              {cat.icon}
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                fontSize: '0.7rem',
-                                fontWeight: 500
-                              }}
-                            >
-                              {cat.name}
-                            </Typography>
-                          </Box>
-                        }
-                        size="small"
-                        sx={{
-                          backgroundColor: `${category.color}15`,
-                          color: category.color,
-                          border: `1px solid ${category.color}40`,
-                          fontSize: '0.7rem',
-                          height: 24,
-                          '& .MuiChip-label': {
-                            px: 1
-                          }
-                        }}
-                      />
-                    ))}
-                    {category.categories.length > 4 && (
-                      <Chip
-                        label={`+${category.categories.length - 4} more`}
-                        size="small"
-                        sx={{
-                          backgroundColor: '#f1f5f9',
-                          color: '#64748b',
-                          border: '1px solid #cbd5e1',
-                          fontSize: '0.65rem',
-                          height: 24
-                        }}
-                      />
-                    )}
-                  </Box>
-                ) : (
+                <Box>
                   <Box
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      height: '24px'
+                      gap: 1,
+                      mb: 1
                     }}
                   >
-                    <Typography
-                      variant="caption"
+                    <Box
                       sx={{
-                        color: '#9ca3af',
-                        fontSize: '0.75rem',
-                        fontStyle: 'italic'
+                        backgroundColor: category.color,
+                        borderRadius: 2,
+                        p: 1
                       }}
                     >
-                      No active categories
-                    </Typography>
+                      <category.icon sx={{ fontSize: 20, color: 'white' }} />
+                    </Box>
+                    <Box>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: '1.125rem',
+                          color: '#1f2937'
+                        }}
+                      >
+                        {category.title}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: '#6b7280', fontSize: '0.75rem' }}
+                      >
+                        {category.subtitle}
+                      </Typography>
+                    </Box>
                   </Box>
-                )}
-              </Box>
 
-              <Box sx={{ mb: 3 }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'baseline',
-                    mb: 1
-                  }}
-                >
-                  <Typography
-                    variant="h4"
-                    sx={{
-                      fontWeight: 800,
-                      fontSize: '2rem',
-                      color: category.color,
-                      lineHeight: 1
-                    }}
-                  >
-                    £{category.amount.toLocaleString()}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      fontSize: '1.1rem',
-                      fontWeight: 600,
-                      color: '#6b7280'
-                    }}
-                  >
-                    {actualPercentage.toFixed(1)}%
-                  </Typography>
+                  <Box sx={{ mb: 2 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'baseline',
+                        mb: 1
+                      }}
+                    >
+                      <Typography
+                        variant="h4"
+                        sx={{
+                          fontWeight: 800,
+                          fontSize: '1.75rem',
+                          color: category.color
+                        }}
+                      >
+                        {category.percentage.toFixed(1)}%
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                        Target: {category.targetPercentage}%
+                      </Typography>
+                    </Box>
+
+                    <TemperatureGauge
+                      percentage={category.percentage}
+                      targetPercentage={category.targetPercentage}
+                      isReverse={category.title === 'Future Wealth'}
+                    />
+
+                    <Box sx={{ mt: 1 }}>
+                      {isOver && (
+                        <Chip
+                          icon={<TrendingUpIcon sx={{ fontSize: 14 }} />}
+                          label={`${variance.toFixed(1)}% over target`}
+                          size="small"
+                          sx={{
+                            backgroundColor: '#fee2e2',
+                            color: '#dc2626',
+                            fontSize: '0.7rem'
+                          }}
+                        />
+                      )}
+                      {isUnder && (
+                        <Chip
+                          icon={<TrendingDownIcon sx={{ fontSize: 14 }} />}
+                          label={`${Math.abs(variance).toFixed(1)}% under target`}
+                          size="small"
+                          sx={{
+                            backgroundColor: '#fef3c7',
+                            color: '#d97706',
+                            fontSize: '0.7rem'
+                          }}
+                        />
+                      )}
+                      {!isOver && !isUnder && (
+                        <Chip
+                          icon={<BalanceIcon sx={{ fontSize: 14 }} />}
+                          label="On target"
+                          size="small"
+                          sx={{
+                            backgroundColor: '#dcfce7',
+                            color: '#166534',
+                            fontSize: '0.7rem'
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </Box>
                 </Box>
 
-                <TemperatureGauge
-                  percentage={actualPercentage}
-                  targetPercentage={category.targetPercentage}
-                  isReverse={category.title === 'Savings & Debts'}
-                />
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 600, color: '#374151', fontSize: '1rem' }}
+                >
+                  £{category.amount.toLocaleString()}/mo
+                </Typography>
               </Box>
-            </Box>
 
-            {index < budgetCategories.length - 1 && (
-              <Divider
-                orientation="vertical"
-                flexItem
-                sx={{
-                  borderColor: '#e2e8f0',
-                  borderWidth: 1,
-                  mx: 0
-                }}
-              />
-            )}
-          </React.Fragment>
-        );
-      })}
+              {index < budgetCategories.length - 1 && (
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  sx={{ borderColor: '#e2e8f0', borderWidth: 1 }}
+                />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </Box>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+        <Box
+          sx={{
+            p: 3,
+            bgcolor: '#ffffff',
+            borderRadius: 3,
+            border: '1px solid #e5e7eb'
+          }}
+        >
+          snapshot area
+        </Box>
+        <AdvancedFinancialHealth />
+      </Box>
     </Box>
   );
 };
