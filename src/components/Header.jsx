@@ -5,11 +5,8 @@ const Header = () => {
   return (
     <Box
       sx={{
-        bgcolor: 'white',
-        borderBottom: '1px solid #e3e8ef',
         px: 3,
-        py: 1,
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        py: 0.5
       }}
     >
       <Box

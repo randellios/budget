@@ -18,7 +18,7 @@ export default function Dashboard() {
         sx={{
           display: 'flex',
           minHeight: '100vh',
-          bgcolor: 'background.default'
+          bgcolor: 'white'
         }}
       >
         {/* Sidebar */}
@@ -34,7 +34,14 @@ export default function Dashboard() {
           }}
         >
           {/* Logo/Brand Section - Fixed */}
-          <Box sx={{ p: 3, bgcolor: '#cbd5e1 ', borderTopRightRadius: '24px' }}>
+          <Box
+            sx={{
+              pt: 3,
+              px: 3,
+              bgcolor: '#cbd5e1 ',
+              borderTopRightRadius: '24px'
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box
                 sx={{
@@ -73,27 +80,12 @@ export default function Dashboard() {
               flex: 1,
               bgcolor: '#cbd5e1 ',
               overflow: 'auto',
-              px: 2,
-              py: 2
+              px: 3,
+              pb: 2
             }}
           >
             <Sidebar />
           </Box>
-        </Box>
-
-        {/* Header - Behind sidebar */}
-        <Box
-          component="header"
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1100,
-            borderBottom: '1px solid #e0e0e0'
-          }}
-        >
-          <Header />
         </Box>
 
         {/* Main Content Area */}
@@ -103,17 +95,21 @@ export default function Dashboard() {
             marginLeft: '530px',
             display: 'flex',
             flexDirection: 'column',
-            minHeight: '100vh',
-            paddingTop: '64px'
+            minHeight: '100vh'
           }}
         >
+          <Header />
+
           <Box
             component="main"
             sx={{
               flexGrow: 1,
               p: 3,
+              pt: 0,
               width: '100%',
-              margin: '0 auto'
+              margin: '0 auto',
+              mt: '-15px'
+
               // bgcolor: '#fdfdfd'
             }}
           >

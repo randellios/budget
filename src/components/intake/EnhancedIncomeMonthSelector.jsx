@@ -83,19 +83,12 @@ const EnhancedIncomeMonthSelector = () => {
   return (
     <Box
       sx={{
-        position: 'sticky',
-        top: '-10px',
+        top: '0px',
         zIndex: 100,
         mx: -2,
-        // background: 'linear-gradient(135deg, #ffffff 0%, #fdfdfd 100%)',
-        // border: '2px solid #667eea',
-        // borderLeft: 'none',
-        // borderRight: 'none',
-        // boxShadow:
-        //   '0 6px 24px rgba(102, 126, 234, 0.12), 0 3px 12px rgba(102, 126, 234, 0.08)',
-        // backdropFilter: 'blur(20px)',
-        px: 2,
-        pt: 2
+        bgcolor: '#cbd5e1',
+        pt: 2,
+        px: 2
       }}
     >
       <Card
