@@ -1,28 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Button } from '@mui/material';
+import { Box, Typography, TextField, LinearProgress } from '@mui/material';
 import {
   AccountBalanceWallet as WalletIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
-import SaveStatusIndicator from '../SaveStatusIndicator';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import {
   selectMonthlyIncome,
   updateMonthlyIncome
 } from '../../store/slices/incomeSlice';
 import {
-  selectSaveError,
-  saveBudgetData,
-  clearSaveError
-} from '../../store/slices/apiSlice';
+  selectTotalOutgoings,
+  selectRemainingIncome,
+  selectBudgetAllocationPercentage
+} from '../../store/selectors/budgetSelectors';
 
 const MonthlyIncome = () => {
+  const dispatch = useAppDispatch();
+  const monthlyIncome = useAppSelector(selectMonthlyIncome);
+  const totalAllocated = useAppSelector(selectTotalOutgoings);
+  const remaining = useAppSelector(selectRemainingIncome);
+  const allocationPercentage = useAppSelector(selectBudgetAllocationPercentage);
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState('');
   const inputRef = useRef(null);
-  const income = useAppSelector(selectMonthlyIncome);
-  const saveError = useAppSelector(selectSaveError);
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -31,17 +32,8 @@ const MonthlyIncome = () => {
     }
   }, [isEditing]);
 
-  useEffect(() => {
-    if (saveError) {
-      const timer = setTimeout(() => {
-        dispatch(clearSaveError());
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [saveError, dispatch]);
-
   const handleStartEdit = () => {
-    setTempValue(income.toString());
+    setTempValue(monthlyIncome.toString());
     setIsEditing(true);
   };
 
@@ -64,143 +56,188 @@ const MonthlyIncome = () => {
     }
   };
 
-  const handleManualSave = () => {
-    dispatch(saveBudgetData());
+  const getStatusColor = () => {
+    if (remaining > monthlyIncome * 0.1) return '#10b981';
+    if (remaining > 0) return '#667eea';
+    if (remaining >= -100) return '#f59e0b';
+    return '#ef4444';
   };
 
   return (
-    <Card sx={{ mb: 2 }}>
-      <CardContent sx={{ p: 2.5 }}>
-        {saveError && (
+    <Box sx={{ mb: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+        <Box
+          sx={{
+            width: 28,
+            height: 28,
+            borderRadius: 1.5,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white'
+          }}
+        >
+          <WalletIcon sx={{ fontSize: 16 }} />
+        </Box>
+        <Typography variant="body1" sx={{ fontWeight: 600, color: '#374151' }}>
+          Monthly Income
+        </Typography>
+      </Box>
+
+      {isEditing ? (
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography
+              sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#667eea' }}
+            >
+              £
+            </Typography>
+            <TextField
+              inputRef={inputRef}
+              type="number"
+              value={tempValue}
+              onChange={(e) => setTempValue(e.target.value)}
+              onBlur={handleSave}
+              onKeyDown={handleKeyDown}
+              variant="outlined"
+              size="small"
+              placeholder="Enter amount"
+              sx={{
+                flex: 1,
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'white',
+                  borderRadius: 2,
+                  '& fieldset': { borderColor: '#667eea', borderWidth: 2 },
+                  '&:hover fieldset': { borderColor: '#5a67d8' },
+                  '&.Mui-focused fieldset': { borderColor: '#667eea' }
+                },
+                '& input': {
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: '#667eea',
+                  textAlign: 'left',
+                  padding: '8px 12px'
+                }
+              }}
+            />
+          </Box>
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            mb: 3,
+            p: 2,
+            backgroundColor: '#f8fafc',
+            borderRadius: 2,
+            border: '2px solid #e2e8f0',
+            cursor: 'pointer',
+            position: 'relative',
+            overflow: 'hidden',
+            '&:hover': {
+              border: '2px solid #667eea',
+              transform: 'translateY(-1px)',
+              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.12)'
+            },
+            transition: 'all 0.2s ease'
+          }}
+          onClick={handleStartEdit}
+        >
           <Box
             sx={{
-              mb: 2,
-              p: 1.5,
-              backgroundColor: '#fef2f2',
-              border: '1px solid #fca5a5',
-              borderRadius: 1,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
+              mb: 1
             }}
           >
             <Typography
-              variant="caption"
-              sx={{ color: '#dc2626', fontSize: '0.8rem' }}
-            >
-              Failed to save: {saveError}
-            </Typography>
-            <Button
-              size="small"
-              onClick={handleManualSave}
+              variant="h4"
               sx={{
-                color: '#dc2626',
-                fontSize: '0.7rem',
-                textTransform: 'none',
-                minWidth: 'auto'
+                fontWeight: 800,
+                fontSize: '1.5rem',
+                color: '#1f2937',
+                lineHeight: 1
               }}
             >
-              Retry
-            </Button>
+              £{monthlyIncome.toLocaleString()}
+            </Typography>
+            <Box
+              sx={{
+                width: 24,
+                height: 24,
+                borderRadius: 1,
+                backgroundColor: '#f0f4ff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid #e0e7ff'
+              }}
+            >
+              <EditIcon sx={{ fontSize: 12, color: '#667eea' }} />
+            </Box>
           </Box>
-        )}
+          <Typography
+            variant="caption"
+            sx={{
+              color: '#6b7280',
+              fontSize: '0.7rem',
+              fontWeight: 500,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}
+          >
+            Click to edit
+          </Typography>
+        </Box>
+      )}
+
+      <Box>
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
             justifyContent: 'space-between',
-            p: 1.5,
-            borderRadius: 1.5,
-            backgroundColor: '#f8fafc',
-            border: '2px solid #e2e8f0'
+            alignItems: 'baseline',
+            mb: 1
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: '#6b7280', fontSize: '0.8rem', fontWeight: 500 }}
+          >
+            Allocated: £{totalAllocated.toLocaleString()}
+          </Typography>
+          {remaining !== 0 && (
             <Typography
-              variant="h6"
+              variant="caption"
               sx={{
-                fontWeight: 600,
-                fontSize: '1rem',
-                color: '#1f2937'
+                color: getStatusColor(),
+                fontSize: '.9rem',
+                fontWeight: 600
               }}
             >
-              Monthly Income
+              {remaining > 0
+                ? `+£${remaining.toLocaleString()}`
+                : `-£${Math.abs(remaining).toLocaleString()}`}
             </Typography>
-            <SaveStatusIndicator context="income" />
-          </Box>
-
-          {isEditing ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Box
-                sx={{
-                  position: 'relative',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: '1.25rem',
-                    fontWeight: 700,
-                    color: '#667eea',
-                    mr: 0.5
-                  }}
-                >
-                  £
-                </Typography>
-                <input
-                  ref={inputRef}
-                  type="number"
-                  value={tempValue}
-                  onChange={(e) => setTempValue(e.target.value)}
-                  onBlur={handleSave}
-                  onKeyDown={handleKeyDown}
-                  style={{
-                    border: '2px solid #667eea',
-                    borderRadius: '6px',
-                    padding: '4px 8px',
-                    fontSize: '1.25rem',
-                    fontWeight: 700,
-                    color: '#667eea',
-                    // backgroundColor: 'white',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                    textAlign: 'right',
-                    width: '100px'
-                  }}
-                />
-              </Box>
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  px: 1,
-                  py: 0.5,
-                  borderRadius: 1,
-                  cursor: 'text',
-                  bgcolor: 'rgba(102, 126, 234, 0.1)',
-                  outline: '1px solid rgba(102, 126, 234, 0.3)',
-                  minWidth: '100px'
-                }}
-                onClick={handleStartEdit}
-              >
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: '1.25rem',
-                    color: '#667eea'
-                  }}
-                >
-                  £{income.toLocaleString()}
-                </Typography>
-              </Box>
-            </Box>
           )}
         </Box>
-      </CardContent>
-    </Card>
+        <LinearProgress
+          variant="determinate"
+          value={Math.min(allocationPercentage, 100)}
+          sx={{
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: '#f3f4f6',
+            '& .MuiLinearProgress-bar': {
+              backgroundColor: getStatusColor(),
+              borderRadius: 4,
+              boxShadow: `0 2px 8px ${getStatusColor()}40`
+            }
+          }}
+        />
+      </Box>
+    </Box>
   );
 };
 

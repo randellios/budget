@@ -71,7 +71,7 @@ const SavingsDebtProgress = () => {
       return 'rgba(239, 68, 68, 0.3)';
     }
   };
-
+  return null;
   return (
     <Box>
       <Box sx={{ display: 'flex', width: '100%' }}>

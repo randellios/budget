@@ -35,6 +35,7 @@ import EnhancedIncomeMonthSelector from './components/EnhancedIncomeMonthSelecto
 import { useAppSelector } from './store/hooks';
 import { selectMonthlyIncome } from './store/slices/incomeSlice';
 import { selectRemainingIncome } from './store/selectors/budgetSelectors';
+import MonthlyIncome from './components/intake/MonthlyIncome';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -147,7 +148,7 @@ export default function Dashboard() {
     <Box sx={{ height: '100%', overflow: 'auto' }}>
       <Box sx={{ p: 3 }}>
         <EnhancedIncomeMonthSelector />
-
+        <MonthlyIncome />
         <Typography
           variant="overline"
           sx={{
@@ -163,10 +164,7 @@ export default function Dashboard() {
         </Typography>
 
         {/* Monthly Expenses Section */}
-        <SidebarSection
-          expanded={expandedSections.expenses}
-          onChange={() => handleSectionToggle('expenses')}
-        >
+        <SidebarSection>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}
             sx={{
@@ -197,7 +195,7 @@ export default function Dashboard() {
               Monthly Expenses
             </Typography>
           </AccordionSummary>
-          <AccordionDetails>
+          <AccordionDetails sx={{ p: 0 }}>
             <MonthlyExpenses />
           </AccordionDetails>
         </SidebarSection>
@@ -243,10 +241,7 @@ export default function Dashboard() {
         </SidebarSection>
 
         {/* Debts Section */}
-        <SidebarSection
-          expanded={expandedSections.debts}
-          onChange={() => handleSectionToggle('debts')}
-        >
+        <SidebarSection>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon sx={{ color: '#ef4444' }} />}
             sx={{
