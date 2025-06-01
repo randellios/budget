@@ -1,336 +1,219 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  CardContent,
-  Typography,
-  Collapse,
-  Card,
-  Grid,
-  Chip,
-  Divider,
-  IconButton
-} from '@mui/material';
-import {
-  TrendingUp as TrendingUpIcon,
-  Psychology as PsychologyIcon,
-  Timeline as TimelineIcon,
-  Speed as SpeedIcon,
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon
-} from '@mui/icons-material';
+import { Box, CardContent, Typography, Collapse } from '@mui/material';
 import { useAppSelector } from '../../../store/hooks';
 import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
 import {
   selectEssentialExpenses,
-  selectNonEssentialExpenses
+  selectNonEssentialExpenses,
+  selectExpenseCategories
 } from '../../../store/slices/expensesSlice';
-import { selectTotalSavingsContributions } from '../../../store/slices/savingsSlice';
-import { selectTotalDebtPayments } from '../../../store/slices/debtsSlice';
+import {
+  selectTotalSavingsContributions,
+  selectSavingsGoals
+} from '../../../store/slices/savingsSlice';
+import {
+  selectTotalDebtPayments,
+  selectDebts
+} from '../../../store/slices/debtsSlice';
 import FinancialSnapshot from './FinancialSnapshot';
 import AllocationStatus from './AllocationStatus';
 import ExpenseDivision from './ExpenseDivision';
+import CompactFinancialHealth from './CompactFinancialHealth';
+import TopExpenses from './TopExpenses';
 import SavingsDebtProgress from '../SavingsDebtProgress';
-import AdvancedFinancialHealth from './AdvancedFinancialHealth';
 
 const MonthlyBudgetOverview = () => {
-  const [expandedSections, setExpandedSections] = useState({
-    healthAnalysis: false,
-    detailedProgress: true,
-    projections: true
-  });
-
-  const monthlyIncome = useAppSelector(selectMonthlyIncome);
-  const essentialExpenses = useAppSelector(selectEssentialExpenses);
-  const nonEssentialExpenses = useAppSelector(selectNonEssentialExpenses);
-  const savingsContributions = useAppSelector(selectTotalSavingsContributions);
-  const debtPayments = useAppSelector(selectTotalDebtPayments);
-
-  const toggleSection = (section) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
-
-  const totalExpenses = essentialExpenses + nonEssentialExpenses;
-  const totalAllocated = totalExpenses + savingsContributions + debtPayments;
-  const remaining = monthlyIncome - totalAllocated;
-
-  const getQuickInsights = () => {
-    const insights = [];
-    const savingsRate =
-      monthlyIncome > 0 ? (savingsContributions / monthlyIncome) * 100 : 0;
-    const essentialRate =
-      monthlyIncome > 0 ? (essentialExpenses / monthlyIncome) * 100 : 0;
-
-    if (remaining > monthlyIncome * 0.1) {
-      insights.push({
-        icon: '💰',
-        text: `£${remaining.toLocaleString()} surplus - great financial cushion`,
-        color: '#10b981'
-      });
-    }
-
-    if (savingsRate >= 20) {
-      insights.push({
-        icon: '🎯',
-        text: `${savingsRate.toFixed(1)}% savings rate - excellent wealth building`,
-        color: '#10b981'
-      });
-    } else if (savingsRate < 10) {
-      insights.push({
-        icon: '📈',
-        text: `${savingsRate.toFixed(1)}% savings rate - room to boost future wealth`,
-        color: '#f59e0b'
-      });
-    }
-
-    if (essentialRate <= 50) {
-      insights.push({
-        icon: '🏠',
-        text: `${essentialRate.toFixed(1)}% on essentials - efficient spending`,
-        color: '#667eea'
-      });
-    }
-
-    return insights;
-  };
-
-  const quickInsights = getQuickInsights();
+  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <CardContent sx={{ p: 0 }}>
-      {/* Hero Status Section */}
-      <Box sx={{ mb: 6 }}>
-        <AllocationStatus />
-      </Box>
-
-      {/* Core Budget Analysis */}
-      <Box sx={{ mb: 6 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-          <Box
-            sx={{
-              width: 40,
-              height: 40,
-              borderRadius: 2,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <SpeedIcon sx={{ fontSize: 20, color: 'white' }} />
-          </Box>
-          <Box>
+    <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+      <CardContent sx={{ p: 3, pt: 0 }}>
+        {/* Top Section - Budget Overview */}
+        <Box sx={{ mt: 2, mb: 4 }}>
+          {/* Header */}
+          <Box sx={{ mb: 3 }}>
             <Typography
               variant="h5"
-              sx={{ fontWeight: 800, color: '#1f2937', fontSize: '1.5rem' }}
+              sx={{
+                fontWeight: 800,
+                fontSize: '1.5rem',
+                color: '#1f2937',
+                mb: 1
+              }}
             >
-              Budget Analysis
+              📊 Budget Overview
             </Typography>
             <Typography
               variant="body2"
-              sx={{ color: '#6b7280', fontSize: '0.9rem' }}
+              sx={{
+                color: '#6b7280',
+                fontSize: '0.9rem',
+                lineHeight: 1.5
+              }}
             >
-              How your spending aligns with the 50/30/20 rule
+              Track your spending patterns, monitor financial health, and
+              optimize your budget allocation
             </Typography>
           </Box>
-        </Box>
-        <Card
-          sx={{
-            background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
-            border: '1px solid #e2e8f0',
-            borderRadius: 3,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-            overflow: 'hidden'
-          }}
-        >
-          <Box sx={{ p: 0 }}>
-            <ExpenseDivision />
-          </Box>
-        </Card>
-      </Box>
 
-      {/* Financial Projections */}
-      <Box sx={{ mb: 6 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 4
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TimelineIcon sx={{ fontSize: 20, color: 'white' }} />
-            </Box>
-            <Box>
-              <Typography
-                variant="h5"
-                sx={{ fontWeight: 800, color: '#1f2937', fontSize: '1.5rem' }}
-              >
-                Financial Projections
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: '#6b7280', fontSize: '0.9rem' }}
-              >
-                Visualize your financial future over time
-              </Typography>
-            </Box>
-          </Box>
-          <IconButton
-            size="small"
-            onClick={() => toggleSection('projections')}
-            sx={{ color: '#667eea' }}
-          >
-            {expandedSections.projections ? (
-              <ExpandLessIcon />
-            ) : (
-              <ExpandMoreIcon />
-            )}
-          </IconButton>
-        </Box>
-        <Collapse in={expandedSections.projections}>
-          <Card
+          {/* Main Dashboard Grid */}
+          <Box
             sx={{
-              background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
-              border: '1px solid #e2e8f0',
-              borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-              overflow: 'hidden'
+              display: 'grid',
+              gridTemplateColumns: '60% 40%',
+              gap: 4,
+              alignItems: 'start'
             }}
           >
-            <Box sx={{ p: 4 }}>
-              <FinancialSnapshot />
-            </Box>
-          </Card>
-        </Collapse>
-      </Box>
+            {/* Left Column: Budget Allocation + Expense Division + Financial Snapshot */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {/* Budget Allocation Status */}
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.1rem',
+                    color: '#374151',
+                    mb: 2
+                  }}
+                >
+                  💰 Budget Allocation
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#6b7280',
+                    fontSize: '0.85rem',
+                    mb: 3,
+                    lineHeight: 1.4
+                  }}
+                >
+                  Your monthly income allocation and remaining balance
+                </Typography>
+                <AllocationStatus />
+              </Box>
 
-      {/* Progress Tracking */}
-      <Box sx={{ mb: 6 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 4
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TrendingUpIcon sx={{ fontSize: 20, color: 'white' }} />
+              {/* 50/30/20 Budget Analysis */}
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.1rem',
+                    color: '#374151',
+                    mb: 2
+                  }}
+                >
+                  📈 50/30/20 Analysis
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#6b7280',
+                    fontSize: '0.85rem',
+                    mb: 3,
+                    lineHeight: 1.4
+                  }}
+                >
+                  See how your spending aligns with the recommended budget
+                  framework
+                </Typography>
+                <ExpenseDivision />
+              </Box>
+
+              {/* Financial Snapshot */}
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.1rem',
+                    color: '#374151',
+                    mb: 2
+                  }}
+                >
+                  🔮 Financial Snapshot
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#6b7280',
+                    fontSize: '0.85rem',
+                    mb: 3,
+                    lineHeight: 1.4
+                  }}
+                >
+                  Project your financial future and track key metrics over time
+                </Typography>
+                <FinancialSnapshot />
+              </Box>
             </Box>
-            <Box>
-              <Typography
-                variant="h5"
-                sx={{ fontWeight: 800, color: '#1f2937', fontSize: '1.5rem' }}
-              >
-                Goals & Debt Progress
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: '#6b7280', fontSize: '0.9rem' }}
-              >
-                Track your journey to financial milestones
-              </Typography>
+
+            {/* Right Column: Financial Health + Top Expenses */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {/* Financial Health */}
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.1rem',
+                    color: '#374151',
+                    mb: 2
+                  }}
+                >
+                  🩺 Financial Health
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#6b7280',
+                    fontSize: '0.85rem',
+                    mb: 3,
+                    lineHeight: 1.4
+                  }}
+                >
+                  Comprehensive wellness score based on emergency fund, debt
+                  management, and savings metrics
+                </Typography>
+                <CompactFinancialHealth />
+              </Box>
+
+              {/* Top Expenses */}
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.1rem',
+                    color: '#374151',
+                    mb: 2
+                  }}
+                >
+                  💸 Spending Analysis
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#6b7280',
+                    fontSize: '0.85rem',
+                    mb: 3,
+                    lineHeight: 1.4
+                  }}
+                >
+                  Your largest expenses and their impact on your budget
+                </Typography>
+                <TopExpenses />
+              </Box>
             </Box>
           </Box>
-          <IconButton
-            size="small"
-            onClick={() => toggleSection('detailedProgress')}
-            sx={{ color: '#667eea' }}
-          >
-            {expandedSections.detailedProgress ? (
-              <ExpandLessIcon />
-            ) : (
-              <ExpandMoreIcon />
-            )}
-          </IconButton>
         </Box>
-        <Collapse in={expandedSections.detailedProgress}>
-          <SavingsDebtProgress />
-        </Collapse>
-      </Box>
 
-      {/* Comprehensive Health Analysis */}
-      <Box>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 4
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <PsychologyIcon sx={{ fontSize: 20, color: 'white' }} />
-            </Box>
-            <Box>
-              <Typography
-                variant="h5"
-                sx={{ fontWeight: 800, color: '#1f2937', fontSize: '1.5rem' }}
-              >
-                Financial Health Analysis
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: '#6b7280', fontSize: '0.9rem' }}
-              >
-                Comprehensive scoring and personalized action plan
-              </Typography>
-            </Box>
-          </Box>
-          <IconButton
-            size="small"
-            onClick={() => toggleSection('healthAnalysis')}
-            sx={{ color: '#667eea' }}
-          >
-            {expandedSections.healthAnalysis ? (
-              <ExpandLessIcon />
-            ) : (
-              <ExpandMoreIcon />
-            )}
-          </IconButton>
-        </Box>
-        <Collapse in={expandedSections.healthAnalysis}>
-          <AdvancedFinancialHealth />
-        </Collapse>
-      </Box>
-    </CardContent>
+        {/* Progress Tracking */}
+        <SavingsDebtProgress />
+      </CardContent>
+    </Collapse>
   );
 };
 

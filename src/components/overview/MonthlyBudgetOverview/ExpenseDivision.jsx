@@ -33,7 +33,7 @@ import {
   selectDebts
 } from '../../../store/slices/debtsSlice';
 import TemperatureGauge from './TemperatureGauge';
-import AdvancedFinancialHealth from './AdvancedFinancialHealth';
+import AdvancedFinancialHealth from './CompactFinancialHealth';
 import FinancialSnapshot from './FinancialSnapshot';
 
 const ExpenseDivision = () => {
@@ -385,6 +385,8 @@ const ExpenseDivision = () => {
               <Box
                 sx={{
                   p: 3,
+                  pl: index === 0 ? 0 : 3,
+                  pr: index === budgetCategories.length - 1 ? 0 : 3,
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between'
