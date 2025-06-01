@@ -12,11 +12,8 @@ import {
   selectTotalDebtPayments,
   selectTotalDebtBalance
 } from '../../../store/slices/debtsSlice';
-
 const FinancialSnapshot = () => {
   const [timeHorizon, setTimeHorizon] = useState(0);
-
-  // Redux selectors
   const monthlyIncome = useAppSelector(selectMonthlyIncome);
   const totalExpenses = useAppSelector(selectTotalExpenses);
   const savingsContributions = useAppSelector(selectTotalSavingsContributions);
@@ -24,8 +21,6 @@ const FinancialSnapshot = () => {
   const totalDebtBalance = useAppSelector(selectTotalDebtBalance);
   const savingsGoals = useAppSelector(selectSavingsGoals);
   const totalSavingsBalance = useAppSelector(selectTotalSavingsBalance);
-
-  // Calculated values
   const emergencyGoal = savingsGoals.find((g) =>
     g.name.toLowerCase().includes('emergency')
   );
@@ -37,13 +32,9 @@ const FinancialSnapshot = () => {
     totalDebtBalance > 0 && debtPayments > 0
       ? Math.ceil(totalDebtBalance / debtPayments)
       : 0;
-
-  // Net worth calculation
   const netWorth = totalSavingsBalance - totalDebtBalance;
   const monthlyCashFlow =
     monthlyIncome - totalExpenses - savingsContributions - debtPayments;
-
-  // Projections
   const projectedSavings =
     totalSavingsBalance + savingsContributions * timeHorizon;
   const projectedDebt = Math.max(
@@ -59,20 +50,14 @@ const FinancialSnapshot = () => {
       ? Math.floor(projectedEmergencyBalance / totalExpenses)
       : 0;
   const projectedNetWorth = projectedSavings - projectedDebt;
-
-  const projectionDate =
-    timeHorizon > 0
-      ? (() => {
-          const date = new Date();
-          date.setMonth(date.getMonth() + timeHorizon);
-          return date.toLocaleDateString('en-GB', {
-            month: 'short',
-            year: 'numeric'
-          });
-        })()
-      : null;
-
-  // Status helpers with gradient colors
+  const projectionDate = (() => {
+    const date = new Date();
+    date.setMonth(date.getMonth() + timeHorizon);
+    return date.toLocaleDateString('en-GB', {
+      month: 'short',
+      year: 'numeric'
+    });
+  })();
   const getSavingsStatus = (savings) => {
     if (savings >= 25000)
       return {
@@ -109,7 +94,6 @@ const FinancialSnapshot = () => {
       emoji: '✨'
     };
   };
-
   const getEmergencyStatus = (months) => {
     if (months >= 6)
       return {
@@ -139,7 +123,6 @@ const FinancialSnapshot = () => {
       emoji: '⚠️'
     };
   };
-
   const getDebtStatus = (months, balance) => {
     if (balance === 0)
       return {
@@ -169,7 +152,6 @@ const FinancialSnapshot = () => {
       emoji: '🗻'
     };
   };
-
   const getNetWorthStatus = (netWorth) => {
     if (netWorth >= 50000)
       return {
@@ -206,8 +188,6 @@ const FinancialSnapshot = () => {
       emoji: '⚠️'
     };
   };
-
-  // Current statuses
   const savingsStatus = getSavingsStatus(
     timeHorizon === 0 ? totalSavingsBalance : projectedSavings
   );
@@ -221,7 +201,6 @@ const FinancialSnapshot = () => {
   const netWorthStatus = getNetWorthStatus(
     timeHorizon === 0 ? netWorth : projectedNetWorth
   );
-
   const StatusCard = ({
     status,
     title,
@@ -245,7 +224,7 @@ const FinancialSnapshot = () => {
         flexDirection: 'column'
       }}
     >
-      {/* Icon Header with Gradient */}
+      {' '}
       <Box
         sx={{
           background: status.gradient,
@@ -263,7 +242,9 @@ const FinancialSnapshot = () => {
           }
         }}
       >
+        {' '}
         <Box sx={{ position: 'relative', zIndex: 1 }}>
+          {' '}
           <Typography
             sx={{
               fontSize: '28px',
@@ -271,8 +252,9 @@ const FinancialSnapshot = () => {
               filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
             }}
           >
-            {status.emoji}
-          </Typography>
+            {' '}
+            {status.emoji}{' '}
+          </Typography>{' '}
           <Typography
             variant="h6"
             sx={{
@@ -282,15 +264,15 @@ const FinancialSnapshot = () => {
               textShadow: '0 2px 4px rgba(0,0,0,0.3)'
             }}
           >
-            {title}
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Content */}
+            {' '}
+            {title}{' '}
+          </Typography>{' '}
+        </Box>{' '}
+      </Box>{' '}
       <Box sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* Main Value */}
+        {' '}
         <Box sx={{ textAlign: 'center', mb: 2 }}>
+          {' '}
           <Typography
             variant="h4"
             sx={{
@@ -301,23 +283,19 @@ const FinancialSnapshot = () => {
               mb: 0.5
             }}
           >
-            {mainValue}
-          </Typography>
+            {' '}
+            {mainValue}{' '}
+          </Typography>{' '}
           {subValue && (
             <Typography
               variant="body2"
-              sx={{
-                fontSize: '0.8rem',
-                color: '#6b7280',
-                fontWeight: 500
-              }}
+              sx={{ fontSize: '0.8rem', color: '#6b7280', fontWeight: 500 }}
             >
-              {subValue}
+              {' '}
+              {subValue}{' '}
             </Typography>
-          )}
-        </Box>
-
-        {/* Time Horizon Info */}
+          )}{' '}
+        </Box>{' '}
         {timeHorizon > 0 && timeHorizonData && (
           <Box
             sx={{
@@ -329,6 +307,7 @@ const FinancialSnapshot = () => {
               textAlign: 'center'
             }}
           >
+            {' '}
             <Typography
               variant="caption"
               sx={{
@@ -341,23 +320,20 @@ const FinancialSnapshot = () => {
                 mb: 0.5
               }}
             >
-              By {projectionDate}
-            </Typography>
+              {' '}
+              By {projectionDate}{' '}
+            </Typography>{' '}
             <Typography
               variant="body2"
-              sx={{
-                fontWeight: 700,
-                color: status.color,
-                fontSize: '0.8rem'
-              }}
+              sx={{ fontWeight: 700, color: status.color, fontSize: '0.8rem' }}
             >
-              {timeHorizonData}
-            </Typography>
+              {' '}
+              {timeHorizonData}{' '}
+            </Typography>{' '}
           </Box>
-        )}
-
-        {/* Progress Bar */}
+        )}{' '}
         <Box sx={{ mt: 'auto' }}>
+          {' '}
           <LinearProgress
             variant="determinate"
             value={Math.min(progressValue, 100)}
@@ -372,7 +348,7 @@ const FinancialSnapshot = () => {
                 boxShadow: `0 2px 8px ${status.color}40`
               }
             }}
-          />
+          />{' '}
           <Typography
             variant="caption"
             sx={{
@@ -382,36 +358,35 @@ const FinancialSnapshot = () => {
               display: 'block'
             }}
           >
-            {progressLabel}
-          </Typography>
-        </Box>
-      </Box>
+            {' '}
+            {progressLabel}{' '}
+          </Typography>{' '}
+        </Box>{' '}
+      </Box>{' '}
     </Box>
   );
-
   return (
-    <Box
-      sx={
-        {
-          // background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
-          // border: '1px solid #e8ecf3',
-          // borderRadius: 3,
-          // boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-          // overflow: 'hidden'
-        }
-      }
-    >
-      {/* Header */}
-      <Box sx={{ borderBottom: '1px solid #e8ecf3' }}>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 3
-          }}
-        >
-          {timeHorizon > 0 && (
+    <Box sx={{}}>
+      {' '}
+      <Box sx={{ mb: 3 }}>
+        {' '}
+        <Box sx={{ position: 'relative' }}>
+          {' '}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            {' '}
+            <Typography
+              variant="caption"
+              sx={{
+                color: '#0369a1',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+            >
+              {' '}
+              Projecting{' '}
+            </Typography>{' '}
             <Chip
               label={`+${timeHorizon} months`}
               size="small"
@@ -421,34 +396,19 @@ const FinancialSnapshot = () => {
                 fontSize: '0.7rem',
                 fontWeight: 600
               }}
-            />
-          )}
-        </Box>
-
-        {/* Enhanced Slider with Year Markers */}
-        <Box sx={{ position: 'relative' }}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              mb: 0.5
-            }}
-          >
+            />{' '}
             <Typography
               variant="caption"
-              sx={{
-                color: timeHorizon === 0 ? '#059669' : '#0369a1',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                minWidth: '120px'
-              }}
+              sx={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: 500 }}
             >
-              {timeHorizon === 0 ? 'Current Status' : 'Projecting'}
-            </Typography>
+              {' '}
+              {projectionDate} {timeHorizon > 0 && `(+${timeHorizon}mo)`}{' '}
+            </Typography>{' '}
+          </Box>{' '}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
+            {' '}
             <Box sx={{ flex: 1, position: 'relative' }}>
+              {' '}
               <Slider
                 value={timeHorizon}
                 onChange={(_, value) => setTimeHorizon(value)}
@@ -486,9 +446,7 @@ const FinancialSnapshot = () => {
                     opacity: 1
                   }
                 }}
-              />
-
-              {/* Gradient Overlay on Track */}
+              />{' '}
               <Box
                 sx={{
                   position: 'absolute',
@@ -502,18 +460,13 @@ const FinancialSnapshot = () => {
                   borderRadius: 4,
                   pointerEvents: 'none'
                 }}
-              />
-            </Box>
-          </Box>
-
-          {/* Year Markers */}
+              />{' '}
+            </Box>{' '}
+          </Box>{' '}
           <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              ml: '136px'
-            }}
+            sx={{ display: 'flex', justifyContent: 'space-between', ml: '0px' }}
           >
+            {' '}
             {[0, 1, 2, 3, 4, 5].map((year) => (
               <Box
                 key={year}
@@ -525,6 +478,7 @@ const FinancialSnapshot = () => {
                   transition: 'opacity 0.2s ease'
                 }}
               >
+                {' '}
                 <Box
                   sx={{
                     width: 2,
@@ -534,7 +488,7 @@ const FinancialSnapshot = () => {
                     mb: 0.25,
                     transition: 'background-color 0.2s ease'
                   }}
-                />
+                />{' '}
                 <Typography
                   variant="caption"
                   sx={{
@@ -544,33 +498,18 @@ const FinancialSnapshot = () => {
                     transition: 'color 0.2s ease'
                   }}
                 >
-                  {year}y
-                </Typography>
+                  {' '}
+                  {year}y{' '}
+                </Typography>{' '}
               </Box>
-            ))}
-          </Box>
-
-          <Typography
-            variant="caption"
-            sx={{
-              color: '#1f2937',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              textAlign: 'center',
-              display: 'block',
-              mt: 1
-            }}
-          >
-            {timeHorizon === 0
-              ? 'Today'
-              : `${projectionDate} (+${timeHorizon}mo)`}
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Cards Grid - 2x2 */}
+            ))}{' '}
+          </Box>{' '}
+        </Box>{' '}
+      </Box>{' '}
       <Box>
+        {' '}
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+          {' '}
           <StatusCard
             status={savingsStatus}
             title="Total Savings"
@@ -588,8 +527,7 @@ const FinancialSnapshot = () => {
                 ? `+£${(projectedSavings - totalSavingsBalance).toLocaleString()} growth`
                 : null
             }
-          />
-
+          />{' '}
           <StatusCard
             status={emergencyStatus}
             title="Emergency Fund"
@@ -609,8 +547,7 @@ const FinancialSnapshot = () => {
                 ? `${projectedEmergencyMonths} months coverage`
                 : null
             }
-          />
-
+          />{' '}
           <StatusCard
             status={debtStatus}
             title="Debt Freedom"
@@ -639,8 +576,7 @@ const FinancialSnapshot = () => {
                 ? `£${projectedDebt.toLocaleString()} remaining`
                 : null
             }
-          />
-
+          />{' '}
           <StatusCard
             status={netWorthStatus}
             title="Net Worth"
@@ -662,11 +598,9 @@ const FinancialSnapshot = () => {
                 ? `${projectedNetWorth >= netWorth ? '+' : ''}£${(projectedNetWorth - netWorth).toLocaleString()} change`
                 : null
             }
-          />
-        </Box>
-      </Box>
-
-      {/* Insights */}
+          />{' '}
+        </Box>{' '}
+      </Box>{' '}
       {timeHorizon > 0 && (
         <Box
           sx={{
@@ -678,6 +612,7 @@ const FinancialSnapshot = () => {
             border: '1px solid #0ea5e9'
           }}
         >
+          {' '}
           <Typography
             variant="body2"
             sx={{
@@ -687,14 +622,14 @@ const FinancialSnapshot = () => {
               fontSize: '0.85rem'
             }}
           >
+            {' '}
             🎯 By {projectionDate}, you'll have grown your net worth by £
             {(projectedNetWorth - netWorth).toLocaleString()} through consistent
-            saving and debt reduction
-          </Typography>
+            saving and debt reduction{' '}
+          </Typography>{' '}
         </Box>
-      )}
+      )}{' '}
     </Box>
   );
 };
-
 export default FinancialSnapshot;

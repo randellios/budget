@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Box, CardContent, Typography, Collapse } from '@mui/material';
+import { Box, CardContent, Typography, Collapse, Divider } from '@mui/material';
+import {
+  AccountBalanceWallet as BudgetIcon,
+  Assessment as AnalysisIcon,
+  Timeline as SnapshotIcon,
+  HealthAndSafety as HealthIcon,
+  ShoppingCart as SpendingIcon
+} from '@mui/icons-material';
 import { useAppSelector } from '../../../store/hooks';
 import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
 import {
@@ -28,85 +35,44 @@ const MonthlyBudgetOverview = () => {
   return (
     <Collapse in={isExpanded} timeout="auto" unmountOnExit>
       <CardContent sx={{ p: 3, pt: 0 }}>
-        {/* Top Section - Budget Overview */}
         <Box sx={{ mt: 2, mb: 4 }}>
-          {/* Header */}
-          <Box sx={{ mb: 3 }}>
-            <Typography
-              variant="h5"
+          <Box sx={{ display: 'flex', gap: 6, alignItems: 'start' }}>
+            {/* Left Column */}
+            <Box
               sx={{
-                fontWeight: 800,
-                fontSize: '1.5rem',
-                color: '#1f2937',
-                mb: 1
+                flex: '0 0 58%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 3
               }}
             >
-              📊 Budget Overview
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                color: '#6b7280',
-                fontSize: '0.9rem',
-                lineHeight: 1.5
-              }}
-            >
-              Track your spending patterns, monitor financial health, and
-              optimize your budget allocation
-            </Typography>
-          </Box>
-
-          {/* Main Dashboard Grid */}
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: '60% 40%',
-              gap: 4,
-              alignItems: 'start'
-            }}
-          >
-            {/* Left Column: Budget Allocation + Expense Division + Financial Snapshot */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {/* Budget Allocation Status */}
-              <Box>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    color: '#374151',
-                    mb: 2
-                  }}
-                >
-                  💰 Budget Allocation
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: '#6b7280',
-                    fontSize: '0.85rem',
-                    mb: 3,
-                    lineHeight: 1.4
-                  }}
-                >
-                  Your monthly income allocation and remaining balance
-                </Typography>
+              {/* Budget Allocation */}
+              {/* <Box>
                 <AllocationStatus />
-              </Box>
+              </Box> */}
 
-              {/* 50/30/20 Budget Analysis */}
+              {/* 50/30/20 Analysis */}
               <Box>
-                <Typography
-                  variant="h6"
+                <Box
                   sx={{
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    color: '#374151',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
                     mb: 2
                   }}
                 >
-                  📈 50/30/20 Analysis
-                </Typography>
+                  <AnalysisIcon sx={{ fontSize: 20, color: '#10b981' }} />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '1.1rem',
+                      color: '#374151'
+                    }}
+                  >
+                    50/30/20 Analysis
+                  </Typography>
+                </Box>
                 <Typography
                   variant="body2"
                   sx={{
@@ -124,17 +90,26 @@ const MonthlyBudgetOverview = () => {
 
               {/* Financial Snapshot */}
               <Box>
-                <Typography
-                  variant="h6"
+                <Box
                   sx={{
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    color: '#374151',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
                     mb: 2
                   }}
                 >
-                  🔮 Financial Snapshot
-                </Typography>
+                  <SnapshotIcon sx={{ fontSize: 20, color: '#f59e0b' }} />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '1.1rem',
+                      color: '#374151'
+                    }}
+                  >
+                    Financial Snapshot
+                  </Typography>
+                </Box>
                 <Typography
                   variant="body2"
                   sx={{
@@ -150,21 +125,37 @@ const MonthlyBudgetOverview = () => {
               </Box>
             </Box>
 
-            {/* Right Column: Financial Health + Top Expenses */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Right Column */}
+            <Box
+              sx={{
+                flex: '0 0 38%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 3
+              }}
+            >
               {/* Financial Health */}
               <Box>
-                <Typography
-                  variant="h6"
+                <Box
                   sx={{
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    color: '#374151',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
                     mb: 2
                   }}
                 >
-                  🩺 Financial Health
-                </Typography>
+                  <HealthIcon sx={{ fontSize: 20, color: '#ef4444' }} />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '1.1rem',
+                      color: '#374151'
+                    }}
+                  >
+                    Financial Health
+                  </Typography>
+                </Box>
                 <Typography
                   variant="body2"
                   sx={{
@@ -180,19 +171,28 @@ const MonthlyBudgetOverview = () => {
                 <CompactFinancialHealth />
               </Box>
 
-              {/* Top Expenses */}
+              {/* Spending Analysis */}
               <Box>
-                <Typography
-                  variant="h6"
+                <Box
                   sx={{
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    color: '#374151',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
                     mb: 2
                   }}
                 >
-                  💸 Spending Analysis
-                </Typography>
+                  <SpendingIcon sx={{ fontSize: 20, color: '#8b5cf6' }} />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '1.1rem',
+                      color: '#374151'
+                    }}
+                  >
+                    Spending Analysis
+                  </Typography>
+                </Box>
                 <Typography
                   variant="body2"
                   sx={{
@@ -209,6 +209,15 @@ const MonthlyBudgetOverview = () => {
             </Box>
           </Box>
         </Box>
+
+        {/* Clear divider between horizontal and vertical sections */}
+        <Divider
+          sx={{
+            my: 4,
+            borderColor: '#e2e8f0',
+            borderWidth: 1
+          }}
+        />
 
         {/* Progress Tracking */}
         <SavingsDebtProgress />
