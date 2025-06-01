@@ -6,23 +6,31 @@ import {
   Toolbar,
   IconButton,
   Button,
-  Fab,
-  Drawer,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Drawer,
+  Divider,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  Add as AddIcon,
+  Settings as SettingsIcon,
+  Notifications as NotificationsIcon,
   Dashboard as DashboardIcon,
   TrendingUp as TrendingUpIcon,
-  Settings as SettingsIcon,
-  Notifications as NotificationsIcon
+  ExpandMore as ExpandMoreIcon,
+  ShoppingCart as ShoppingCartIcon,
+  TrackChanges as TargetIcon,
+  CreditCard as CreditCardIcon
 } from '@mui/icons-material';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import Overview from './components/overview/Overview';
-import Sidebar from './components/intake/Sidebar';
+import MonthlyExpenses from './components/intake/MonthlyExpenses';
+import SavingGoals from './components/intake/SavingGoals';
+import Debts from './components/intake/Debts';
 import EnhancedIncomeMonthSelector from './components/EnhancedIncomeMonthSelector';
 import { useAppSelector } from './store/hooks';
 import { selectMonthlyIncome } from './store/slices/incomeSlice';
@@ -92,9 +100,33 @@ const QuickActionCard = styled(Box)(({ theme, color = '#667eea' }) => ({
   }
 }));
 
+const SidebarSection = styled(Accordion)(({ theme }) => ({
+  background: 'transparent',
+  boxShadow: 'none',
+  border: 'none',
+  '&:before': {
+    display: 'none'
+  },
+  '& .MuiAccordionSummary-root': {
+    padding: '12px 0',
+    minHeight: 'auto',
+    '&.Mui-expanded': {
+      minHeight: 'auto'
+    }
+  },
+  '& .MuiAccordionDetails-root': {
+    padding: '0 0 16px 0'
+  }
+}));
+
 export default function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [budgetPanelOpen, setBudgetPanelOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({
+    expenses: true,
+    savings: true,
+    debts: true
+  });
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const monthlyIncome = useAppSelector(selectMonthlyIncome);
@@ -104,9 +136,154 @@ export default function Dashboard() {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleBudgetPanel = () => {
-    setBudgetPanelOpen(!budgetPanelOpen);
+  const handleSectionToggle = (section) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
   };
+
+  const SidebarContent = () => (
+    <Box sx={{ height: '100%', overflow: 'auto' }}>
+      <Box sx={{ p: 3 }}>
+        <EnhancedIncomeMonthSelector />
+
+        <Typography
+          variant="overline"
+          sx={{
+            color: '#6b7280',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            letterSpacing: '0.5px',
+            mb: 2,
+            display: 'block'
+          }}
+        >
+          Budget Setup
+        </Typography>
+
+        {/* Monthly Expenses Section */}
+        <SidebarSection
+          expanded={expandedSections.expenses}
+          onChange={() => handleSectionToggle('expenses')}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}
+            sx={{
+              '& .MuiAccordionSummary-content': {
+                alignItems: 'center',
+                gap: 1.5
+              }
+            }}
+          >
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: 1.5,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white'
+              }}
+            >
+              <ShoppingCartIcon sx={{ fontSize: 16 }} />
+            </Box>
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: 600, color: '#374151' }}
+            >
+              Monthly Expenses
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <MonthlyExpenses />
+          </AccordionDetails>
+        </SidebarSection>
+
+        {/* Savings Goals Section */}
+        <SidebarSection
+          expanded={expandedSections.savings}
+          onChange={() => handleSectionToggle('savings')}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon sx={{ color: '#10b981' }} />}
+            sx={{
+              '& .MuiAccordionSummary-content': {
+                alignItems: 'center',
+                gap: 1.5
+              }
+            }}
+          >
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: 1.5,
+                background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white'
+              }}
+            >
+              <TargetIcon sx={{ fontSize: 16 }} />
+            </Box>
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: 600, color: '#374151' }}
+            >
+              Savings Goals
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <SavingGoals />
+          </AccordionDetails>
+        </SidebarSection>
+
+        {/* Debts Section */}
+        <SidebarSection
+          expanded={expandedSections.debts}
+          onChange={() => handleSectionToggle('debts')}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon sx={{ color: '#ef4444' }} />}
+            sx={{
+              '& .MuiAccordionSummary-content': {
+                alignItems: 'center',
+                gap: 1.5
+              }
+            }}
+          >
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: 1.5,
+                background: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white'
+              }}
+            >
+              <CreditCardIcon sx={{ fontSize: 16 }} />
+            </Box>
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: 600, color: '#374151' }}
+            >
+              Debts
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Debts />
+          </AccordionDetails>
+        </SidebarSection>
+      </Box>
+    </Box>
+  );
 
   return (
     <ThemeProvider theme={theme}>
@@ -150,23 +327,6 @@ export default function Dashboard() {
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Button
-                variant="outlined"
-                onClick={handleBudgetPanel}
-                sx={{
-                  color: 'white',
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                  '&:hover': {
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                  }
-                }}
-              >
-                Edit Budget
-              </Button>
-              <IconButton color="inherit">
-                <NotificationsIcon />
-              </IconButton>
               <IconButton color="inherit">
                 <SettingsIcon />
               </IconButton>
@@ -175,119 +335,27 @@ export default function Dashboard() {
         </StyledAppBar>
 
         <Box sx={{ display: 'flex', flex: 1 }}>
+          {/* Desktop Sidebar */}
           <Box
             sx={{
-              width: { md: 280 },
+              width: { md: 400 },
               flexShrink: 0,
               display: { xs: 'none', md: 'block' }
             }}
           >
             <Box
               sx={{
-                width: 280,
+                width: 400,
                 height: '100%',
                 background: 'linear-gradient(180deg, #ffffff 0%, #fafbfc 100%)',
-                borderRight: '1px solid #e2e8f0',
-                p: 3
+                borderRight: '1px solid #e2e8f0'
               }}
             >
-              <EnhancedIncomeMonthSelector />
-
-              <Typography
-                variant="overline"
-                sx={{
-                  color: '#6b7280',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.5px',
-                  mb: 2,
-                  display: 'block'
-                }}
-              >
-                Quick Actions
-              </Typography>
-
-              <Box
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}
-              >
-                <QuickActionCard color="#667eea" onClick={handleBudgetPanel}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <DashboardIcon sx={{ fontSize: 20 }} />
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      Budget Setup
-                    </Typography>
-                  </Box>
-                </QuickActionCard>
-
-                <QuickActionCard color="#10b981">
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <TrendingUpIcon sx={{ fontSize: 20 }} />
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      Financial Health
-                    </Typography>
-                  </Box>
-                </QuickActionCard>
-              </Box>
-
-              <Typography
-                variant="overline"
-                sx={{
-                  color: '#6b7280',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.5px',
-                  mb: 2,
-                  display: 'block'
-                }}
-              >
-                Quick Stats
-              </Typography>
-
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box
-                  sx={{
-                    p: 2,
-                    bgcolor: '#f8fafc',
-                    borderRadius: 2,
-                    border: '1px solid #e2e8f0'
-                  }}
-                >
-                  <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                    Available to Spend
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 700,
-                      color: remainingIncome >= 0 ? '#10b981' : '#ef4444'
-                    }}
-                  >
-                    £{Math.abs(remainingIncome).toLocaleString()}
-                  </Typography>
-                </Box>
-
-                <Box
-                  sx={{
-                    p: 2,
-                    bgcolor: '#f8fafc',
-                    borderRadius: 2,
-                    border: '1px solid #e2e8f0'
-                  }}
-                >
-                  <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                    Budget Health
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    sx={{ fontWeight: 700, color: '#667eea' }}
-                  >
-                    84/100
-                  </Typography>
-                </Box>
-              </Box>
+              <SidebarContent />
             </Box>
           </Box>
 
+          {/* Mobile Drawer */}
           <Drawer
             variant="temporary"
             open={mobileOpen}
@@ -295,17 +363,16 @@ export default function Dashboard() {
             ModalProps={{ keepMounted: true }}
             sx={{
               display: { xs: 'block', md: 'none' },
-              '& .MuiDrawer-paper': { width: 280 }
+              '& .MuiDrawer-paper': {
+                width: 400,
+                background: 'linear-gradient(180deg, #ffffff 0%, #fafbfc 100%)'
+              }
             }}
           >
-            <Box sx={{ p: 3 }}>
-              <EnhancedIncomeMonthSelector />
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Navigation
-              </Typography>
-            </Box>
+            <SidebarContent />
           </Drawer>
 
+          {/* Main Content */}
           <MainContent
             component="main"
             sx={{ position: 'relative', zIndex: 1 }}
@@ -354,54 +421,7 @@ export default function Dashboard() {
               </DashboardCard>
             </Box>
           </MainContent>
-
-          <Drawer
-            anchor="right"
-            open={budgetPanelOpen}
-            onClose={() => setBudgetPanelOpen(false)}
-            sx={{
-              '& .MuiDrawer-paper': {
-                width: { xs: '100%', sm: 500 },
-                background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)'
-              }
-            }}
-          >
-            <Box sx={{ p: 3 }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  mb: 3
-                }}
-              >
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                  Budget Setup
-                </Typography>
-                <IconButton onClick={() => setBudgetPanelOpen(false)}>
-                  ×
-                </IconButton>
-              </Box>
-              <Sidebar />
-            </Box>
-          </Drawer>
         </Box>
-
-        <Fab
-          color="primary"
-          sx={{
-            position: 'fixed',
-            bottom: 24,
-            right: 24,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)'
-            }
-          }}
-          onClick={handleBudgetPanel}
-        >
-          <AddIcon />
-        </Fab>
       </Box>
     </ThemeProvider>
   );

@@ -267,7 +267,7 @@ const EnhancedIncomeMonthSelector = () => {
       <Divider sx={{ mb: 2, borderColor: '#e2e8f0' }} />
 
       {/* Income Section */}
-      {/* <Typography
+      <Typography
         variant="overline"
         sx={{
           color: '#374151',
@@ -407,7 +407,7 @@ const EnhancedIncomeMonthSelector = () => {
             Click to edit
           </Typography>
         </Box>
-      )} */}
+      )}
     </Box>
   );
 };
