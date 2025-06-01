@@ -1,15 +1,18 @@
-import React from 'react';
-import { Box, Typography, LinearProgress, Chip } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Chip, Button } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   Star as StarIcon,
-  StarBorder as StarBorderIcon
+  StarBorder as StarBorderIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon
 } from '@mui/icons-material';
 import { useAppSelector } from '../../../store/hooks';
 import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
 import { selectExpenseCategories } from '../../../store/slices/expensesSlice';
 
 const TopExpenses = () => {
+  const [showMore, setShowMore] = useState(false);
   const monthlyIncome = useAppSelector(selectMonthlyIncome);
   const expenseCategories = useAppSelector(selectExpenseCategories);
 
@@ -32,11 +35,15 @@ const TopExpenses = () => {
       });
     });
 
-    return allExpenses.sort((a, b) => b.amount - a.amount).slice(0, 5);
+    return allExpenses.sort((a, b) => b.amount - a.amount);
   };
 
-  const topExpenses = getTopExpenses();
-  const totalTopExpenses = topExpenses.reduce(
+  const allTopExpenses = getTopExpenses();
+  const displayedExpenses = showMore
+    ? allTopExpenses.slice(0, 9)
+    : allTopExpenses.slice(0, 4);
+
+  const totalTopExpenses = displayedExpenses.reduce(
     (sum, expense) => sum + expense.amount,
     0
   );
@@ -139,9 +146,23 @@ const TopExpenses = () => {
       </Box>
 
       {/* Expense List */}
-      <Box sx={{ p: 3, pt: 2 }}>
+      <Box sx={{ p: 3 }}>
+        <Typography
+          variant="overline"
+          sx={{
+            color: '#6b7280',
+            fontSize: '0.7rem',
+            fontWeight: 600,
+            letterSpacing: '0.5px',
+            mb: 2,
+            display: 'block'
+          }}
+        >
+          Expense Breakdown
+        </Typography>
+
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {topExpenses.map((expense, index) => (
+          {displayedExpenses.map((expense, index) => (
             <Box
               key={index}
               sx={{
@@ -217,15 +238,9 @@ const TopExpenses = () => {
                     variant="caption"
                     sx={{
                       color: '#6b7280',
-                      fontSize: '0.7rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5
+                      fontSize: '0.7rem'
                     }}
                   >
-                    <span style={{ fontSize: '12px' }}>
-                      {expense.categoryIcon}
-                    </span>
                     {expense.category}
                   </Typography>
                   <Chip
@@ -274,6 +289,31 @@ const TopExpenses = () => {
             </Box>
           ))}
         </Box>
+
+        {/* See More/Less Button */}
+        {allTopExpenses.length > 4 && (
+          <Box sx={{ mt: 3, textAlign: 'center' }}>
+            <Button
+              onClick={() => setShowMore(!showMore)}
+              startIcon={showMore ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              sx={{
+                color: '#f59e0b',
+                fontSize: '0.875rem',
+                textTransform: 'none',
+                fontWeight: 600,
+                '&:hover': {
+                  bgcolor: 'rgba(245, 158, 11, 0.08)',
+                  transform: 'translateY(-1px)'
+                },
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {showMore
+                ? `Show Less`
+                : `See More (${Math.min(allTopExpenses.length - 4, 5)} more)`}
+            </Button>
+          </Box>
+        )}
       </Box>
     </Box>
   );
