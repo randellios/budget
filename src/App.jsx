@@ -23,6 +23,10 @@ import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import Overview from './components/overview/Overview';
 import Sidebar from './components/intake/Sidebar';
+import EnhancedIncomeMonthSelector from './components/EnhancedIncomeMonthSelector';
+import { useAppSelector } from './store/hooks';
+import { selectMonthlyIncome } from './store/slices/incomeSlice';
+import { selectRemainingIncome } from './store/selectors/budgetSelectors';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -93,6 +97,8 @@ export default function Dashboard() {
   const [budgetPanelOpen, setBudgetPanelOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const monthlyIncome = useAppSelector(selectMonthlyIncome);
+  const remainingIncome = useAppSelector(selectRemainingIncome);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -107,7 +113,6 @@ export default function Dashboard() {
       <Box
         sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
       >
-        {/* Top Navigation */}
         <StyledAppBar position="sticky" elevation={0}>
           <Toolbar sx={{ minHeight: '64px !important' }}>
             <IconButton
@@ -170,23 +175,24 @@ export default function Dashboard() {
         </StyledAppBar>
 
         <Box sx={{ display: 'flex', flex: 1 }}>
-          {/* Left Navigation Panel */}
           <Box
             sx={{
-              width: { md: 240 },
+              width: { md: 280 },
               flexShrink: 0,
               display: { xs: 'none', md: 'block' }
             }}
           >
             <Box
               sx={{
-                width: 240,
+                width: 280,
                 height: '100%',
                 background: 'linear-gradient(180deg, #ffffff 0%, #fafbfc 100%)',
                 borderRight: '1px solid #e2e8f0',
                 p: 3
               }}
             >
+              <EnhancedIncomeMonthSelector />
+
               <Typography
                 variant="overline"
                 sx={{
@@ -247,13 +253,16 @@ export default function Dashboard() {
                   }}
                 >
                   <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                    Monthly Income
+                    Available to Spend
                   </Typography>
                   <Typography
                     variant="h6"
-                    sx={{ fontWeight: 700, color: '#10b981' }}
+                    sx={{
+                      fontWeight: 700,
+                      color: remainingIncome >= 0 ? '#10b981' : '#ef4444'
+                    }}
                   >
-                    £5,000
+                    £{Math.abs(remainingIncome).toLocaleString()}
                   </Typography>
                 </Box>
 
@@ -266,20 +275,19 @@ export default function Dashboard() {
                   }}
                 >
                   <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                    Available
+                    Budget Health
                   </Typography>
                   <Typography
                     variant="h6"
                     sx={{ fontWeight: 700, color: '#667eea' }}
                   >
-                    £1,480
+                    84/100
                   </Typography>
                 </Box>
               </Box>
             </Box>
           </Box>
 
-          {/* Mobile Drawer */}
           <Drawer
             variant="temporary"
             open={mobileOpen}
@@ -287,24 +295,22 @@ export default function Dashboard() {
             ModalProps={{ keepMounted: true }}
             sx={{
               display: { xs: 'block', md: 'none' },
-              '& .MuiDrawer-paper': { width: 240 }
+              '& .MuiDrawer-paper': { width: 280 }
             }}
           >
             <Box sx={{ p: 3 }}>
+              <EnhancedIncomeMonthSelector />
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Navigation
               </Typography>
-              {/* Mobile nav content */}
             </Box>
           </Drawer>
 
-          {/* Main Dashboard Area */}
           <MainContent
             component="main"
             sx={{ position: 'relative', zIndex: 1 }}
           >
             <Box sx={{ p: 3, maxWidth: '1400px', margin: '0 auto' }}>
-              {/* Hero Section */}
               <DashboardCard
                 sx={{
                   mb: 4,
@@ -343,14 +349,12 @@ export default function Dashboard() {
                 </Box>
               </DashboardCard>
 
-              {/* Overview Components */}
               <DashboardCard>
                 <Overview />
               </DashboardCard>
             </Box>
           </MainContent>
 
-          {/* Right Budget Panel */}
           <Drawer
             anchor="right"
             open={budgetPanelOpen}
@@ -383,7 +387,6 @@ export default function Dashboard() {
           </Drawer>
         </Box>
 
-        {/* Floating Action Button */}
         <Fab
           color="primary"
           sx={{
