@@ -73,7 +73,7 @@ const SavingsDebtProgress = () => {
   };
 
   return (
-    <Box sx={{ mt: 8 }}>
+    <Box>
       <Box sx={{ display: 'flex', width: '100%' }}>
         {/* Savings */}
         <Box flex={1}>
