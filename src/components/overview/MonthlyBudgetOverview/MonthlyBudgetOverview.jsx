@@ -54,6 +54,7 @@ const MonthlyBudgetOverview = () => {
               </Typography>
             </Box>
           </Box>
+          <AllocationStatus />
 
           <Box
           // sx={{
@@ -64,8 +65,6 @@ const MonthlyBudgetOverview = () => {
           //   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
           // }}
           >
-            <AllocationStatus />
-
             <Box sx={{ mb: 3 }}>
               <Typography
                 variant="h6"
