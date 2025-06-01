@@ -142,7 +142,7 @@ const SortableItem = ({
           displayTypographyProps={{
             color: '#374151',
             fontSize: '0.95rem',
-            fontWeight: item.isEssential ? 600 : 500,
+            fontWeight: 500,
             noWrap: true
           }}
           containerStyle={{
@@ -152,7 +152,7 @@ const SortableItem = ({
           }}
           inputStyle={{
             fontSize: '0.95rem',
-            fontWeight: item.isEssential ? 600 : 500
+            fontWeight: 500
           }}
         />
       </Box>
