@@ -36,11 +36,11 @@ const MonthlyBudgetOverview = () => {
     <Collapse in={isExpanded} timeout="auto" unmountOnExit>
       <CardContent sx={{ p: 3, pt: 0 }}>
         <Box sx={{ mt: 2, mb: 4 }}>
-          <Box sx={{ display: 'flex', gap: 6, alignItems: 'start' }}>
+          <Box sx={{ display: 'flex', gap: 8, alignItems: 'start' }}>
             {/* Left Column */}
             <Box
               sx={{
-                flex: '0 0 58%',
+                flex: 8,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 3
@@ -128,83 +128,20 @@ const MonthlyBudgetOverview = () => {
             {/* Right Column */}
             <Box
               sx={{
-                flex: '0 0 38%',
+                flex: 4,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 3
               }}
             >
-              {/* Financial Health */}
-              <Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    mb: 2
-                  }}
-                >
-                  <HealthIcon sx={{ fontSize: 20, color: '#ef4444' }} />
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 700,
-                      fontSize: '1.1rem',
-                      color: '#374151'
-                    }}
-                  >
-                    Financial Health
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: '#6b7280',
-                    fontSize: '0.85rem',
-                    mb: 3,
-                    lineHeight: 1.4
-                  }}
-                >
-                  Comprehensive wellness score based on emergency fund, debt
-                  management, and savings metrics
-                </Typography>
-                <CompactFinancialHealth />
-              </Box>
-
               {/* Spending Analysis */}
               <Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    mb: 2
-                  }}
-                >
-                  <SpendingIcon sx={{ fontSize: 20, color: '#8b5cf6' }} />
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 700,
-                      fontSize: '1.1rem',
-                      color: '#374151'
-                    }}
-                  >
-                    Spending Analysis
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: '#6b7280',
-                    fontSize: '0.85rem',
-                    mb: 3,
-                    lineHeight: 1.4
-                  }}
-                >
-                  Your largest expenses and their impact on your budget
-                </Typography>
                 <TopExpenses />
+              </Box>
+
+              {/* Financial Health */}
+              <Box>
+                <CompactFinancialHealth />
               </Box>
             </Box>
           </Box>

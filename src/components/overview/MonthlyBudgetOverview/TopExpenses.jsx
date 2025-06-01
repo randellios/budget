@@ -32,7 +32,7 @@ const TopExpenses = () => {
       });
     });
 
-    return allExpenses.sort((a, b) => b.amount - a.amount).slice(0, 6);
+    return allExpenses.sort((a, b) => b.amount - a.amount).slice(0, 5);
   };
 
   const topExpenses = getTopExpenses();
@@ -138,61 +138,8 @@ const TopExpenses = () => {
         </Box>
       </Box>
 
-      {/* Summary */}
-      <Box sx={{ px: 3, pt: 2, pb: 1 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 2
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{ color: '#6b7280', fontSize: '0.85rem' }}
-          >
-            Top {topExpenses.length} expenses total
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{ fontWeight: 700, color: '#1f2937', fontSize: '0.9rem' }}
-          >
-            £{totalTopExpenses.toLocaleString()}
-          </Typography>
-        </Box>
-
-        <LinearProgress
-          variant="determinate"
-          value={Math.min(topExpensesPercentage, 100)}
-          sx={{
-            height: 6,
-            borderRadius: 3,
-            backgroundColor: '#f3f4f6',
-            '& .MuiLinearProgress-bar': {
-              background: 'linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%)',
-              borderRadius: 3
-            }
-          }}
-        />
-      </Box>
-
       {/* Expense List */}
       <Box sx={{ p: 3, pt: 2 }}>
-        <Typography
-          variant="overline"
-          sx={{
-            color: '#6b7280',
-            fontSize: '0.7rem',
-            fontWeight: 600,
-            letterSpacing: '0.5px',
-            mb: 2,
-            display: 'block'
-          }}
-        >
-          Expense Breakdown
-        </Typography>
-
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {topExpenses.map((expense, index) => (
             <Box
@@ -326,34 +273,6 @@ const TopExpenses = () => {
               </Box>
             </Box>
           ))}
-        </Box>
-
-        {/* Summary Insight */}
-        <Box
-          sx={{
-            mt: 3,
-            p: 2,
-            bgcolor: topExpensesPercentage > 60 ? '#fef2f2' : '#f0fdf4',
-            borderRadius: 2,
-            border:
-              topExpensesPercentage > 60
-                ? '1px solid #fecaca'
-                : '1px solid #bbf7d0'
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{
-              color: topExpensesPercentage > 60 ? '#dc2626' : '#166534',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              textAlign: 'center'
-            }}
-          >
-            {topExpensesPercentage > 60
-              ? `⚠️ Top expenses use ${topExpensesPercentage.toFixed(0)}% of income - consider optimizing`
-              : `✅ Top expenses represent a healthy ${topExpensesPercentage.toFixed(0)}% of income`}
-          </Typography>
         </Box>
       </Box>
     </Box>
