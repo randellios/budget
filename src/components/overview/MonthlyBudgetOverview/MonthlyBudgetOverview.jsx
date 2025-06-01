@@ -56,13 +56,13 @@ const MonthlyBudgetOverview = () => {
           </Box>
 
           <Box
-            sx={{
-              p: 3,
-              bgcolor: '#ffffff',
-              borderRadius: 3,
-              border: '1px solid #e5e7eb',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
-            }}
+          // sx={{
+          //   p: 3,
+          //   bgcolor: '#ffffff',
+          //   borderRadius: 3,
+          //   border: '1px solid #e5e7eb',
+          //   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+          // }}
           >
             <AllocationStatus />
 
