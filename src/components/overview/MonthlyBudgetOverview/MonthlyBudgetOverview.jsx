@@ -19,6 +19,7 @@ import FinancialSnapshot from './FinancialSnapshot';
 import AllocationStatus from './AllocationStatus';
 import ExpenseDivision from './ExpenseDivision';
 import SavingsDebtProgress from '../SavingsDebtProgress';
+import AdvancedFinancialHealth from './AdvancedFinancialHealth';
 
 const MonthlyBudgetOverview = () => {
   const [isExpanded, setIsExpanded] = useState(true);

@@ -34,6 +34,7 @@ import {
 } from '../../../store/slices/debtsSlice';
 import TemperatureGauge from './TemperatureGauge';
 import AdvancedFinancialHealth from './AdvancedFinancialHealth';
+import FinancialSnapshot from './FinancialSnapshot';
 
 const ExpenseDivision = () => {
   const monthlyIncome = useAppSelector(selectMonthlyIncome);
@@ -527,9 +528,34 @@ const ExpenseDivision = () => {
             border: '1px solid #e5e7eb'
           }}
         >
-          snapshot area
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+            <Box>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '1.5rem',
+                  color: '#1f2937',
+                  lineHeight: 1.2
+                }}
+              >
+                Your Financial Position
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#6b7280',
+                  fontSize: '0.9rem',
+                  fontWeight: 500
+                }}
+              >
+                Monitor your wealth building journey and financial security
+                milestones
+              </Typography>
+            </Box>
+          </Box>
+          <FinancialSnapshot />
         </Box>
-        <AdvancedFinancialHealth />
       </Box>
     </Box>
   );
