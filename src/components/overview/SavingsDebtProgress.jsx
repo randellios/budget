@@ -1,19 +1,42 @@
 import React from 'react';
+import { Box, Typography, LinearProgress, Chip, Divider } from '@mui/material';
 import {
-  Box,
-  Typography,
-  LinearProgress,
-  Card,
-  CardContent,
-  Chip
-} from '@mui/material';
+  TrendingUp as TrendingUpIcon,
+  AttachMoney as SavingsIcon,
+  CreditCard as DebtIcon,
+  CheckCircle as CheckIcon,
+  Schedule as ClockIcon,
+  Assessment as AssessmentIcon,
+  Speed as SpeedIcon,
+  Star as StarIcon,
+  Shield as ShieldIcon,
+  Security as SecurityIcon
+} from '@mui/icons-material';
 import { useAppSelector } from '../../store/hooks';
-import { selectSavingsGoals } from '../../store/slices/savingsSlice';
-import { selectDebts } from '../../store/slices/debtsSlice';
+import {
+  selectSavingsGoals,
+  selectTotalSavingsBalance,
+  selectTotalSavingsContributions
+} from '../../store/slices/savingsSlice';
+import {
+  selectDebts,
+  selectTotalDebtBalance,
+  selectTotalDebtPayments
+} from '../../store/slices/debtsSlice';
+import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
+import { selectTotalExpenses } from '../../store/slices/expensesSlice';
 
 const SavingsDebtProgress = () => {
   const savingsGoals = useAppSelector(selectSavingsGoals);
   const debts = useAppSelector(selectDebts);
+  const totalSavingsBalance = useAppSelector(selectTotalSavingsBalance);
+  const totalDebtBalance = useAppSelector(selectTotalDebtBalance);
+  const totalSavingsContributions = useAppSelector(
+    selectTotalSavingsContributions
+  );
+  const totalDebtPayments = useAppSelector(selectTotalDebtPayments);
+  const monthlyIncome = useAppSelector(selectMonthlyIncome);
+  const totalExpenses = useAppSelector(selectTotalExpenses);
 
   const calculateMonthsToTarget = (current, target, monthlyAmount) => {
     if (monthlyAmount <= 0) return null;
@@ -28,8 +51,8 @@ const SavingsDebtProgress = () => {
   };
 
   const formatTargetDate = (months) => {
-    if (months === null) return 'No contributions set';
-    if (months === 0) return '🎉 Target reached!';
+    if (months === null) return 'No contributions';
+    if (months === 0) return 'Target reached!';
     const date = new Date();
     date.setMonth(date.getMonth() + months);
     return date.toLocaleDateString('en-GB', {
@@ -38,545 +61,750 @@ const SavingsDebtProgress = () => {
     });
   };
 
-  const getProgressGradient = (progress, type = 'savings') => {
-    if (type === 'savings') {
-      if (progress >= 90)
-        return 'linear-gradient(135deg, #10b981 0%, #34d399 100%)';
-      if (progress >= 70)
-        return 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)';
-      if (progress >= 40)
-        return 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)';
-      return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-    } else {
-      if (progress >= 90)
-        return 'linear-gradient(135deg, #10b981 0%, #34d399 100%)';
-      if (progress >= 70)
-        return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-      if (progress >= 40)
-        return 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)';
-      return 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)';
-    }
+  const isEmergencyFund = (goal) => {
+    return (
+      goal.name.toLowerCase().includes('emergency') ||
+      goal.name.toLowerCase().includes('safety') ||
+      goal.name.toLowerCase().includes('fund')
+    );
   };
 
-  const getGlowColor = (progress, type = 'savings') => {
-    if (type === 'savings') {
-      if (progress >= 90) return 'rgba(16, 185, 129, 0.3)';
-      if (progress >= 70) return 'rgba(14, 165, 233, 0.3)';
-      if (progress >= 40) return 'rgba(245, 158, 11, 0.3)';
-      return 'rgba(102, 126, 234, 0.3)';
-    } else {
-      if (progress >= 90) return 'rgba(16, 185, 129, 0.3)';
-      if (progress >= 70) return 'rgba(102, 126, 234, 0.3)';
-      if (progress >= 40) return 'rgba(245, 158, 11, 0.3)';
-      return 'rgba(239, 68, 68, 0.3)';
+  const ProgressCard = ({ item, type }) => {
+    const isDebt = type === 'debt';
+    const isEmergency = !isDebt && isEmergencyFund(item);
+
+    const progress = isDebt
+      ? item.startingBalance > 0
+        ? ((item.startingBalance - item.currentBalance) /
+            item.startingBalance) *
+          100
+        : 0
+      : item.targetAmount > 0
+        ? (item.currentBalance / item.targetAmount) * 100
+        : 0;
+
+    const monthsToComplete = isDebt
+      ? calculateDebtPayoffMonths(item.currentBalance, item.monthlyPayment)
+      : calculateMonthsToTarget(
+          item.currentBalance,
+          item.targetAmount,
+          item.monthlyContribution
+        );
+
+    const isComplete = isDebt ? item.currentBalance === 0 : progress >= 100;
+    const amount = isDebt ? item.currentBalance : item.currentBalance;
+    const target = isDebt ? item.startingBalance : item.targetAmount;
+    const monthlyAmount = isDebt
+      ? item.monthlyPayment
+      : item.monthlyContribution;
+
+    const getStatusChip = () => {
+      if (isComplete) {
+        return {
+          label: isDebt ? '🎉 Debt Free!' : '🎯 Complete!',
+          color: '#10b981',
+          bg: '#dcfce7',
+          border: '#bbf7d0'
+        };
+      }
+
+      if (monthsToComplete && monthsToComplete <= 12) {
+        return {
+          label: `${monthsToComplete}mo left`,
+          color: '#f59e0b',
+          bg: '#fef3c7',
+          border: '#fde68a'
+        };
+      }
+
+      return {
+        label: `${progress.toFixed(0)}%`,
+        color: isDebt ? '#ef4444' : isEmergency ? '#3b82f6' : '#667eea',
+        bg: isDebt ? '#fee2e2' : isEmergency ? '#dbeafe' : '#e0e7ff',
+        border: isDebt ? '#fca5a5' : isEmergency ? '#93c5fd' : '#c7d2fe'
+      };
+    };
+
+    const statusChip = getStatusChip();
+
+    // Emergency fund specific styling
+    if (isEmergency) {
+      const monthsCovered =
+        totalExpenses > 0 ? item.currentBalance / totalExpenses : 0;
+
+      return (
+        <Box
+          sx={{
+            p: 0,
+            background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
+            position: 'relative',
+            overflow: 'hidden',
+            color: 'white'
+          }}
+        >
+          {/* Decorative background elements */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -20,
+              right: -20,
+              width: 80,
+              height: 80,
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.1)',
+              opacity: 0.6
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: -30,
+              left: -30,
+              width: 100,
+              height: 100,
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.05)',
+              opacity: 0.8
+            }}
+          />
+
+          {/* Header */}
+          <Box sx={{ p: 3, pb: 2, position: 'relative', zIndex: 1 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 2
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 2,
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    backdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <SecurityIcon sx={{ fontSize: 22, color: 'white' }} />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '1.1rem',
+                      color: 'white',
+                      textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                    }}
+                  >
+                    {item.name}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px'
+                    }}
+                  >
+                    Emergency Protection
+                  </Typography>
+                </Box>
+              </Box>
+              <Chip
+                label={`${monthsCovered.toFixed(1)}mo`}
+                size="small"
+                sx={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  backdropFilter: 'blur(10px)'
+                }}
+              />
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'baseline',
+                  mb: 2
+                }}
+              >
+                <Typography
+                  variant="h3"
+                  sx={{
+                    fontWeight: 900,
+                    fontSize: '2rem',
+                    color: 'white',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                  }}
+                >
+                  £{amount.toLocaleString()}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontSize: '0.85rem'
+                  }}
+                >
+                  of £{target.toLocaleString()}
+                </Typography>
+              </Box>
+
+              <LinearProgress
+                variant="determinate"
+                value={Math.min(progress, 100)}
+                sx={{
+                  height: 12,
+                  borderRadius: 6,
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  '& .MuiLinearProgress-bar': {
+                    background:
+                      'linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%)',
+                    borderRadius: 6,
+                    boxShadow: '0 0 20px rgba(251, 191, 36, 0.5)'
+                  }
+                }}
+              />
+
+              <Box sx={{ mt: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    fontSize: '0.8rem',
+                    fontWeight: 600
+                  }}
+                >
+                  Protection Level:{' '}
+                  {monthsCovered >= 6
+                    ? '🛡️ Fully Protected'
+                    : monthsCovered >= 3
+                      ? '⚠️ Partially Protected'
+                      : '🚨 Vulnerable'}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Footer */}
+          <Box
+            sx={{
+              p: 3,
+              pt: 0,
+              background: 'rgba(0, 0, 0, 0.1)',
+              position: 'relative',
+              zIndex: 1
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <Box>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontSize: '0.8rem',
+                    mb: 0.5
+                  }}
+                >
+                  Monthly Contribution
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 600,
+                    color: 'white',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  £{monthlyAmount.toLocaleString()}
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontSize: '0.8rem',
+                    mb: 0.5
+                  }}
+                >
+                  {isComplete ? 'Completed' : 'Target Date'}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 600,
+                    color: 'white',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  {formatTargetDate(monthsToComplete)}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      );
     }
+
+    // Standard savings/debt card with new styling
+    const cardColors = isDebt
+      ? {
+          primary: '#991b1b',
+          secondary: '#dc2626',
+          accent: '#ef4444'
+        }
+      : {
+          primary: '#059669',
+          secondary: '#10b981',
+          accent: '#34d399'
+        };
+
+    return (
+      <Box
+        sx={{
+          p: 0,
+          background: `linear-gradient(135deg, ${cardColors.primary} 0%, ${cardColors.secondary} 100%)`,
+          borderRadius: 3,
+          boxShadow: `0 8px 32px ${cardColors.secondary}30`,
+          position: 'relative',
+          overflow: 'hidden',
+          color: 'white'
+        }}
+      >
+        {/* Decorative background elements */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -20,
+            right: -20,
+            width: 80,
+            height: 80,
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.1)',
+            opacity: 0.6
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: -30,
+            left: -30,
+            width: 100,
+            height: 100,
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.05)',
+            opacity: 0.8
+          }}
+        />
+
+        {/* Header */}
+        <Box sx={{ p: 3, pb: 2, position: 'relative', zIndex: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mb: 2
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 2,
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid rgba(255, 255, 255, 0.3)',
+                  backdropFilter: 'blur(10px)',
+                  fontSize: '20px'
+                }}
+              >
+                {item.icon}
+              </Box>
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.1rem',
+                    color: 'white',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                  }}
+                >
+                  {item.name}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontSize: '0.7rem',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  {isDebt ? 'Debt Elimination' : 'Savings Goal'}
+                </Typography>
+              </Box>
+            </Box>
+            <Chip
+              label={statusChip.label}
+              size="small"
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                backdropFilter: 'blur(10px)'
+              }}
+            />
+          </Box>
+
+          <Box sx={{ mb: 3 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                mb: 2
+              }}
+            >
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 900,
+                  fontSize: '2rem',
+                  color: 'white',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                }}
+              >
+                £{amount.toLocaleString()}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.85rem' }}
+              >
+                {isDebt ? 'remaining' : `of £${target.toLocaleString()}`}
+              </Typography>
+            </Box>
+
+            <LinearProgress
+              variant="determinate"
+              value={Math.min(progress, 100)}
+              sx={{
+                height: 12,
+                borderRadius: 6,
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                '& .MuiLinearProgress-bar': {
+                  background: `linear-gradient(90deg, ${cardColors.accent} 0%, #ffffff 100%)`,
+                  borderRadius: 6,
+                  boxShadow: `0 0 20px ${cardColors.accent}50`
+                }
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/* Footer */}
+        <Box
+          sx={{
+            p: 3,
+            pt: 0,
+            background: 'rgba(0, 0, 0, 0.1)',
+            position: 'relative',
+            zIndex: 1
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
+            <Box>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontSize: '0.8rem',
+                  mb: 0.5
+                }}
+              >
+                Monthly {isDebt ? 'Payment' : 'Contribution'}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 600,
+                  color: 'white',
+                  fontSize: '0.9rem'
+                }}
+              >
+                £{monthlyAmount.toLocaleString()}
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: 'right' }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontSize: '0.8rem',
+                  mb: 0.5
+                }}
+              >
+                {isComplete ? 'Completed' : 'Target Date'}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 600,
+                  color: 'white',
+                  fontSize: '0.9rem'
+                }}
+              >
+                {formatTargetDate(monthsToComplete)}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    );
   };
-  return null;
+
   return (
     <Box>
-      <Box sx={{ display: 'flex', width: '100%' }}>
-        {/* Savings */}
-        <Box flex={1}>
-          {savingsGoals.map((goal, index) => {
-            const progress =
-              goal.targetAmount > 0
-                ? (goal.currentBalance / goal.targetAmount) * 100
-                : 0;
-            const remaining = Math.max(
-              0,
-              goal.targetAmount - goal.currentBalance
-            );
-            const monthsToTarget = calculateMonthsToTarget(
-              goal.currentBalance,
-              goal.targetAmount,
-              goal.monthlyContribution
-            );
-            const progressGradient = getProgressGradient(progress, 'savings');
-            const glowColor = getGlowColor(progress, 'savings');
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <TrendingUpIcon sx={{ fontSize: 20, color: '#667eea' }} />
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            fontSize: '1.1rem',
+            color: '#374151'
+          }}
+        >
+          Progress Tracking
+        </Typography>
+      </Box>
 
-            return (
+      <Typography
+        variant="body2"
+        sx={{
+          color: '#6b7280',
+          fontSize: '0.85rem',
+          mb: 4,
+          lineHeight: 1.4
+        }}
+      >
+        Track your journey towards financial freedom and savings milestones
+      </Typography>
+
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 280px',
+          gap: 4,
+          mb: 4
+        }}
+      >
+        {/* Savings Section */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+            <Box
+              sx={{
+                width: 32,
+                height: 32,
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white'
+              }}
+            >
+              <SavingsIcon sx={{ fontSize: 18 }} />
+            </Box>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                fontSize: '1rem',
+                color: '#374151'
+              }}
+            >
+              Savings Goals
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {savingsGoals.length > 0 ? (
+              savingsGoals.map((goal) => (
+                <ProgressCard key={goal.id} item={goal} type="savings" />
+              ))
+            ) : (
               <Box
-                key={goal.id}
                 sx={{
-                  mb: index === savingsGoals.length - 1 ? 0 : 4,
-                  p: 3,
-                  background: '#ffffff',
+                  p: 4,
+                  textAlign: 'center',
+                  bgcolor: '#f8fafc',
                   borderRadius: 3,
-                  border: '2px solid #e2e8f0',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '4px',
-                    background: progressGradient,
-                    borderRadius: '3px 3px 0 0'
-                  }
+                  border: '2px dashed #cbd5e1'
                 }}
               >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    mb: 3
-                  }}
+                <Typography
+                  variant="body2"
+                  sx={{ color: '#6b7280', fontSize: '0.85rem' }}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box
-                      sx={{
-                        fontSize: '24px',
-                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-                      }}
-                    >
-                      {goal.icon}
-                    </Box>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 700,
-                        color: '#1f2937',
-                        fontSize: '1.125rem'
-                      }}
-                    >
-                      {goal.name}
-                    </Typography>
-                  </Box>
-                  <Chip
-                    label={
-                      progress >= 100
-                        ? '🎉 Complete!'
-                        : `${progress.toFixed(0)}%`
-                    }
-                    sx={{
-                      background:
-                        progress >= 100
-                          ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)'
-                          : progressGradient,
-                      color: 'white',
-                      fontWeight: 700,
-                      fontSize: '0.75rem',
-                      boxShadow: `0 4px 12px ${glowColor}`,
-                      border: '1px solid rgba(255,255,255,0.2)'
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ mb: 3 }}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'baseline',
-                      mb: 2
-                    }}
-                  >
-                    <Typography
-                      variant="h4"
-                      sx={{
-                        fontWeight: 900,
-                        background: progressGradient,
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        fontSize: '1.75rem',
-                        filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))'
-                      }}
-                    >
-                      £{goal.currentBalance.toLocaleString()}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        color: '#6b7280',
-                        fontSize: '1rem',
-                        fontWeight: 600
-                      }}
-                    >
-                      of £{goal.targetAmount.toLocaleString()}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      height: 12,
-                      backgroundColor: 'rgba(0,0,0,0.05)',
-                      borderRadius: 6,
-                      overflow: 'hidden',
-                      border: '1px solid rgba(0,0,0,0.1)'
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        inset: 0,
-                        width: `${Math.min(progress, 100)}%`,
-                        background: progressGradient,
-                        borderRadius: 6,
-                        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.3), 0 0 20px ${glowColor}`,
-                        transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
-                      }}
-                    />
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        inset: 0,
-                        background:
-                          'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
-                        backgroundSize: '200% 100%',
-                        animation: 'shimmer 2s ease-in-out infinite',
-                        '@keyframes shimmer': {
-                          '0%, 100%': { backgroundPosition: '-200% 0' },
-                          '50%': { backgroundPosition: '200% 0' }
-                        }
-                      }}
-                    />
-                  </Box>
-                </Box>
-
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: '#6b7280',
-                        fontSize: '0.85rem',
-                        fontWeight: 500,
-                        mb: 0.5
-                      }}
-                    >
-                      {remaining > 0
-                        ? `💰 £${remaining.toLocaleString()} to go`
-                        : '🎉 Target achieved!'}
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        px: 2,
-                        py: 0.5,
-                        bgcolor: 'rgba(16, 185, 129, 0.1)',
-                        borderRadius: 2,
-                        border: '1px solid rgba(16, 185, 129, 0.2)'
-                      }}
-                    >
-                      <Typography sx={{ fontSize: '12px' }}>💵</Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: '#059669',
-                          fontSize: '0.8rem',
-                          fontWeight: 700
-                        }}
-                      >
-                        £{goal.monthlyContribution}/month
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        background:
-                          'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        fontSize: '0.9rem',
-                        fontWeight: 700,
-                        lineHeight: 1.2
-                      }}
-                    >
-                      {formatTargetDate(monthsToTarget)}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: '#6b7280',
-                        fontSize: '0.7rem',
-                        display: 'block'
-                      }}
-                    >
-                      {monthsToTarget && monthsToTarget > 0
-                        ? `${monthsToTarget} months`
-                        : ''}
-                    </Typography>
-                  </Box>
-                </Box>
+                  No savings goals yet. Add one to start tracking progress!
+                </Typography>
               </Box>
-            );
-          })}
+            )}
+          </Box>
         </Box>
-        {/* Debts */}
-        <Box flex={1}>
-          {debts.map((debt, index) => {
-            const progress =
-              debt.startingBalance > 0
-                ? ((debt.startingBalance - debt.currentBalance) /
-                    debt.startingBalance) *
-                  100
-                : 0;
-            const monthsToPayoff = calculateDebtPayoffMonths(
-              debt.currentBalance,
-              debt.monthlyPayment
-            );
-            const progressGradient = getProgressGradient(progress, 'debt');
-            const glowColor = getGlowColor(progress, 'debt');
-            const isComplete = debt.currentBalance === 0;
 
-            return (
+        {/* Debts Section */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+            <Box
+              sx={{
+                width: 32,
+                height: 32,
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white'
+              }}
+            >
+              <DebtIcon sx={{ fontSize: 18 }} />
+            </Box>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                fontSize: '1rem',
+                color: '#374151'
+              }}
+            >
+              Debt Elimination
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {debts.length > 0 ? (
+              debts.map((debt) => (
+                <ProgressCard key={debt.id} item={debt} type="debt" />
+              ))
+            ) : (
               <Box
-                key={debt.id}
                 sx={{
-                  mb: index === debts.length - 1 ? 0 : 4,
-                  p: 3,
-                  background: '#ffffff',
+                  p: 4,
+                  textAlign: 'center',
+                  bgcolor: '#f0fdf4',
                   borderRadius: 3,
-                  border: isComplete
-                    ? '2px solid #10b981'
-                    : '2px solid #e2e8f0',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '4px',
-                    background: isComplete
-                      ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)'
-                      : progressGradient,
-                    borderRadius: '3px 3px 0 0'
-                  }
+                  border: '2px solid #bbf7d0'
                 }}
               >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    mb: 3
-                  }}
+                <CheckIcon sx={{ fontSize: 32, color: '#10b981', mb: 1 }} />
+                <Typography
+                  variant="body1"
+                  sx={{ color: '#166534', fontSize: '0.9rem', fontWeight: 600 }}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box
-                      sx={{
-                        fontSize: '24px',
-                        filter: isComplete ? 'grayscale(0)' : 'grayscale(0.2)'
-                      }}
-                    >
-                      {debt.icon}
-                    </Box>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 700,
-                        color: '#1f2937',
-                        fontSize: '1.125rem'
-                      }}
-                    >
-                      {debt.name}
-                    </Typography>
-                  </Box>
-                  <Chip
-                    label={
-                      isComplete
-                        ? '🎉 Debt Free!'
-                        : `${progress.toFixed(0)}% paid`
-                    }
-                    sx={{
-                      background: isComplete
-                        ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)'
-                        : progressGradient,
-                      color: 'white',
-                      fontWeight: 700,
-                      fontSize: '0.75rem',
-                      boxShadow: `0 4px 12px ${glowColor}`,
-                      border: '1px solid rgba(255,255,255,0.2)'
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ mb: 3 }}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'baseline',
-                      mb: 2
-                    }}
-                  >
-                    <Typography
-                      variant="h4"
-                      sx={{
-                        fontWeight: 900,
-                        background: isComplete
-                          ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)'
-                          : 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        fontSize: '1.75rem',
-                        filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))'
-                      }}
-                    >
-                      {isComplete
-                        ? '£0'
-                        : `£${debt.currentBalance.toLocaleString()}`}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        color: '#6b7280',
-                        fontSize: '1rem',
-                        fontWeight: 600,
-                        textDecoration: 'line-through'
-                      }}
-                    >
-                      was £{debt.startingBalance.toLocaleString()}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      height: 12,
-                      backgroundColor: 'rgba(0,0,0,0.05)',
-                      borderRadius: 6,
-                      overflow: 'hidden',
-                      border: '1px solid rgba(0,0,0,0.1)'
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        inset: 0,
-                        width: `${Math.min(progress, 100)}%`,
-                        background: isComplete
-                          ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)'
-                          : progressGradient,
-                        borderRadius: 6,
-                        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.3), 0 0 20px ${glowColor}`,
-                        transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
-                      }}
-                    />
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        inset: 0,
-                        background:
-                          'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
-                        backgroundSize: '200% 100%',
-                        animation: 'shimmer 2s ease-in-out infinite',
-                        '@keyframes shimmer': {
-                          '0%, 100%': { backgroundPosition: '-200% 0' },
-                          '50%': { backgroundPosition: '200% 0' }
-                        }
-                      }}
-                    />
-                  </Box>
-                </Box>
-
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
+                  🎉 Debt Free!
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ color: '#6b7280', fontSize: '0.8rem' }}
                 >
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: '#6b7280',
-                        fontSize: '0.85rem',
-                        fontWeight: 500,
-                        mb: 0.5
-                      }}
-                    >
-                      {isComplete
-                        ? '🎉 Completely eliminated!'
-                        : `🔥 £${(debt.startingBalance - debt.currentBalance).toLocaleString()} crushed`}
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        px: 2,
-                        py: 0.5,
-                        bgcolor: isComplete
-                          ? 'rgba(16, 185, 129, 0.1)'
-                          : 'rgba(239, 68, 68, 0.1)',
-                        borderRadius: 2,
-                        border: isComplete
-                          ? '1px solid rgba(16, 185, 129, 0.2)'
-                          : '1px solid rgba(239, 68, 68, 0.2)'
-                      }}
-                    >
-                      <Typography sx={{ fontSize: '12px' }}>
-                        {isComplete ? '✅' : '💸'}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: isComplete ? '#059669' : '#dc2626',
-                          fontSize: '0.8rem',
-                          fontWeight: 700
-                        }}
-                      >
-                        £{debt.monthlyPayment}/month
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        background: isComplete
-                          ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)'
-                          : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        fontSize: '0.9rem',
-                        fontWeight: 700,
-                        lineHeight: 1.2
-                      }}
-                    >
-                      {isComplete
-                        ? '🎉 Free!'
-                        : formatTargetDate(monthsToPayoff)}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: '#6b7280',
-                        fontSize: '0.7rem',
-                        display: 'block'
-                      }}
-                    >
-                      {!isComplete && monthsToPayoff && monthsToPayoff > 0
-                        ? `${monthsToPayoff} months`
-                        : ''}
-                    </Typography>
-                  </Box>
-                </Box>
+                  You have no debts to track
+                </Typography>
               </Box>
-            );
-          })}
+            )}
+          </Box>
+        </Box>
+
+        {/* Ad Placeholder */}
+        <Box>
+          <Box
+            sx={{
+              width: '100%',
+              height: 400,
+              background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+              border: '2px dashed #cbd5e1',
+              borderRadius: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#9ca3af'
+            }}
+          >
+            <Box
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: 2,
+                background: '#e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mb: 2
+              }}
+            >
+              <Typography sx={{ fontSize: '24px' }}>📢</Typography>
+            </Box>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 600,
+                color: '#6b7280',
+                mb: 0.5,
+                textAlign: 'center'
+              }}
+            >
+              Advertisement Space
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: '#9ca3af',
+                fontSize: '0.75rem',
+                textAlign: 'center'
+              }}
+            >
+              280 x 400px
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Box>
