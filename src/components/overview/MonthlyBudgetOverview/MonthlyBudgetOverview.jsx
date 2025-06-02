@@ -157,7 +157,7 @@ const MonthlyBudgetOverview = () => {
         />
 
         {/* Progress Tracking */}
-        <SavingsDebtProgress />
+        {/* <SavingsDebtProgress /> */}
       </CardContent>
     </Collapse>
   );

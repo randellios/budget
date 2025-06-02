@@ -12,6 +12,23 @@ import {
   selectTotalDebtPayments,
   selectTotalDebtBalance
 } from '../../../store/slices/debtsSlice';
+import {
+  AccountBalanceWallet,
+  TrendingUp,
+  RocketLaunch,
+  EmojiNature,
+  AutoAwesome,
+  Security,
+  Home,
+  Build,
+  Warning,
+  CheckCircle,
+  Speed,
+  Landscape,
+  Diamond,
+  Star
+} from '@mui/icons-material';
+
 const FinancialSnapshot = () => {
   const [timeHorizon, setTimeHorizon] = useState(0);
   const monthlyIncome = useAppSelector(selectMonthlyIncome);
@@ -63,111 +80,114 @@ const FinancialSnapshot = () => {
       return {
         status: 'Excellent',
         color: '#059669',
-        emoji: '💰'
+        icon: AccountBalanceWallet
       };
     if (savings >= 10000)
       return {
         status: 'Strong',
         color: '#6366f1',
-        emoji: '💪'
+        icon: Star
       };
     if (savings >= 3000)
       return {
         status: 'Building',
         color: '#d97706',
-        emoji: '🚀'
+        icon: RocketLaunch
       };
     if (savings >= 500)
       return {
         status: 'Starting',
         color: '#0891b2',
-        emoji: '🌱'
+        icon: EmojiNature
       };
     return {
       status: 'Beginning',
       color: '#8b5cf6',
-      emoji: '✨'
+      icon: AutoAwesome
     };
   };
+
   const getEmergencyStatus = (months) => {
     if (months >= 6)
       return {
         status: 'Secure',
         color: '#059669',
-        emoji: '🛡️'
+        icon: Security
       };
     if (months >= 3)
       return {
         status: 'Protected',
         color: '#6366f1',
-        emoji: '🏠'
+        icon: Home
       };
     if (months >= 1)
       return {
         status: 'Building',
         color: '#d97706',
-        emoji: '🔨'
+        icon: Build
       };
     return {
       status: 'Vulnerable',
       color: '#dc2626',
-      emoji: '⚠️'
+      icon: Warning
     };
   };
+
   const getDebtStatus = (months, balance) => {
     if (balance === 0)
       return {
         status: 'Debt Free',
         color: '#059669',
-        emoji: '🎉'
+        icon: CheckCircle
       };
     if (months <= 12)
       return {
         status: 'Nearly Free',
         color: '#6366f1',
-        emoji: '🏃‍♂️'
+        icon: Speed
       };
     if (months <= 24)
       return {
         status: 'On Track',
         color: '#d97706',
-        emoji: '📈'
+        icon: TrendingUp
       };
     return {
       status: 'Long Journey',
       color: '#dc2626',
-      emoji: '🗻'
+      icon: Landscape
     };
   };
+
   const getNetWorthStatus = (netWorth) => {
     if (netWorth >= 50000)
       return {
         status: 'Wealthy',
         color: '#059669',
-        emoji: '💎'
+        icon: Diamond
       };
     if (netWorth >= 20000)
       return {
         status: 'Strong',
         color: '#6366f1',
-        emoji: '💪'
+        icon: Star
       };
     if (netWorth >= 5000)
       return {
         status: 'Positive',
         color: '#d97706',
-        emoji: '📈'
+        icon: TrendingUp
       };
     if (netWorth >= 0)
       return {
         status: 'Building',
         color: '#0891b2',
-        emoji: '🏗️'
+        icon: Build
       };
     return {
       status: 'Negative',
       color: '#dc2626',
-      emoji: '⚠️'
+      icon: Warning
     };
   };
   const savingsStatus = getSavingsStatus(
@@ -191,174 +211,258 @@ const FinancialSnapshot = () => {
     progressValue,
     progressLabel,
     timeHorizonData
-  }) => (
-    <Box
-      sx={{
-        borderRadius: 3,
-        background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
-        border: '1px solid #e2e8f0',
-        p: 3,
-        position: 'relative',
-        overflow: 'hidden',
-        // boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-        minHeight: '200px',
-        display: 'flex',
-        flexDirection: 'column',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '3px',
-          background: status.color,
-          borderRadius: '3px 3px 0 0'
-        }
-      }}
-    >
+  }) => {
+    const IconComponent = status.icon;
+
+    return (
       <Box
         sx={{
+          borderRadius: 3,
+          background: `linear-gradient(135deg, #ffffff 0%, #fdfdfd 100%)`,
+          border: `1px solid ${status.color}20`,
+          p: 3,
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: `0 4px 20px rgba(0, 0, 0, 0.06), 0 0 0 1px ${status.color}08`,
+          minHeight: '200px',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          mb: 2
+          flexDirection: 'column',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: `0 8px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px ${status.color}15, 0 0 20px ${status.color}10`,
+            border: `1px solid ${status.color}30`
+          },
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            background: `linear-gradient(90deg, ${status.color} 0%, ${status.color}80 100%)`,
+            borderRadius: '3px 3px 0 0',
+            boxShadow: `0 2px 8px ${status.color}25`
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: -100,
+            right: -100,
+            width: 200,
+            height: 200,
+            background: `radial-gradient(circle, ${status.color}03 0%, transparent 70%)`,
+            borderRadius: '50%',
+            opacity: 0.6
+          }
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box
-            sx={{
-              width: 32,
-              height: 32,
-              borderRadius: 2,
-              background: `${status.color}15`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '16px'
-            }}
-          >
-            {status.emoji}
-          </Box>
-          <Box>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 600,
-                fontSize: '1rem',
-                color: '#1f2937',
-                lineHeight: 1
-              }}
-            >
-              {title}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                color: '#6b7280',
-                fontSize: '0.75rem',
-                fontWeight: 500
-              }}
-            >
-              {status.status}
-            </Typography>
-          </Box>
-        </Box>
-        <Chip
-          label={status.status}
-          size="small"
+        <Box
           sx={{
-            backgroundColor: `${status.color}15`,
-            color: status.color,
-            border: `1px solid ${status.color}30`,
-            fontSize: '0.7rem',
-            fontWeight: 600
-          }}
-        />
-      </Box>
-      <Box sx={{ textAlign: 'center', mb: 2, flex: 1 }}>
-        <Typography
-          variant="h3"
-          sx={{
-            fontWeight: 900,
-            fontSize: '2rem',
-            color: '#1f2937',
-            lineHeight: 1,
-            mb: 0.5
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            mb: 2,
+            position: 'relative',
+            zIndex: 1
           }}
         >
-          {mainValue}
-        </Typography>
-        {subValue && (
-          <Typography
-            variant="body2"
-            sx={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: 500 }}
-          >
-            {subValue}
-          </Typography>
-        )}
-        {timeHorizon > 0 && timeHorizonData && (
-          <Box
-            sx={{
-              mt: 2,
-              p: 1.5,
-              bgcolor: `${status.color}08`,
-              borderRadius: 2,
-              border: `1px solid ${status.color}20`
-            }}
-          >
-            <Typography
-              variant="caption"
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box
               sx={{
-                color: status.color,
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                display: 'block',
-                mb: 0.5
+                width: 36,
+                height: 36,
+                borderRadius: 2,
+                background: `linear-gradient(135deg, ${status.color}15 0%, ${status.color}08 100%)`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: `2px solid ${status.color}20`,
+                boxShadow: `0 2px 8px ${status.color}15`,
+                position: 'relative',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: -1,
+                  background: `conic-gradient(from 0deg, ${status.color}30, transparent, ${status.color}30)`,
+                  borderRadius: 'inherit',
+                  zIndex: -1,
+                  opacity: 0.5
+                }
               }}
             >
-              By {projectionDate}
-            </Typography>
+              <IconComponent sx={{ fontSize: 18, color: status.color }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  color: '#1f2937',
+                  lineHeight: 1,
+                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
+                }}
+              >
+                {title}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: '#6b7280',
+                  fontSize: '0.75rem',
+                  fontWeight: 500
+                }}
+              >
+                {status.status}
+              </Typography>
+            </Box>
+          </Box>
+          <Chip
+            label={status.status}
+            size="small"
+            sx={{
+              backgroundColor: `${status.color}12`,
+              color: status.color,
+              border: `1px solid ${status.color}25`,
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              boxShadow: `0 2px 4px ${status.color}15`,
+              '& .MuiChip-label': {
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
+              }
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            textAlign: 'center',
+            mb: 2,
+            flex: 1,
+            position: 'relative',
+            zIndex: 1
+          }}
+        >
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 900,
+              fontSize: '2rem',
+              background: `linear-gradient(135deg, #1f2937 0%, #374151 100%)`,
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              lineHeight: 1,
+              mb: 0.5,
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+            }}
+          >
+            {mainValue}
+          </Typography>
+          {subValue && (
             <Typography
               variant="body2"
-              sx={{ fontWeight: 600, color: status.color, fontSize: '0.8rem' }}
+              sx={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: 500 }}
             >
-              {timeHorizonData}
+              {subValue}
             </Typography>
-          </Box>
-        )}
+          )}
+          {timeHorizon > 0 && timeHorizonData && (
+            <Box
+              sx={{
+                mt: 2,
+                p: 1.5,
+                background: `linear-gradient(135deg, ${status.color}08 0%, ${status.color}04 100%)`,
+                borderRadius: 2,
+                border: `1px solid ${status.color}20`,
+                boxShadow: `0 2px 8px ${status.color}10`,
+                position: 'relative',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: 0,
+                  background: `linear-gradient(135deg, transparent 0%, ${status.color}02 50%, transparent 100%)`,
+                  borderRadius: 'inherit'
+                }
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  color: status.color,
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  display: 'block',
+                  mb: 0.5,
+                  position: 'relative',
+                  zIndex: 1
+                }}
+              >
+                By {projectionDate}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 700,
+                  color: status.color,
+                  fontSize: '0.8rem',
+                  position: 'relative',
+                  zIndex: 1
+                }}
+              >
+                {timeHorizonData}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <LinearProgress
+            variant="determinate"
+            value={Math.min(progressValue, 100)}
+            sx={{
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: '#f3f4f6',
+              mb: 1,
+              boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.1)',
+              border: '1px solid rgba(0, 0, 0, 0.05)',
+              '& .MuiLinearProgress-bar': {
+                background: `linear-gradient(90deg, ${status.color} 0%, ${status.color}dd 100%)`,
+                borderRadius: 5,
+                boxShadow: `0 0 10px ${status.color}40, inset 0 1px 0 rgba(255, 255, 255, 0.3)`,
+                position: 'relative',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '50%',
+                  background:
+                    'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent)',
+                  borderRadius: '5px 5px 0 0'
+                }
+              }
+            }}
+          />
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: '0.7rem',
+              color: '#6b7280',
+              textAlign: 'center',
+              display: 'block',
+              fontWeight: 500
+            }}
+          >
+            {progressLabel}
+          </Typography>
+        </Box>
       </Box>
-      <Box>
-        <LinearProgress
-          variant="determinate"
-          value={Math.min(progressValue, 100)}
-          sx={{
-            height: 8,
-            borderRadius: 4,
-            backgroundColor: '#f3f4f6',
-            mb: 1,
-            '& .MuiLinearProgress-bar': {
-              backgroundColor: status.color,
-              borderRadius: 4,
-              boxShadow: `0 2px 8px ${status.color}25`
-            }
-          }}
-        />
-        <Typography
-          variant="caption"
-          sx={{
-            fontSize: '0.7rem',
-            color: '#6b7280',
-            textAlign: 'center',
-            display: 'block'
-          }}
-        >
-          {progressLabel}
-        </Typography>
-      </Box>
-    </Box>
-  );
+    );
+  };
   return (
     <Box sx={{}}>
       <Box sx={{ mb: 3 }}>

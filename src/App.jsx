@@ -36,6 +36,7 @@ import { useAppSelector } from './store/hooks';
 import { selectMonthlyIncome } from './store/slices/incomeSlice';
 import { selectRemainingIncome } from './store/selectors/budgetSelectors';
 import MonthlyIncome from './components/intake/MonthlyIncome';
+import SavingsDebtProgress from './components/overview/SavingsDebtProgress';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -411,8 +412,11 @@ export default function Dashboard() {
                 </Box>
               </DashboardCard>
 
-              <DashboardCard>
+              <DashboardCard sx={{ mb: 4 }}>
                 <Overview />
+              </DashboardCard>
+              <DashboardCard>
+                <SavingsDebtProgress />
               </DashboardCard>
             </Box>
           </MainContent>
