@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -36,7 +36,6 @@ import { useAppSelector } from './store/hooks';
 import { selectMonthlyIncome } from './store/slices/incomeSlice';
 import { selectRemainingIncome } from './store/selectors/budgetSelectors';
 import MonthlyIncome from './components/intake/MonthlyIncome';
-import SavingsDebtProgress from './components/overview/SavingsDebtProgress';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -88,20 +87,6 @@ const DashboardCard = styled(Box)(({ theme }) => ({
   }
 }));
 
-const QuickActionCard = styled(Box)(({ theme, color = '#667eea' }) => ({
-  background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
-  borderRadius: 12,
-  padding: 16,
-  color: 'white',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  boxShadow: `0 4px 16px ${color}30`,
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: `0 8px 24px ${color}40`
-  }
-}));
-
 const SidebarSection = styled(Accordion)(({ theme }) => ({
   background: 'transparent',
   boxShadow: 'none',
@@ -121,6 +106,11 @@ const SidebarSection = styled(Accordion)(({ theme }) => ({
   }
 }));
 
+// Memoized components to prevent unnecessary re-renders
+const MemoizedMonthlyExpenses = React.memo(MonthlyExpenses);
+const MemoizedSavingGoals = React.memo(SavingGoals);
+const MemoizedDebts = React.memo(Debts);
+
 export default function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
@@ -134,151 +124,167 @@ export default function Dashboard() {
   const monthlyIncome = useAppSelector(selectMonthlyIncome);
   const remainingIncome = useAppSelector(selectRemainingIncome);
 
-  const handleDrawerToggle = () => {
+  const handleDrawerToggle = useCallback(() => {
     setMobileOpen(!mobileOpen);
-  };
+  }, [mobileOpen]);
 
-  const handleSectionToggle = (section) => {
+  const handleSectionToggle = useCallback((section) => {
     setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section]
     }));
-  };
+  }, []);
 
-  const SidebarContent = () => (
-    <Box sx={{ height: '100%', overflow: 'auto' }}>
-      <Box sx={{ p: 3 }}>
-        <EnhancedIncomeMonthSelector />
-        <MonthlyIncome />
-        <Typography
-          variant="overline"
-          sx={{
-            color: '#6b7280',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            letterSpacing: '0.5px',
-            mb: 2,
-            display: 'block'
-          }}
-        >
-          Budget Setup
-        </Typography>
-
-        {/* Monthly Expenses Section */}
-        <SidebarSection>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}
+  // Memoize the sidebar content to prevent re-renders when Redux state changes
+  const SidebarContent = useMemo(
+    () => () => (
+      <Box sx={{ height: '100%', overflow: 'auto' }}>
+        <Box sx={{ p: 3 }}>
+          <EnhancedIncomeMonthSelector />
+          <MonthlyIncome />
+          <Typography
+            variant="overline"
             sx={{
-              '& .MuiAccordionSummary-content': {
-                alignItems: 'center',
-                gap: 1.5
-              }
+              color: '#6b7280',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+              mb: 2,
+              display: 'block'
             }}
           >
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: 1.5,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white'
-              }}
-            >
-              <ShoppingCartIcon sx={{ fontSize: 16 }} />
-            </Box>
-            <Typography
-              variant="body1"
-              sx={{ fontWeight: 600, color: '#374151' }}
-            >
-              Monthly Expenses
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ p: 0 }}>
-            <MonthlyExpenses />
-          </AccordionDetails>
-        </SidebarSection>
+            Budget Setup
+          </Typography>
 
-        {/* Savings Goals Section */}
-        <SidebarSection
-          expanded={expandedSections.savings}
-          onChange={() => handleSectionToggle('savings')}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon sx={{ color: '#10b981' }} />}
-            sx={{
-              '& .MuiAccordionSummary-content': {
-                alignItems: 'center',
-                gap: 1.5
-              }
-            }}
+          {/* Monthly Expenses Section */}
+          <SidebarSection
+            expanded={expandedSections.expenses}
+            onChange={() => handleSectionToggle('expenses')}
+            TransitionProps={{ unmountOnExit: false }}
           >
-            <Box
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon sx={{ color: '#667eea' }} />}
               sx={{
-                width: 28,
-                height: 28,
-                borderRadius: 1.5,
-                background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white'
+                '& .MuiAccordionSummary-content': {
+                  alignItems: 'center',
+                  gap: 1.5
+                }
               }}
             >
-              <TargetIcon sx={{ fontSize: 16 }} />
-            </Box>
-            <Typography
-              variant="body1"
-              sx={{ fontWeight: 600, color: '#374151' }}
-            >
-              Savings Goals
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <SavingGoals />
-          </AccordionDetails>
-        </SidebarSection>
+              <Box
+                sx={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 1.5,
+                  background:
+                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white'
+                }}
+              >
+                <ShoppingCartIcon sx={{ fontSize: 16 }} />
+              </Box>
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 600, color: '#374151' }}
+              >
+                Monthly Expenses
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <MemoizedMonthlyExpenses />
+            </AccordionDetails>
+          </SidebarSection>
 
-        {/* Debts Section */}
-        <SidebarSection>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon sx={{ color: '#ef4444' }} />}
-            sx={{
-              '& .MuiAccordionSummary-content': {
-                alignItems: 'center',
-                gap: 1.5
-              }
-            }}
+          {/* Savings Goals Section */}
+          <SidebarSection
+            expanded={expandedSections.savings}
+            onChange={() => handleSectionToggle('savings')}
+            TransitionProps={{ unmountOnExit: false }}
           >
-            <Box
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon sx={{ color: '#10b981' }} />}
               sx={{
-                width: 28,
-                height: 28,
-                borderRadius: 1.5,
-                background: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white'
+                '& .MuiAccordionSummary-content': {
+                  alignItems: 'center',
+                  gap: 1.5
+                }
               }}
             >
-              <CreditCardIcon sx={{ fontSize: 16 }} />
-            </Box>
-            <Typography
-              variant="body1"
-              sx={{ fontWeight: 600, color: '#374151' }}
+              <Box
+                sx={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 1.5,
+                  background:
+                    'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white'
+                }}
+              >
+                <TargetIcon sx={{ fontSize: 16 }} />
+              </Box>
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 600, color: '#374151' }}
+              >
+                Savings Goals
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <MemoizedSavingGoals />
+            </AccordionDetails>
+          </SidebarSection>
+
+          {/* Debts Section */}
+          <SidebarSection
+            expanded={expandedSections.debts}
+            onChange={() => handleSectionToggle('debts')}
+            TransitionProps={{ unmountOnExit: false }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon sx={{ color: '#ef4444' }} />}
+              sx={{
+                '& .MuiAccordionSummary-content': {
+                  alignItems: 'center',
+                  gap: 1.5
+                }
+              }}
             >
-              Debts
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Debts />
-          </AccordionDetails>
-        </SidebarSection>
+              <Box
+                sx={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 1.5,
+                  background:
+                    'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white'
+                }}
+              >
+                <CreditCardIcon sx={{ fontSize: 16 }} />
+              </Box>
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 600, color: '#374151' }}
+              >
+                Debts
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <MemoizedDebts />
+            </AccordionDetails>
+          </SidebarSection>
+        </Box>
       </Box>
-    </Box>
+    ),
+    [expandedSections, handleSectionToggle]
   );
 
   return (
@@ -412,11 +418,8 @@ export default function Dashboard() {
                 </Box>
               </DashboardCard>
 
-              <DashboardCard sx={{ mb: 4 }}>
-                <Overview />
-              </DashboardCard>
               <DashboardCard>
-                <SavingsDebtProgress />
+                <Overview />
               </DashboardCard>
             </Box>
           </MainContent>
