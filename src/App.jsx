@@ -213,28 +213,6 @@ export default function Dashboard() {
             </Box>
           </Box>
 
-          {/* Mobile Drawer */}
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{ keepMounted: true }}
-            sx={{
-              display: { xs: 'block', md: 'none' },
-              '& .MuiDrawer-paper': {
-                width: 400,
-                background: 'linear-gradient(180deg, #ffffff 0%, #fafbfc 100%)'
-              }
-            }}
-          >
-            <Box sx={{ height: '100%', overflow: 'auto' }}>
-              <Box sx={{ p: 3 }}>
-                <EnhancedIncomeMonthSelector />
-                <MonthlyIncome />
-              </Box>
-            </Box>
-          </Drawer>
-
           {/* Main Content */}
           <MainContent
             component="main"
