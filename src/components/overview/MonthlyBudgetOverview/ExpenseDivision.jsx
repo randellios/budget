@@ -78,14 +78,19 @@ const ExpenseDivision = () => {
   const getTopSpendingInsights = () => {
     const allItems = [];
 
-    expenseCategories.forEach((cat) => {
-      cat.items.forEach((item) => {
+    // Iterate through the object-based categories
+    Object.values(expenseCategories).forEach((category) => {
+      category.items.forEach((item) => {
         if (item.amount > 0) {
+          // Determine if essential based on category type
+          const isEssential =
+            category.id === 'needs' || category.id === 'basics';
+
           allItems.push({
             name: item.name,
-            category: cat.name,
+            category: category.name,
             amount: item.amount,
-            isEssential: item.isEssential,
+            isEssential: isEssential,
             percentageOfIncome:
               monthlyIncome > 0 ? (item.amount / monthlyIncome) * 100 : 0
           });

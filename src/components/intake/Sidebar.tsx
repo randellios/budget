@@ -6,9 +6,9 @@ import Debts from './Debts';
 const Sidebar = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-      <MonthlyExpenses />
+      {/* <MonthlyExpenses />
       <SavingGoals />
-      <Debts />
+      <Debts /> */}
     </Box>
   );
 };

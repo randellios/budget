@@ -19,15 +19,20 @@ const TopExpenses = () => {
   const getTopExpenses = () => {
     const allExpenses = [];
 
-    expenseCategories.forEach((category) => {
+    // Iterate through the object-based categories
+    Object.values(expenseCategories).forEach((category) => {
       category.items.forEach((item) => {
         if (item.amount > 0) {
+          // Determine if essential based on category type
+          const isEssential =
+            category.id === 'needs' || category.id === 'basics';
+
           allExpenses.push({
             name: item.name,
             amount: item.amount,
             category: category.name,
             categoryIcon: category.icon,
-            isEssential: item.isEssential,
+            isEssential: isEssential,
             percentageOfIncome:
               monthlyIncome > 0 ? (item.amount / monthlyIncome) * 100 : 0
           });

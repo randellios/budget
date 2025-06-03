@@ -191,52 +191,6 @@ const MonthlyIncome = () => {
           </Typography>
         </Box>
       )}
-
-      <Box>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            mb: 1
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{ color: '#6b7280', fontSize: '0.8rem', fontWeight: 500 }}
-          >
-            Allocated: £{totalAllocated.toLocaleString()}
-          </Typography>
-          {remaining !== 0 && (
-            <Typography
-              variant="caption"
-              sx={{
-                color: getStatusColor(),
-                fontSize: '.9rem',
-                fontWeight: 600
-              }}
-            >
-              {remaining > 0
-                ? `+£${remaining.toLocaleString()}`
-                : `-£${Math.abs(remaining).toLocaleString()}`}
-            </Typography>
-          )}
-        </Box>
-        <LinearProgress
-          variant="determinate"
-          value={Math.min(allocationPercentage, 100)}
-          sx={{
-            height: 8,
-            borderRadius: 4,
-            backgroundColor: '#f3f4f6',
-            '& .MuiLinearProgress-bar': {
-              backgroundColor: getStatusColor(),
-              borderRadius: 4,
-              boxShadow: `0 2px 8px ${getStatusColor()}40`
-            }
-          }}
-        />
-      </Box>
     </Box>
   );
 };
