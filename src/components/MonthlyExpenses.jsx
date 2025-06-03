@@ -374,23 +374,23 @@ const MonthlyExpenses = () => {
             className="item-actions"
             sx={{
               position: 'absolute',
-              right: 0,
-              bottom: 0,
+              right: 8,
+              bottom: 8,
               display: 'flex',
               gap: 0.5,
               opacity: 0,
               visibility: 'hidden',
-              transition: 'all 0.2s ease',
-              bgcolor: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: 2,
-              p: 0.5,
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+              transition: 'all 0.2s ease'
+              // bgcolor: '#ffffff',
+              // border: '1px solid #e2e8f0',
+              // borderRadius: 2,
+              // p: 0.5,
+              // // boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
             }}
           >
             <Tooltip title={isDisabled ? 'Enable item' : 'Disable item'}>
               <IconButton
-                size="small"
+                // size="small"
                 onClick={() => toggleItemEnabled(categoryId, item.id)}
                 sx={{
                   color: isDisabled ? '#9ca3af' : '#6b7280',
@@ -399,9 +399,9 @@ const MonthlyExpenses = () => {
                 }}
               >
                 {isDisabled ? (
-                  <VisibilityOffIcon sx={{ fontSize: 14 }} />
+                  <VisibilityOffIcon sx={{ fontSize: 18 }} />
                 ) : (
-                  <VisibilityIcon sx={{ fontSize: 14 }} />
+                  <VisibilityIcon sx={{ fontSize: 18 }} />
                 )}
               </IconButton>
             </Tooltip>
@@ -415,7 +415,7 @@ const MonthlyExpenses = () => {
                   p: 0.5
                 }}
               >
-                <DeleteIcon sx={{ fontSize: 14 }} />
+                <DeleteIcon sx={{ fontSize: 18 }} />
               </IconButton>
             </Tooltip>
           </Box>
