@@ -168,14 +168,14 @@ const MonthlyExpenses = () => {
       }}
       onClick={() => toggleCategory(categoryId)}
     >
-      <Box sx={{ fontSize: '18px' }}>{config.icon}</Box>
+      <Box sx={{ fontSize: '20px' }}>{config.icon}</Box>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography
           variant="h6"
           sx={{
             fontWeight: 600,
-            fontSize: '0.9rem',
+            fontSize: '1rem',
             color: disabledCategories[categoryId] ? '#9ca3af' : '#374151',
             opacity: disabledCategories[categoryId] ? 0.6 : 1
           }}
@@ -184,7 +184,7 @@ const MonthlyExpenses = () => {
         </Typography>
         <Typography
           variant="caption"
-          sx={{ color: '#6b7280', fontSize: '0.7rem' }}
+          sx={{ color: '#6b7280', fontSize: '0.8rem' }}
         >
           {itemCount} items • £{total.toLocaleString()}
         </Typography>
@@ -195,7 +195,7 @@ const MonthlyExpenses = () => {
           variant="body2"
           sx={{
             fontWeight: 600,
-            fontSize: '0.8rem',
+            fontSize: '0.9rem',
             color: config.color,
             opacity: disabledCategories[categoryId] ? 0.5 : 1
           }}
@@ -221,18 +221,18 @@ const MonthlyExpenses = () => {
             }}
           >
             {disabledCategories[categoryId] ? (
-              <VisibilityOffIcon sx={{ fontSize: 16 }} />
+              <VisibilityOffIcon sx={{ fontSize: 18 }} />
             ) : (
-              <VisibilityIcon sx={{ fontSize: 16 }} />
+              <VisibilityIcon sx={{ fontSize: 18 }} />
             )}
           </IconButton>
         </Tooltip>
 
         <IconButton size="small" sx={{ color: '#6b7280' }}>
           {expandedCategories[categoryId] ? (
-            <ExpandLessIcon sx={{ fontSize: 18 }} />
+            <ExpandLessIcon sx={{ fontSize: 20 }} />
           ) : (
-            <ExpandMoreIcon sx={{ fontSize: 18 }} />
+            <ExpandMoreIcon sx={{ fontSize: 20 }} />
           )}
         </IconButton>
       </Box>
@@ -266,7 +266,7 @@ const MonthlyExpenses = () => {
             sx={{
               flex: 1,
               '& .MuiOutlinedInput-root': {
-                fontSize: '0.8rem',
+                fontSize: '0.9rem',
                 '& fieldset': { border: 'none' },
                 bgcolor: 'white'
               }
@@ -279,9 +279,9 @@ const MonthlyExpenses = () => {
             onChange={(e) => setEditAmount(e.target.value)}
             placeholder="0"
             sx={{
-              width: 60,
+              width: 70,
               '& .MuiOutlinedInput-root': {
-                fontSize: '0.8rem',
+                fontSize: '0.9rem',
                 '& fieldset': { border: 'none' },
                 bgcolor: 'white'
               }
@@ -292,14 +292,14 @@ const MonthlyExpenses = () => {
             onClick={() => saveEdit(categoryId, item.id)}
             sx={{ color: '#10b981' }}
           >
-            <CheckIcon sx={{ fontSize: 16 }} />
+            <CheckIcon sx={{ fontSize: 18 }} />
           </IconButton>
           <IconButton
             size="small"
             onClick={cancelEdit}
             sx={{ color: '#ef4444' }}
           >
-            <CloseIcon sx={{ fontSize: 16 }} />
+            <CloseIcon sx={{ fontSize: 18 }} />
           </IconButton>
         </Box>
       );
@@ -308,25 +308,33 @@ const MonthlyExpenses = () => {
     return (
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
+          position: 'relative',
           p: 1.5,
           borderRadius: 2,
           opacity: isDisabled ? 0.5 : 1,
           '&:hover': {
             bgcolor: isDisabled ? 'transparent' : '#f8fafc',
-            '& .item-actions': { opacity: 1 }
+            '& .item-actions': {
+              opacity: 1,
+              visibility: 'visible'
+            }
           },
           transition: 'all 0.2s ease'
         }}
       >
-        <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            mb: '-5px'
+          }}
+        >
           <Typography
             variant="body2"
             sx={{
               fontWeight: 500,
-              fontSize: '0.8rem',
+              fontSize: '0.9rem',
               color: isDisabled ? '#9ca3af' : '#374151',
               cursor: 'pointer',
               '&:hover': { color: config.color }
@@ -335,56 +343,82 @@ const MonthlyExpenses = () => {
           >
             {item.name}
           </Typography>
+
           <Typography
-            variant="caption"
-            sx={{ color: '#9ca3af', fontSize: '0.7rem' }}
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              color: isDisabled ? '#9ca3af' : config.color
+            }}
           >
-            Monthly expense
+            £{item.amount}
           </Typography>
         </Box>
 
-        <Typography
-          variant="body2"
-          sx={{
-            fontWeight: 600,
-            fontSize: '0.8rem',
-            color: isDisabled ? '#9ca3af' : config.color,
-            minWidth: 'fit-content'
-          }}
-        >
-          £{item.amount}
-        </Typography>
-
         <Box
-          className="item-actions"
           sx={{
             display: 'flex',
-            opacity: 0,
-            transition: 'opacity 0.2s ease'
+            alignItems: 'center',
+            justifyContent: 'space-between'
           }}
         >
-          <Tooltip title={isDisabled ? 'Enable item' : 'Disable item'}>
-            <IconButton
-              size="small"
-              onClick={() => toggleItemEnabled(categoryId, item.id)}
-              sx={{ color: isDisabled ? '#9ca3af' : '#6b7280' }}
-            >
-              {isDisabled ? (
-                <VisibilityOffIcon sx={{ fontSize: 14 }} />
-              ) : (
-                <VisibilityIcon sx={{ fontSize: 14 }} />
-              )}
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete item">
-            <IconButton
-              size="small"
-              onClick={() => handleDeleteItem(categoryId, item.id)}
-              sx={{ color: '#ef4444' }}
-            >
-              <DeleteIcon sx={{ fontSize: 14 }} />
-            </IconButton>
-          </Tooltip>
+          <Typography
+            variant="caption"
+            sx={{ color: '#9ca3af', fontSize: '0.8rem', mt: 1 }}
+          >
+            20%
+          </Typography>
+
+          <Box
+            className="item-actions"
+            sx={{
+              position: 'absolute',
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              gap: 0.5,
+              opacity: 0,
+              visibility: 'hidden',
+              transition: 'all 0.2s ease',
+              bgcolor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: 2,
+              p: 0.5,
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+            }}
+          >
+            <Tooltip title={isDisabled ? 'Enable item' : 'Disable item'}>
+              <IconButton
+                size="small"
+                onClick={() => toggleItemEnabled(categoryId, item.id)}
+                sx={{
+                  color: isDisabled ? '#9ca3af' : '#6b7280',
+                  '&:hover': { bgcolor: '#f9fafb' },
+                  p: 0.5
+                }}
+              >
+                {isDisabled ? (
+                  <VisibilityOffIcon sx={{ fontSize: 14 }} />
+                ) : (
+                  <VisibilityIcon sx={{ fontSize: 14 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete item">
+              <IconButton
+                size="small"
+                onClick={() => handleDeleteItem(categoryId, item.id)}
+                sx={{
+                  color: '#ef4444',
+                  '&:hover': { bgcolor: '#fef2f2' },
+                  p: 0.5
+                }}
+              >
+                <DeleteIcon sx={{ fontSize: 14 }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
       </Box>
     );
@@ -396,7 +430,7 @@ const MonthlyExpenses = () => {
         variant="overline"
         sx={{
           color: '#6b7280',
-          fontSize: '0.75rem',
+          fontSize: '0.8rem',
           fontWeight: 600,
           letterSpacing: '0.5px',
           mb: 2,
@@ -418,7 +452,7 @@ const MonthlyExpenses = () => {
               sx={{
                 border: '1px solid #e2e8f0',
                 borderRadius: 3,
-                overflow: 'hidden',
+                overflow: 'visible',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
               }}
             >
@@ -460,7 +494,7 @@ const MonthlyExpenses = () => {
                         }}
                         sx={{
                           '& .MuiOutlinedInput-root': {
-                            fontSize: '0.8rem'
+                            fontSize: '0.9rem'
                           }
                         }}
                       />
@@ -469,7 +503,7 @@ const MonthlyExpenses = () => {
                         onClick={() => handleAddItem(categoryId)}
                         sx={{ color: '#10b981' }}
                       >
-                        <CheckIcon sx={{ fontSize: 16 }} />
+                        <CheckIcon sx={{ fontSize: 18 }} />
                       </IconButton>
                       <IconButton
                         size="small"
@@ -482,18 +516,18 @@ const MonthlyExpenses = () => {
                         }}
                         sx={{ color: '#ef4444' }}
                       >
-                        <CloseIcon sx={{ fontSize: 16 }} />
+                        <CloseIcon sx={{ fontSize: 18 }} />
                       </IconButton>
                     </Box>
                   ) : (
                     <Button
                       size="small"
-                      startIcon={<AddIcon sx={{ fontSize: 14 }} />}
+                      startIcon={<AddIcon sx={{ fontSize: 16 }} />}
                       onClick={() => setAddingToCategory(categoryId)}
                       sx={{
                         mt: 1,
                         color: config.color,
-                        fontSize: '0.75rem',
+                        fontSize: '0.8rem',
                         textTransform: 'none',
                         fontWeight: 500,
                         '&:hover': { bgcolor: `${config.color}08` }
