@@ -12,7 +12,9 @@ const initialState = {
   expandedDebts: {},
   expandedSavings: {},
   editingField: null,
-  showIconPicker: null
+  showIconPicker: null,
+  disabledCategories: {},
+  disabledItems: {}
 };
 
 const uiSlice = createSlice({
@@ -44,6 +46,16 @@ const uiSlice = createSlice({
     },
     setShowIconPicker: (state, action) => {
       state.showIconPicker = action.payload;
+    },
+    toggleCategoryDisabled: (state, action) => {
+      const categoryId = action.payload;
+      state.disabledCategories[categoryId] =
+        !state.disabledCategories[categoryId];
+    },
+    toggleItemDisabled: (state, action) => {
+      const { categoryId, itemId } = action.payload;
+      const key = `${categoryId}-${itemId}`;
+      state.disabledItems[key] = !state.disabledItems[key];
     }
   },
   extraReducers: (builder) => {
@@ -82,7 +94,9 @@ export const {
   toggleDebt,
   toggleSaving,
   setEditingField,
-  setShowIconPicker
+  setShowIconPicker,
+  toggleCategoryDisabled,
+  toggleItemDisabled
 } = uiSlice.actions;
 
 // Selectors remain the same
@@ -93,5 +107,7 @@ export const selectExpandedDebts = (state) => state.ui.expandedDebts;
 export const selectExpandedSavings = (state) => state.ui.expandedSavings;
 export const selectEditingField = (state) => state.ui.editingField;
 export const selectShowIconPicker = (state) => state.ui.showIconPicker;
+export const selectDisabledCategories = (state) => state.ui.disabledCategories;
+export const selectDisabledItems = (state) => state.ui.disabledItems;
 
 export default uiSlice.reducer;
