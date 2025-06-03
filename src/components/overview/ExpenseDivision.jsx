@@ -33,8 +33,6 @@ import {
   selectDebts
 } from '../../store/slices/debtsSlice';
 import TemperatureGauge from './TemperatureGauge';
-import AdvancedFinancialHealth from './CompactFinancialHealth';
-import FinancialSnapshot from './FinancialSnapshot';
 
 const ExpenseDivision = () => {
   const monthlyIncome = useAppSelector(selectMonthlyIncome);

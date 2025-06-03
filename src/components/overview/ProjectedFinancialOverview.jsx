@@ -194,6 +194,7 @@ const ProjectedFinancialOverview = () => {
         mt: 3,
         mb: 6,
         p: 3.5,
+        pt: 2.5,
         background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
         border: '2px solid #e2e8f0',
         borderRadius: 4,

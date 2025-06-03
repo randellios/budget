@@ -36,7 +36,6 @@ import {
   selectTotalDebtPayments,
   selectDebts
 } from '../../store/slices/debtsSlice';
-import FinancialSnapshot from './FinancialSnapshot';
 import ExpenseDivision from './ExpenseDivision';
 import CompactFinancialHealth from './CompactFinancialHealth';
 import TopExpenses from './TopExpenses';
@@ -348,11 +347,7 @@ const MonthlyBudgetOverview = () => {
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.06)',
                   overflow: 'hidden'
                 }}
-              >
-                <Box sx={{ p: 3 }}>
-                  <FinancialSnapshot />
-                </Box>
-              </Box>
+              ></Box>
             </SectionHeader>
 
             <Box>
