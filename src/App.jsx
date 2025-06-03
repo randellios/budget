@@ -15,6 +15,7 @@ import { styled, ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import MonthlyBudgetOverview from './components/overview/MonthlyBudgetOverview';
 import Sidebar from './components/Sidebar';
+import BudgetAllocationSummary from './components/BudgetAllocationSummary';
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   boxShadow: '0 4px 20px rgba(102, 126, 234, 0.15)',
@@ -132,33 +133,7 @@ export default function Dashboard() {
                   border: 'none'
                 }}
               >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>
-                      Welcome back! 👋
-                    </Typography>
-                    <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                      Your financial health score is looking strong this month.
-                    </Typography>
-                  </Box>
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography
-                      variant="h2"
-                      sx={{ fontWeight: 900, lineHeight: 1 }}
-                    >
-                      84
-                    </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                      Health Score
-                    </Typography>
-                  </Box>
-                </Box>
+                <BudgetAllocationSummary />
               </DashboardCard>
               <DashboardCard>
                 <MonthlyBudgetOverview />
