@@ -1,53 +1,32 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Box,
   Typography,
   AppBar,
   Toolbar,
   IconButton,
-  Button,
-  useTheme,
-  useMediaQuery,
-  Drawer,
-  Divider,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails
+  useTheme
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  Settings as SettingsIcon,
-  Notifications as NotificationsIcon,
-  Dashboard as DashboardIcon,
-  TrendingUp as TrendingUpIcon,
-  ExpandMore as ExpandMoreIcon,
-  ShoppingCart as ShoppingCartIcon,
-  TrackChanges as TargetIcon,
-  CreditCard as CreditCardIcon
+  Settings as SettingsIcon
 } from '@mui/icons-material';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled, ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
-
-import EnhancedIncomeMonthSelector from './components/EnhancedIncomeMonthSelector';
-import { useAppSelector } from './store/hooks';
-import { selectMonthlyIncome } from './store/slices/incomeSlice';
-import { selectRemainingIncome } from './store/selectors/budgetSelectors';
-import MonthlyIncome from './components/MonthlyIncome';
 import MonthlyBudgetOverview from './components/overview/MonthlyBudgetOverview';
 import Sidebar from './components/Sidebar';
-
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   boxShadow: '0 4px 20px rgba(102, 126, 234, 0.15)',
   backdropFilter: 'blur(10px)',
   borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
 }));
-
 const MainContent = styled(Box)(({ theme }) => ({
   flex: 1,
   background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
   minHeight: '100vh',
   position: 'relative',
+  paddingLeft: 400,
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -60,7 +39,6 @@ const MainContent = styled(Box)(({ theme }) => ({
     pointerEvents: 'none'
   }
 }));
-
 const DashboardCard = styled(Box)(({ theme }) => ({
   background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
   borderRadius: 16,
@@ -85,47 +63,12 @@ const DashboardCard = styled(Box)(({ theme }) => ({
     boxShadow: '0 12px 32px rgba(0, 0, 0, 0.12)'
   }
 }));
-
-const SidebarSection = styled(Accordion)(({ theme }) => ({
-  background: 'transparent',
-  boxShadow: 'none',
-  border: 'none',
-  '&:before': {
-    display: 'none'
-  },
-  '& .MuiAccordionSummary-root': {
-    padding: '12px 0',
-    minHeight: 'auto',
-    '&.Mui-expanded': {
-      minHeight: 'auto'
-    }
-  },
-  '& .MuiAccordionDetails-root': {
-    padding: '0 0 16px 0'
-  }
-}));
-
 export default function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [expandedSections, setExpandedSections] = useState({
-    expenses: true,
-    savings: true,
-    debts: true
-  });
-
   const theme = useTheme();
-
   const handleDrawerToggle = useCallback(() => {
     setMobileOpen(!mobileOpen);
   }, [mobileOpen]);
-
-  const handleSectionToggle = useCallback((section) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  }, []);
-
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -141,7 +84,6 @@ export default function Dashboard() {
             >
               <MenuIcon />
             </IconButton>
-
             <Box
               sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}
             >
@@ -160,13 +102,13 @@ export default function Dashboard() {
                   border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
+                {' '}
                 B
               </Box>
               <Typography variant="h6" sx={{ fontWeight: 700, color: 'white' }}>
                 Budget Dashboard
               </Typography>
             </Box>
-
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton color="inherit">
                 <SettingsIcon />
@@ -174,11 +116,8 @@ export default function Dashboard() {
             </Box>
           </Toolbar>
         </StyledAppBar>
-
         <Box sx={{ display: 'flex', flex: 1 }}>
-          {/* Desktop Sidebar */}
           <Sidebar />
-          {/* Main Content */}
           <MainContent
             component="main"
             sx={{ position: 'relative', zIndex: 1 }}
@@ -221,7 +160,6 @@ export default function Dashboard() {
                   </Box>
                 </Box>
               </DashboardCard>
-
               <DashboardCard>
                 <MonthlyBudgetOverview />
               </DashboardCard>
