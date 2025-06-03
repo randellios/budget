@@ -31,7 +31,7 @@ import {
   deleteExpenseItem
 } from '../store/slices/expensesSlice';
 
-const MonthlyExpenses = ({ isExpanded = true }) => {
+const MonthlyExpenses = () => {
   const dispatch = useAppDispatch();
   const expenseCategories = useAppSelector(selectExpenseCategories);
 
@@ -182,57 +182,51 @@ const MonthlyExpenses = ({ isExpanded = true }) => {
         >
           {config.name}
         </Typography>
-        {isExpanded && (
-          <Typography
-            variant="caption"
-            sx={{ color: '#6b7280', fontSize: '0.7rem' }}
-          >
-            {itemCount} items • £{total.toLocaleString()}
-          </Typography>
-        )}
+        <Typography
+          variant="caption"
+          sx={{ color: '#6b7280', fontSize: '0.7rem' }}
+        >
+          {itemCount} items • £{total.toLocaleString()}
+        </Typography>
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        {!isExpanded && (
-          <Typography
-            variant="body2"
+        <Typography
+          variant="body2"
+          sx={{
+            fontWeight: 600,
+            fontSize: '0.8rem',
+            color: config.color,
+            opacity: disabledCategories[categoryId] ? 0.5 : 1
+          }}
+        >
+          £{total}
+        </Typography>
+
+        <Tooltip
+          title={
+            disabledCategories[categoryId]
+              ? 'Enable category'
+              : 'Disable category'
+          }
+        >
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleCategoryEnabled(categoryId);
+            }}
             sx={{
-              fontWeight: 600,
-              fontSize: '0.8rem',
-              color: config.color,
-              opacity: disabledCategories[categoryId] ? 0.5 : 1
+              color: disabledCategories[categoryId] ? '#9ca3af' : config.color
             }}
           >
-            £{total}
-          </Typography>
-        )}
-
-        {isExpanded && (
-          <Tooltip
-            title={
-              disabledCategories[categoryId]
-                ? 'Enable category'
-                : 'Disable category'
-            }
-          >
-            <IconButton
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleCategoryEnabled(categoryId);
-              }}
-              sx={{
-                color: disabledCategories[categoryId] ? '#9ca3af' : config.color
-              }}
-            >
-              {disabledCategories[categoryId] ? (
-                <VisibilityOffIcon sx={{ fontSize: 16 }} />
-              ) : (
-                <VisibilityIcon sx={{ fontSize: 16 }} />
-              )}
-            </IconButton>
-          </Tooltip>
-        )}
+            {disabledCategories[categoryId] ? (
+              <VisibilityOffIcon sx={{ fontSize: 16 }} />
+            ) : (
+              <VisibilityIcon sx={{ fontSize: 16 }} />
+            )}
+          </IconButton>
+        </Tooltip>
 
         <IconButton size="small" sx={{ color: '#6b7280' }}>
           {expandedCategories[categoryId] ? (
@@ -341,14 +335,12 @@ const MonthlyExpenses = ({ isExpanded = true }) => {
           >
             {item.name}
           </Typography>
-          {isExpanded && (
-            <Typography
-              variant="caption"
-              sx={{ color: '#9ca3af', fontSize: '0.7rem' }}
-            >
-              Monthly expense
-            </Typography>
-          )}
+          <Typography
+            variant="caption"
+            sx={{ color: '#9ca3af', fontSize: '0.7rem' }}
+          >
+            Monthly expense
+          </Typography>
         </Box>
 
         <Typography
@@ -363,39 +355,37 @@ const MonthlyExpenses = ({ isExpanded = true }) => {
           £{item.amount}
         </Typography>
 
-        {isExpanded && (
-          <Box
-            className="item-actions"
-            sx={{
-              display: 'flex',
-              opacity: 0,
-              transition: 'opacity 0.2s ease'
-            }}
-          >
-            <Tooltip title={isDisabled ? 'Enable item' : 'Disable item'}>
-              <IconButton
-                size="small"
-                onClick={() => toggleItemEnabled(categoryId, item.id)}
-                sx={{ color: isDisabled ? '#9ca3af' : '#6b7280' }}
-              >
-                {isDisabled ? (
-                  <VisibilityOffIcon sx={{ fontSize: 14 }} />
-                ) : (
-                  <VisibilityIcon sx={{ fontSize: 14 }} />
-                )}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete item">
-              <IconButton
-                size="small"
-                onClick={() => handleDeleteItem(categoryId, item.id)}
-                sx={{ color: '#ef4444' }}
-              >
-                <DeleteIcon sx={{ fontSize: 14 }} />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
+        <Box
+          className="item-actions"
+          sx={{
+            display: 'flex',
+            opacity: 0,
+            transition: 'opacity 0.2s ease'
+          }}
+        >
+          <Tooltip title={isDisabled ? 'Enable item' : 'Disable item'}>
+            <IconButton
+              size="small"
+              onClick={() => toggleItemEnabled(categoryId, item.id)}
+              sx={{ color: isDisabled ? '#9ca3af' : '#6b7280' }}
+            >
+              {isDisabled ? (
+                <VisibilityOffIcon sx={{ fontSize: 14 }} />
+              ) : (
+                <VisibilityIcon sx={{ fontSize: 14 }} />
+              )}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete item">
+            <IconButton
+              size="small"
+              onClick={() => handleDeleteItem(categoryId, item.id)}
+              sx={{ color: '#ef4444' }}
+            >
+              <DeleteIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
     );
   };
