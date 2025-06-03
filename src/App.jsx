@@ -34,6 +34,7 @@ import { selectMonthlyIncome } from './store/slices/incomeSlice';
 import { selectRemainingIncome } from './store/selectors/budgetSelectors';
 import MonthlyIncome from './components/MonthlyIncome';
 import MonthlyBudgetOverview from './components/overview/MonthlyBudgetOverview';
+import Sidebar from './components/Sidebar';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -176,43 +177,7 @@ export default function Dashboard() {
 
         <Box sx={{ display: 'flex', flex: 1 }}>
           {/* Desktop Sidebar */}
-          <Box
-            sx={{
-              width: { md: 400 },
-              flexShrink: 0,
-              display: { xs: 'none', md: 'block' }
-            }}
-          >
-            <Box
-              sx={{
-                width: 400,
-                height: '100%',
-                background: 'linear-gradient(180deg, #ffffff 0%, #fafbfc 100%)',
-                borderRight: '1px solid #e2e8f0'
-              }}
-            >
-              <Box sx={{ height: '100%', overflow: 'auto' }}>
-                <Box sx={{ p: 3 }}>
-                  <EnhancedIncomeMonthSelector />
-                  <MonthlyIncome />
-                  <Typography
-                    variant="overline"
-                    sx={{
-                      color: '#6b7280',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      letterSpacing: '0.5px',
-                      mb: 2,
-                      display: 'block'
-                    }}
-                  >
-                    Budget Setup
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-
+          <Sidebar />
           {/* Main Content */}
           <MainContent
             component="main"
