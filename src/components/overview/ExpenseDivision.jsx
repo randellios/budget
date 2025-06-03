@@ -84,7 +84,7 @@ const ExpenseDivision = () => {
       percentage: analysis.essential.percentage,
       targetPercentage: 50,
       icon: HomeIcon,
-      color: '#fbbf24'
+      color: '#ffd60a'
     },
     {
       title: 'Optional',
@@ -94,7 +94,7 @@ const ExpenseDivision = () => {
       percentage: analysis.optional.percentage,
       targetPercentage: 30,
       icon: ShoppingCartIcon,
-      color: '#34d399'
+      color: '#06ffa5'
     },
     {
       title: 'Future Wealth',
@@ -104,7 +104,7 @@ const ExpenseDivision = () => {
       percentage: analysis.savingsDebt.percentage,
       targetPercentage: 20,
       icon: SavingsIcon,
-      color: '#60a5fa'
+      color: '#40c9ff'
     }
   ];
 
@@ -147,10 +147,10 @@ const ExpenseDivision = () => {
                   >
                     <Box
                       sx={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
                         borderRadius: 2,
                         p: 1,
-                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
                         backdropFilter: 'blur(10px)'
                       }}
                     >
@@ -171,7 +171,7 @@ const ExpenseDivision = () => {
                       <Typography
                         variant="caption"
                         sx={{
-                          color: 'rgba(255, 255, 255, 0.8)',
+                          color: 'rgba(255, 255, 255, 0.85)',
                           fontSize: '0.75rem',
                           textShadow: '0 1px 2px rgba(0,0,0,0.2)'
                         }}
@@ -204,7 +204,7 @@ const ExpenseDivision = () => {
                       <Typography
                         variant="body2"
                         sx={{
-                          color: 'rgba(255, 255, 255, 0.8)',
+                          color: 'rgba(255, 255, 255, 0.85)',
                           textShadow: '0 1px 2px rgba(0,0,0,0.2)'
                         }}
                       >
@@ -218,10 +218,10 @@ const ExpenseDivision = () => {
                         sx={{
                           position: 'relative',
                           height: 20,
-                          backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                          backgroundColor: 'rgba(0, 0, 0, 0.25)',
                           borderRadius: 10,
                           overflow: 'hidden',
-                          border: '1px solid rgba(255, 255, 255, 0.3)'
+                          border: '1px solid rgba(255, 255, 255, 0.2)'
                         }}
                       >
                         {/* Good zone background */}
@@ -237,7 +237,7 @@ const ExpenseDivision = () => {
                                 ? `${100 - category.targetPercentage}%`
                                 : `${category.targetPercentage}%`,
                             height: '100%',
-                            backgroundColor: 'rgba(52, 211, 153, 0.3)',
+                            backgroundColor: 'rgba(6, 255, 165, 0.25)',
                             borderRadius: 10
                           }}
                         />
@@ -250,7 +250,7 @@ const ExpenseDivision = () => {
                             background: `linear-gradient(90deg, ${category.color} 0%, ${category.color}dd 100%)`,
                             width: `${Math.min(category.percentage, 100)}%`,
                             borderRadius: 10,
-                            boxShadow: `0 0 12px ${category.color}60`,
+                            boxShadow: `0 0 16px ${category.color}40`,
                             transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
                           }}
                         />
@@ -265,8 +265,8 @@ const ExpenseDivision = () => {
                             height: 24,
                             backgroundColor: 'white',
                             borderRadius: 1.5,
-                            border: '2px solid rgba(255, 255, 255, 0.8)',
-                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+                            border: '2px solid rgba(255, 255, 255, 0.9)',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
                             transform: 'translateX(-50%)'
                           }}
                         />
@@ -278,7 +278,7 @@ const ExpenseDivision = () => {
                             left: `${Math.min(category.targetPercentage, 100)}%`,
                             top: -22,
                             transform: 'translateX(-50%)',
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
                             color: '#374151',
                             px: 1.5,
                             py: 0.25,
@@ -286,7 +286,7 @@ const ExpenseDivision = () => {
                             fontSize: '0.6rem',
                             fontWeight: 600,
                             whiteSpace: 'nowrap',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
                           }}
                         >
                           {category.targetPercentage}%
@@ -301,10 +301,10 @@ const ExpenseDivision = () => {
                           label={`${variance.toFixed(1)}% over target`}
                           size="small"
                           sx={{
-                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.25)',
                             color: 'white',
                             fontSize: '0.7rem',
-                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                            border: '1px solid rgba(239, 68, 68, 0.4)',
                             backdropFilter: 'blur(10px)'
                           }}
                         />
@@ -315,10 +315,10 @@ const ExpenseDivision = () => {
                           label={`${Math.abs(variance).toFixed(1)}% under target`}
                           size="small"
                           sx={{
-                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            backgroundColor: 'rgba(255, 214, 10, 0.25)',
                             color: 'white',
                             fontSize: '0.7rem',
-                            border: '1px solid rgba(245, 158, 11, 0.3)',
+                            border: '1px solid rgba(255, 214, 10, 0.4)',
                             backdropFilter: 'blur(10px)'
                           }}
                         />
@@ -329,10 +329,10 @@ const ExpenseDivision = () => {
                           label="On target"
                           size="small"
                           sx={{
-                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            backgroundColor: 'rgba(6, 255, 165, 0.25)',
                             color: 'white',
                             fontSize: '0.7rem',
-                            border: '1px solid rgba(16, 185, 129, 0.3)',
+                            border: '1px solid rgba(6, 255, 165, 0.4)',
                             backdropFilter: 'blur(10px)'
                           }}
                         />
@@ -359,7 +359,7 @@ const ExpenseDivision = () => {
                   orientation="vertical"
                   flexItem
                   sx={{
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
                     borderWidth: 1,
                     mx: 2
                   }}

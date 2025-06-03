@@ -20,7 +20,12 @@ import {
   Receipt as ReceiptIcon,
   Star as StarIcon,
   ArrowUpward as ArrowUpwardIcon,
-  ArrowDownward as ArrowDownwardIcon
+  ArrowDownward as ArrowDownwardIcon,
+  Savings as SavingsIcon,
+  CreditCard as CreditCardIcon,
+  TrendingDown as TrendingDownIcon,
+  Schedule as ScheduleIcon,
+  AttachMoney as MoneyIcon
 } from '@mui/icons-material';
 
 import { useAppSelector } from '../../store/hooks';
@@ -145,11 +150,113 @@ const MonthlyBudgetOverview = () => {
     concerns: ['Dining expenses up 23%', 'Entertainment spending rising']
   };
 
+  // Fake savings and debt data
+  const savingsGoals = [
+    {
+      id: 1,
+      name: 'Emergency Fund',
+      currentBalance: 15000,
+      targetAmount: 25000,
+      monthlyContribution: 500,
+      targetDate: '2025-12',
+      priority: 'High',
+      icon: '🛡️'
+    },
+    {
+      id: 2,
+      name: 'Holiday Fund',
+      currentBalance: 3200,
+      targetAmount: 8000,
+      monthlyContribution: 300,
+      targetDate: '2025-08',
+      priority: 'Medium',
+      icon: '✈️'
+    },
+    {
+      id: 3,
+      name: 'New Car Fund',
+      currentBalance: 8500,
+      targetAmount: 20000,
+      monthlyContribution: 400,
+      targetDate: '2026-06',
+      priority: 'Medium',
+      icon: '🚗'
+    },
+    {
+      id: 4,
+      name: 'House Deposit',
+      currentBalance: 45000,
+      targetAmount: 100000,
+      monthlyContribution: 800,
+      targetDate: '2027-12',
+      priority: 'High',
+      icon: '🏠'
+    }
+  ];
+
+  const debts = [
+    {
+      id: 1,
+      name: 'Credit Card',
+      currentBalance: 3200,
+      originalBalance: 8000,
+      interestRate: 22.9,
+      monthlyPayment: 300,
+      priority: 'High',
+      icon: '💳'
+    },
+    {
+      id: 2,
+      name: 'Car Loan',
+      currentBalance: 12500,
+      originalBalance: 25000,
+      interestRate: 6.5,
+      monthlyPayment: 420,
+      priority: 'Medium',
+      icon: '🚗'
+    },
+    {
+      id: 3,
+      name: 'Student Loan',
+      currentBalance: 18000,
+      originalBalance: 35000,
+      interestRate: 3.2,
+      monthlyPayment: 280,
+      priority: 'Low',
+      icon: '🎓'
+    }
+  ];
+
   const getHealthColor = (score) => {
     if (score >= 85) return '#10b981';
     if (score >= 70) return '#667eea';
     if (score >= 55) return '#f59e0b';
     return '#ef4444';
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return '#ef4444';
+      case 'medium':
+        return '#f59e0b';
+      case 'low':
+        return '#10b981';
+      default:
+        return '#6b7280';
+    }
+  };
+
+  const getMonthsToComplete = (current, target, monthly) => {
+    if (monthly <= 0) return 'N/A';
+    const remaining = target - current;
+    if (remaining <= 0) return 'Complete';
+    return Math.ceil(remaining / monthly);
+  };
+
+  const getDebtPayoffMonths = (balance, payment) => {
+    if (payment <= 0) return 'N/A';
+    return Math.ceil(balance / payment);
   };
 
   return (
@@ -160,56 +267,65 @@ const MonthlyBudgetOverview = () => {
         <Box sx={{ px: 3 }}>
           <ProgressDivider label="Budget Breakdown" />
 
-          {/* Hero Section - 50/30/20 Analysis */}
+          {/* Compact 50/30/20 Analysis */}
           <Box
             sx={{
-              mb: 8,
-              p: 6,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              borderRadius: 4,
+              mb: 6,
+              p: 4,
+              background: 'linear-gradient(135deg, #7b91ff 0%, #8a9fff 100%)',
+              borderRadius: 3,
               color: 'white',
               position: 'relative',
               overflow: 'hidden'
             }}
           >
-            <Box
-              sx={{
-                position: 'absolute',
-                top: -50,
-                right: -50,
-                width: 200,
-                height: 200,
-                borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.1)'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: -30,
-                left: -30,
-                width: 150,
-                height: 150,
-                borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.05)'
-              }}
-            />
-
             <Box sx={{ position: 'relative', zIndex: 1 }}>
-              <Box sx={{ mb: 4 }}>
-                <Typography
-                  variant="h4"
-                  sx={{ fontWeight: 800, fontSize: '2rem', mb: 2 }}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  mb: 3
+                }}
+              >
+                <Box>
+                  <Typography
+                    variant="h5"
+                    sx={{ fontWeight: 700, fontSize: '1.4rem', mb: 1 }}
+                  >
+                    50/30/20 Budget Analysis
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize: '0.9rem', opacity: 0.9, maxWidth: '500px' }}
+                  >
+                    Optimal allocation: 50% needs, 30% wants, 20% savings & debt
+                    payments
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    p: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: 2,
+                    backdropFilter: 'blur(10px)'
+                  }}
                 >
-                  50/30/20 Budget Analysis
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ fontSize: '1.1rem', opacity: 0.9, maxWidth: '600px' }}
-                >
-                  The proven framework for financial success: 50% for needs, 30%
-                  for wants, 20% for savings and debt payments.
-                </Typography>
+                  <AssessmentIcon sx={{ fontSize: 20, color: 'white' }} />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'white',
+                      fontSize: '0.75rem',
+                      fontWeight: 600
+                    }}
+                  >
+                    FRAMEWORK
+                  </Typography>
+                </Box>
               </Box>
 
               <ExpenseDivision />
@@ -499,6 +615,356 @@ const MonthlyBudgetOverview = () => {
                     </Typography>
                   ))}
                 </Box>
+              </Box>
+            </Box>
+          </Box>
+
+          <ProgressDivider label="Savings & Debt Progress" />
+
+          {/* Savings and Debt Section */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 6,
+              mb: 8
+            }}
+          >
+            {/* Left: Savings Goals */}
+            <Box>
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: 700, color: '#1f2937', mb: 1 }}
+                >
+                  Savings Goals Progress
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                  Track your journey toward financial milestones
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {savingsGoals.map((goal) => {
+                  const progress =
+                    (goal.currentBalance / goal.targetAmount) * 100;
+                  const monthsToComplete = getMonthsToComplete(
+                    goal.currentBalance,
+                    goal.targetAmount,
+                    goal.monthlyContribution
+                  );
+
+                  return (
+                    <Box
+                      key={goal.id}
+                      sx={{
+                        p: 3,
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 3,
+                        background:
+                          'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
+                        '&:hover': {
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                          transform: 'translateY(-1px)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          mb: 2
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1.5
+                          }}
+                        >
+                          <Typography sx={{ fontSize: '18px' }}>
+                            {goal.icon}
+                          </Typography>
+                          <Box>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 600, color: '#1f2937' }}
+                            >
+                              {goal.name}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: '#6b7280' }}
+                            >
+                              £{goal.monthlyContribution}/month
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Chip
+                          label={goal.priority}
+                          size="small"
+                          sx={{
+                            backgroundColor: `${getPriorityColor(goal.priority)}20`,
+                            color: getPriorityColor(goal.priority),
+                            border: `1px solid ${getPriorityColor(goal.priority)}40`,
+                            fontSize: '0.7rem',
+                            fontWeight: 600
+                          }}
+                        />
+                      </Box>
+
+                      <Box sx={{ mb: 2 }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            mb: 1
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: 600, color: '#1f2937' }}
+                          >
+                            £{goal.currentBalance.toLocaleString()} / £
+                            {goal.targetAmount.toLocaleString()}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#10b981', fontWeight: 600 }}
+                          >
+                            {progress.toFixed(1)}%
+                          </Typography>
+                        </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={Math.min(progress, 100)}
+                          sx={{
+                            height: 8,
+                            borderRadius: 4,
+                            backgroundColor: '#f1f5f9',
+                            '& .MuiLinearProgress-bar': {
+                              backgroundColor: '#10b981',
+                              borderRadius: 4
+                            }
+                          }}
+                        />
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5
+                          }}
+                        >
+                          <ScheduleIcon
+                            sx={{ fontSize: 14, color: '#6b7280' }}
+                          />
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#6b7280' }}
+                          >
+                            {typeof monthsToComplete === 'number'
+                              ? `${monthsToComplete} months to go`
+                              : monthsToComplete}
+                          </Typography>
+                        </Box>
+                        <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                          Target: {goal.targetDate}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+
+            {/* Right: Debt Payoff */}
+            <Box>
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: 700, color: '#1f2937', mb: 1 }}
+                >
+                  Debt Payoff Progress
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                  Track your path to financial freedom
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {debts.map((debt) => {
+                  const progress =
+                    ((debt.originalBalance - debt.currentBalance) /
+                      debt.originalBalance) *
+                    100;
+                  const monthsToPayoff = getDebtPayoffMonths(
+                    debt.currentBalance,
+                    debt.monthlyPayment
+                  );
+
+                  return (
+                    <Box
+                      key={debt.id}
+                      sx={{
+                        p: 3,
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 3,
+                        background:
+                          'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
+                        '&:hover': {
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                          transform: 'translateY(-1px)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          mb: 2
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1.5
+                          }}
+                        >
+                          <Typography sx={{ fontSize: '18px' }}>
+                            {debt.icon}
+                          </Typography>
+                          <Box>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 600, color: '#1f2937' }}
+                            >
+                              {debt.name}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: '#6b7280' }}
+                            >
+                              {debt.interestRate}% APR • £{debt.monthlyPayment}
+                              /month
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Chip
+                          label={debt.priority}
+                          size="small"
+                          sx={{
+                            backgroundColor: `${getPriorityColor(debt.priority)}20`,
+                            color: getPriorityColor(debt.priority),
+                            border: `1px solid ${getPriorityColor(debt.priority)}40`,
+                            fontSize: '0.7rem',
+                            fontWeight: 600
+                          }}
+                        />
+                      </Box>
+
+                      <Box sx={{ mb: 2 }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            mb: 1
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: 600, color: '#1f2937' }}
+                          >
+                            £{debt.currentBalance.toLocaleString()} remaining
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#ef4444', fontWeight: 600 }}
+                          >
+                            {progress.toFixed(1)}% paid off
+                          </Typography>
+                        </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={Math.min(progress, 100)}
+                          sx={{
+                            height: 8,
+                            borderRadius: 4,
+                            backgroundColor: '#fef2f2',
+                            '& .MuiLinearProgress-bar': {
+                              backgroundColor: '#ef4444',
+                              borderRadius: 4
+                            }
+                          }}
+                        />
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5
+                          }}
+                        >
+                          <TrendingDownIcon
+                            sx={{ fontSize: 14, color: '#10b981' }}
+                          />
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#6b7280' }}
+                          >
+                            {typeof monthsToPayoff === 'number'
+                              ? `${monthsToPayoff} months left`
+                              : monthsToPayoff}
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5
+                          }}
+                        >
+                          <MoneyIcon sx={{ fontSize: 14, color: '#f59e0b' }} />
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#6b7280' }}
+                          >
+                            £
+                            {(
+                              debt.currentBalance *
+                              (debt.interestRate / 100 / 12)
+                            ).toFixed(0)}
+                            /month interest
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                  );
+                })}
               </Box>
             </Box>
           </Box>
