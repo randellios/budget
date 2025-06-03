@@ -332,11 +332,11 @@ const MonthlyBudgetOverview = () => {
             </Box>
           </Box>
 
-          {/* Two Column Layout */}
+          {/* Three Column Layout */}
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: '2fr 1fr',
+              gridTemplateColumns: '1.5fr 1fr 280px',
               gap: 6,
               mb: 8
             }}
@@ -354,7 +354,6 @@ const MonthlyBudgetOverview = () => {
                   Your top expenses this month with trend analysis
                 </Typography>
               </Box>
-
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {topExpenses.map((expense, index) => (
                   <Box
@@ -401,7 +400,6 @@ const MonthlyBudgetOverview = () => {
                         </Typography>
                       </Box>
                     </Box>
-
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       {expense.change !== 0 && (
                         <Box
@@ -432,7 +430,6 @@ const MonthlyBudgetOverview = () => {
                           </Typography>
                         </Box>
                       )}
-
                       <Typography
                         variant="h6"
                         sx={{
@@ -450,8 +447,7 @@ const MonthlyBudgetOverview = () => {
                 ))}
               </Box>
             </Box>
-
-            {/* Right: Budget Health */}
+            {/* Middle: Budget Health */}
             <Box>
               <Box sx={{ mb: 4 }}>
                 <Typography
@@ -464,8 +460,6 @@ const MonthlyBudgetOverview = () => {
                   How well you're managing your finances
                 </Typography>
               </Box>
-
-              {/* Health Score Circle */}
               <Box
                 sx={{
                   textAlign: 'center',
@@ -530,8 +524,6 @@ const MonthlyBudgetOverview = () => {
                   Your budget is well-balanced with room for improvement
                 </Typography>
               </Box>
-
-              {/* Strengths */}
               <Box sx={{ mb: 4 }}>
                 <Box
                   sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}
@@ -573,8 +565,6 @@ const MonthlyBudgetOverview = () => {
                   ))}
                 </Box>
               </Box>
-
-              {/* Concerns */}
               <Box>
                 <Box
                   sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}
@@ -616,6 +606,91 @@ const MonthlyBudgetOverview = () => {
                   ))}
                 </Box>
               </Box>
+            </Box>
+            {/* Right: Ad Placeholders */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <Paper
+                sx={{
+                  height: 250,
+                  p: 3,
+                  border: '2px dashed #cbd5e1',
+                  borderRadius: 3,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: '#f8fafc',
+                  color: '#6b7280'
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 2,
+                    bgcolor: '#e2e8f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 2
+                  }}
+                >
+                  <Typography sx={{ fontSize: '20px' }}>📢</Typography>
+                </Box>
+                <Typography
+                  variant="body2"
+                  sx={{ fontWeight: 600, textAlign: 'center', mb: 1 }}
+                >
+                  Advertisement
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ textAlign: 'center', fontSize: '0.75rem' }}
+                >
+                  Sponsored content placeholder
+                </Typography>
+              </Paper>
+              <Paper
+                sx={{
+                  height: 250,
+                  p: 3,
+                  border: '2px dashed #cbd5e1',
+                  borderRadius: 3,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: '#f8fafc',
+                  color: '#6b7280'
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 2,
+                    bgcolor: '#e2e8f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 2
+                  }}
+                >
+                  <Typography sx={{ fontSize: '20px' }}>💼</Typography>
+                </Box>
+                <Typography
+                  variant="body2"
+                  sx={{ fontWeight: 600, textAlign: 'center', mb: 1 }}
+                >
+                  Premium Feature
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ textAlign: 'center', fontSize: '0.75rem' }}
+                >
+                  Upgrade to unlock advanced insights
+                </Typography>
+              </Paper>
             </Box>
           </Box>
 

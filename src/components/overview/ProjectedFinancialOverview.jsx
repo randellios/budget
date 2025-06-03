@@ -334,18 +334,7 @@ const ProjectedFinancialOverview = () => {
       : null;
 
   return (
-    <Paper
-      sx={{
-        mx: 3,
-        mt: 3,
-        mb: 6,
-        p: 4,
-        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-        border: '2px solid #e2e8f0',
-        borderRadius: 4,
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)'
-      }}
-    >
+    <>
       <Box sx={{ mb: 4 }}>
         <Box
           sx={{
@@ -660,7 +649,7 @@ const ProjectedFinancialOverview = () => {
           icon={WealthIcon}
         />
       </Box>
-    </Paper>
+    </>
   );
 };
 
