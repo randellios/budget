@@ -17,21 +17,21 @@ import {
   Psychology as PsychologyIcon,
   Info as InfoIcon
 } from '@mui/icons-material';
-import { useAppSelector } from '../../../store/hooks';
-import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
+import { useAppSelector } from '../../store/hooks';
+import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
 import {
   selectEssentialExpenses,
   selectNonEssentialExpenses,
   selectExpenseCategories
-} from '../../../store/slices/expensesSlice';
+} from '../../store/slices/expensesSlice';
 import {
   selectTotalSavingsContributions,
   selectSavingsGoals
-} from '../../../store/slices/savingsSlice';
+} from '../../store/slices/savingsSlice';
 import {
   selectTotalDebtPayments,
   selectDebts
-} from '../../../store/slices/debtsSlice';
+} from '../../store/slices/debtsSlice';
 import TemperatureGauge from './TemperatureGauge';
 import AdvancedFinancialHealth from './CompactFinancialHealth';
 import FinancialSnapshot from './FinancialSnapshot';

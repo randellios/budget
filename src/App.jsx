@@ -27,13 +27,13 @@ import {
 } from '@mui/icons-material';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
-import Overview from './components/overview/Overview';
 
 import EnhancedIncomeMonthSelector from './components/EnhancedIncomeMonthSelector';
 import { useAppSelector } from './store/hooks';
 import { selectMonthlyIncome } from './store/slices/incomeSlice';
 import { selectRemainingIncome } from './store/selectors/budgetSelectors';
-import MonthlyIncome from './components/intake/MonthlyIncome';
+import MonthlyIncome from './components/MonthlyIncome';
+import MonthlyBudgetOverview from './components/overview/MonthlyBudgetOverview';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -280,7 +280,7 @@ export default function Dashboard() {
               </DashboardCard>
 
               <DashboardCard>
-                <Overview />
+                <MonthlyBudgetOverview />
               </DashboardCard>
             </Box>
           </MainContent>

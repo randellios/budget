@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Box, Typography, Slider, Chip, LinearProgress } from '@mui/material';
-import { useAppSelector } from '../../../store/hooks';
-import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
-import { selectTotalExpenses } from '../../../store/slices/expensesSlice';
+import { useAppSelector } from '../../store/hooks';
+import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
+import { selectTotalExpenses } from '../../store/slices/expensesSlice';
 import {
   selectTotalSavingsContributions,
   selectSavingsGoals,
   selectTotalSavingsBalance
-} from '../../../store/slices/savingsSlice';
+} from '../../store/slices/savingsSlice';
 import {
   selectTotalDebtPayments,
   selectTotalDebtBalance
-} from '../../../store/slices/debtsSlice';
+} from '../../store/slices/debtsSlice';
 import {
   AccountBalanceWallet,
   TrendingUp,

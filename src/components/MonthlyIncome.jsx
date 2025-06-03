@@ -4,16 +4,16 @@ import {
   AccountBalanceWallet as WalletIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
 import {
   selectMonthlyIncome,
   updateMonthlyIncome
-} from '../../store/slices/incomeSlice';
+} from '../store/slices/incomeSlice';
 import {
   selectTotalOutgoings,
   selectRemainingIncome,
   selectBudgetAllocationPercentage
-} from '../../store/selectors/budgetSelectors';
+} from '../store/selectors/budgetSelectors';
 
 const MonthlyIncome = () => {
   const dispatch = useAppDispatch();

@@ -21,27 +21,26 @@ import {
   Lightbulb as InsightIcon,
   Speed as SpeedIcon
 } from '@mui/icons-material';
-import { useAppSelector } from '../../../store/hooks';
-import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
+import { useAppSelector } from '../../store/hooks';
+import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
 import {
   selectEssentialExpenses,
   selectNonEssentialExpenses,
   selectExpenseCategories
-} from '../../../store/slices/expensesSlice';
+} from '../../store/slices/expensesSlice';
 import {
   selectTotalSavingsContributions,
   selectSavingsGoals
-} from '../../../store/slices/savingsSlice';
+} from '../../store/slices/savingsSlice';
 import {
   selectTotalDebtPayments,
   selectDebts
-} from '../../../store/slices/debtsSlice';
+} from '../../store/slices/debtsSlice';
 import FinancialSnapshot from './FinancialSnapshot';
-import AllocationStatus from './AllocationStatus';
 import ExpenseDivision from './ExpenseDivision';
 import CompactFinancialHealth from './CompactFinancialHealth';
 import TopExpenses from './TopExpenses';
-import SavingsDebtProgress from '../SavingsDebtProgress';
+import SavingsDebtProgress from './SavingsDebtProgress';
 
 const SectionHeader = ({
   icon: Icon,

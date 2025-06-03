@@ -7,9 +7,9 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon
 } from '@mui/icons-material';
-import { useAppSelector } from '../../../store/hooks';
-import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
-import { selectExpenseCategories } from '../../../store/slices/expensesSlice';
+import { useAppSelector } from '../../store/hooks';
+import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
+import { selectExpenseCategories } from '../../store/slices/expensesSlice';
 
 const TopExpenses = () => {
   const [showMore, setShowMore] = useState(false);

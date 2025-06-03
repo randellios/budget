@@ -20,22 +20,22 @@ import {
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon
 } from '@mui/icons-material';
-import { useAppSelector } from '../../../store/hooks';
-import { selectMonthlyIncome } from '../../../store/slices/incomeSlice';
+import { useAppSelector } from '../../store/hooks';
+import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
 import {
   selectEssentialExpenses,
   selectNonEssentialExpenses
-} from '../../../store/slices/expensesSlice';
+} from '../../store/slices/expensesSlice';
 import {
   selectTotalSavingsContributions,
   selectSavingsGoals,
   selectTotalSavingsBalance
-} from '../../../store/slices/savingsSlice';
+} from '../../store/slices/savingsSlice';
 import {
   selectTotalDebtPayments,
   selectDebts,
   selectTotalDebtBalance
-} from '../../../store/slices/debtsSlice';
+} from '../../store/slices/debtsSlice';
 
 const CompactFinancialHealth = () => {
   const [showDetails, setShowDetails] = useState(false);
