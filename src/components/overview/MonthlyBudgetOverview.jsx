@@ -41,6 +41,7 @@ import ExpenseDivision from './ExpenseDivision';
 import CompactFinancialHealth from './CompactFinancialHealth';
 import TopExpenses from './TopExpenses';
 import SavingsDebtProgress from './SavingsDebtProgress';
+import ProjectedFinancialOverview from './ProjectedFinancialOverview';
 
 const SectionHeader = ({
   icon: Icon,
@@ -280,83 +281,7 @@ const MonthlyBudgetOverview = () => {
     <Collapse in={isExpanded} timeout="auto" unmountOnExit>
       <CardContent sx={{ p: 0 }}>
         {/* Key Insights Bar */}
-        <Paper
-          sx={{
-            mx: 3,
-            mt: 3,
-            mb: 6,
-            p: 3.5,
-            background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-            border: '2px solid #e2e8f0',
-            borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)'
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-            <Box
-              sx={{
-                width: 36,
-                height: 36,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
-              }}
-            >
-              <InsightIcon sx={{ fontSize: 20 }} />
-            </Box>
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 700, color: '#374151', fontSize: '1.1rem' }}
-            >
-              Financial Overview
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: 3
-            }}
-          >
-            <InsightCard
-              title="Monthly Cash Flow"
-              value={
-                remaining >= 0
-                  ? `+£${remaining.toLocaleString()}`
-                  : `-£${Math.abs(remaining).toLocaleString()}`
-              }
-              change={remaining >= 0 ? '+5.2%' : '-12%'}
-              description="Available after all allocations"
-              color={remaining >= 0 ? '#10b981' : '#ef4444'}
-            />
-            <InsightCard
-              title="Savings Rate"
-              value={`${savingsRate.toFixed(1)}%`}
-              change={savingsRate >= 20 ? '+2.1%' : '-0.8%'}
-              description="Of total income saved"
-              color="#667eea"
-            />
-            <InsightCard
-              title="Expense Ratio"
-              value={`${expenseRatio.toFixed(1)}%`}
-              change={expenseRatio <= 70 ? '+1.3%' : '+4.2%'}
-              description="Of income on expenses"
-              color="#f59e0b"
-            />
-            <InsightCard
-              title="Active Goals"
-              value={`${savingsGoals.length + debts.length}`}
-              change={`${savingsGoals.length}S ${debts.length}D`}
-              description="Savings & debt targets"
-              color="#8b5cf6"
-            />
-          </Box>
-        </Paper>
-
+        <ProjectedFinancialOverview />
         <Box sx={{ px: 3 }}>
           <ProgressDivider label="Budget Breakdown" />
 
