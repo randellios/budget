@@ -27,7 +27,6 @@ import {
   Schedule as ScheduleIcon,
   AttachMoney as MoneyIcon
 } from '@mui/icons-material';
-
 import { useAppSelector } from '../../store/hooks';
 import { selectMonthlyIncome } from '../../store/slices/incomeSlice';
 import {
@@ -43,12 +42,10 @@ import {
   selectTotalDebtPayments,
   selectDebts
 } from '../../store/slices/debtsSlice';
-
 import ProjectedFinancialOverview from './ProjectedFinancialOverview';
 import ExpenseDivision from './ExpenseDivision';
-
 const ProgressDivider = ({ label = 'Progress Tracking' }) => (
-  <Box sx={{ my: 8, position: 'relative' }}>
+  <Box sx={{ my: 12, position: 'relative' }}>
     <Divider sx={{ borderColor: '#e2e8f0', borderWidth: 1 }} />
     <Box
       sx={{
@@ -79,7 +76,6 @@ const ProgressDivider = ({ label = 'Progress Tracking' }) => (
     </Box>
   </Box>
 );
-
 const MonthlyBudgetOverview = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const monthlyIncome = useAppSelector(selectMonthlyIncome);
@@ -87,8 +83,6 @@ const MonthlyBudgetOverview = () => {
   const nonEssentialExpenses = useAppSelector(selectNonEssentialExpenses);
   const savingsContributions = useAppSelector(selectTotalSavingsContributions);
   const debtPayments = useAppSelector(selectTotalDebtPayments);
-
-  // Fake data
   const topExpenses = [
     {
       name: 'Mortgage',
@@ -139,7 +133,6 @@ const MonthlyBudgetOverview = () => {
       change: 15
     }
   ];
-
   const budgetHealth = {
     score: 78,
     strengths: [
@@ -149,8 +142,6 @@ const MonthlyBudgetOverview = () => {
     ],
     concerns: ['Dining expenses up 23%', 'Entertainment spending rising']
   };
-
-  // Fake savings and debt data
   const savingsGoals = [
     {
       id: 1,
@@ -193,7 +184,6 @@ const MonthlyBudgetOverview = () => {
       icon: '🏠'
     }
   ];
-
   const debts = [
     {
       id: 1,
@@ -226,14 +216,12 @@ const MonthlyBudgetOverview = () => {
       icon: '🎓'
     }
   ];
-
   const getHealthColor = (score) => {
     if (score >= 85) return '#10b981';
     if (score >= 70) return '#667eea';
     if (score >= 55) return '#f59e0b';
     return '#ef4444';
   };
-
   const getPriorityColor = (priority) => {
     switch (priority.toLowerCase()) {
       case 'high':
@@ -246,37 +234,32 @@ const MonthlyBudgetOverview = () => {
         return '#6b7280';
     }
   };
-
   const getMonthsToComplete = (current, target, monthly) => {
     if (monthly <= 0) return 'N/A';
     const remaining = target - current;
     if (remaining <= 0) return 'Complete';
     return Math.ceil(remaining / monthly);
   };
-
   const getDebtPayoffMonths = (balance, payment) => {
     if (payment <= 0) return 'N/A';
     return Math.ceil(balance / payment);
   };
-
   return (
     <Collapse in={isExpanded} timeout="auto" unmountOnExit>
       <CardContent sx={{ p: 0 }}>
-        <Box sx={{ px: 3 }}>
-          {/* ProjectedFinancialOverview with Budget Health and Ad */}
+        <Box sx={{ px: 4 }}>
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: '1fr 280px',
-              gap: 4,
-              mb: 6
+              gridTemplateColumns: '1fr 300px',
+              gap: 6,
+              mb: 10
             }}
           >
             <Box>
               <ProjectedFinancialOverview />
             </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {/* Top: Budget Health */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <Paper
                 sx={{
                   p: 0,
@@ -284,7 +267,7 @@ const MonthlyBudgetOverview = () => {
                     'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
                   border: '1px solid #e2e8f0',
                   borderRadius: 3,
-                  height: 'calc(50% - 12px)',
+                  height: 'calc(50% - 16px)',
                   cursor: 'pointer',
                   overflow: 'hidden',
                   '&:hover': {
@@ -510,7 +493,6 @@ const MonthlyBudgetOverview = () => {
                   </Box>
                 </Box>
               </Paper>
-              {/* Bottom: Ad Placeholder */}
               <Paper
                 sx={{
                   p: 3,
@@ -522,7 +504,7 @@ const MonthlyBudgetOverview = () => {
                   justifyContent: 'center',
                   bgcolor: '#f8fafc',
                   color: '#6b7280',
-                  height: 'calc(50% - 12px)'
+                  height: 'calc(50% - 16px)'
                 }}
               >
                 <Box
@@ -560,15 +542,12 @@ const MonthlyBudgetOverview = () => {
             </Box>
           </Box>
         </Box>
-
-        <Box sx={{ px: 3 }}>
+        <Box sx={{ px: 4 }}>
           <ProgressDivider label="Budget Breakdown" />
-
-          {/* Compact 50/30/20 Analysis */}
           <Box
             sx={{
-              mb: 6,
-              p: 4,
+              mb: 10,
+              p: 5,
               background: 'linear-gradient(135deg, #7b91ff 0%, #8a9fff 100%)',
               borderRadius: 3,
               color: 'white',
@@ -582,7 +561,7 @@ const MonthlyBudgetOverview = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  mb: 3
+                  mb: 4
                 }}
               >
                 <Box>
@@ -624,23 +603,19 @@ const MonthlyBudgetOverview = () => {
                   </Typography>
                 </Box>
               </Box>
-
               <ExpenseDivision />
             </Box>
           </Box>
-
-          {/* Three Column Layout */}
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: '1.5fr 1fr 280px',
-              gap: 6,
-              mb: 8
+              gridTemplateColumns: '1.5fr 1fr 300px',
+              gap: 8,
+              mb: 12
             }}
           >
-            {/* Left: Top Expenses */}
             <Box>
-              <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 5 }}>
                 <Typography
                   variant="h5"
                   sx={{ fontWeight: 700, color: '#1f2937', mb: 1 }}
@@ -659,7 +634,7 @@ const MonthlyBudgetOverview = () => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      py: 3,
+                      py: 4,
                       px: 0,
                       borderBottom:
                         index < topExpenses.length - 1
@@ -744,9 +719,8 @@ const MonthlyBudgetOverview = () => {
                 ))}
               </Box>
             </Box>
-            {/* Middle: Budget Health */}
             <Box>
-              <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 5 }}>
                 <Typography
                   variant="h5"
                   sx={{ fontWeight: 700, color: '#1f2937', mb: 1 }}
@@ -760,7 +734,7 @@ const MonthlyBudgetOverview = () => {
               <Box
                 sx={{
                   textAlign: 'center',
-                  mb: 4,
+                  mb: 5,
                   p: 4,
                   bgcolor: '#f8fafc',
                   borderRadius: 3
@@ -821,7 +795,7 @@ const MonthlyBudgetOverview = () => {
                   Your budget is well-balanced with room for improvement
                 </Typography>
               </Box>
-              <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 5 }}>
                 <Box
                   sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}
                 >
@@ -904,11 +878,10 @@ const MonthlyBudgetOverview = () => {
                 </Box>
               </Box>
             </Box>
-            {/* Right: Ad Placeholders */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               <Paper
                 sx={{
-                  height: 250,
+                  height: 280,
                   p: 3,
                   border: '2px dashed #cbd5e1',
                   borderRadius: 3,
@@ -949,7 +922,7 @@ const MonthlyBudgetOverview = () => {
               </Paper>
               <Paper
                 sx={{
-                  height: 250,
+                  height: 280,
                   p: 3,
                   border: '2px dashed #cbd5e1',
                   borderRadius: 3,
@@ -990,21 +963,17 @@ const MonthlyBudgetOverview = () => {
               </Paper>
             </Box>
           </Box>
-
           <ProgressDivider label="Savings & Debt Progress" />
-
-          {/* Savings and Debt Section */}
           <Box
             sx={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gap: 6,
-              mb: 8
+              gap: 8,
+              mb: 12
             }}
           >
-            {/* Left: Savings Goals */}
             <Box>
-              <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 5 }}>
                 <Typography
                   variant="h5"
                   sx={{ fontWeight: 700, color: '#1f2937', mb: 1 }}
@@ -1015,8 +984,7 @@ const MonthlyBudgetOverview = () => {
                   Track your journey toward financial milestones
                 </Typography>
               </Box>
-
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {savingsGoals.map((goal) => {
                   const progress =
                     (goal.currentBalance / goal.targetAmount) * 100;
@@ -1025,7 +993,6 @@ const MonthlyBudgetOverview = () => {
                     goal.targetAmount,
                     goal.monthlyContribution
                   );
-
                   return (
                     <Box
                       key={goal.id}
@@ -1087,7 +1054,6 @@ const MonthlyBudgetOverview = () => {
                           }}
                         />
                       </Box>
-
                       <Box sx={{ mb: 2 }}>
                         <Box
                           sx={{
@@ -1125,7 +1091,6 @@ const MonthlyBudgetOverview = () => {
                           }}
                         />
                       </Box>
-
                       <Box
                         sx={{
                           display: 'flex',
@@ -1161,10 +1126,8 @@ const MonthlyBudgetOverview = () => {
                 })}
               </Box>
             </Box>
-
-            {/* Right: Debt Payoff */}
             <Box>
-              <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 5 }}>
                 <Typography
                   variant="h5"
                   sx={{ fontWeight: 700, color: '#1f2937', mb: 1 }}
@@ -1175,8 +1138,7 @@ const MonthlyBudgetOverview = () => {
                   Track your path to financial freedom
                 </Typography>
               </Box>
-
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {debts.map((debt) => {
                   const progress =
                     ((debt.originalBalance - debt.currentBalance) /
@@ -1186,7 +1148,6 @@ const MonthlyBudgetOverview = () => {
                     debt.currentBalance,
                     debt.monthlyPayment
                   );
-
                   return (
                     <Box
                       key={debt.id}
@@ -1249,7 +1210,6 @@ const MonthlyBudgetOverview = () => {
                           }}
                         />
                       </Box>
-
                       <Box sx={{ mb: 2 }}>
                         <Box
                           sx={{
@@ -1286,7 +1246,6 @@ const MonthlyBudgetOverview = () => {
                           }}
                         />
                       </Box>
-
                       <Box
                         sx={{
                           display: 'flex',
@@ -1340,17 +1299,15 @@ const MonthlyBudgetOverview = () => {
               </Box>
             </Box>
           </Box>
-
-          {/* Bottom Insights Bar */}
           <Box
             sx={{
-              p: 4,
+              p: 5,
               background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
               borderRadius: 3,
               border: '1px solid #7dd3fc'
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
               <LightbulbIcon sx={{ fontSize: 24, color: '#0369a1' }} />
               <Typography
                 variant="h6"
@@ -1359,12 +1316,11 @@ const MonthlyBudgetOverview = () => {
                 Smart Recommendations
               </Typography>
             </Box>
-
             <Box
               sx={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: 4
+                gap: 5
               }}
             >
               <Box>
@@ -1382,7 +1338,6 @@ const MonthlyBudgetOverview = () => {
                   by 8 points and save £1,200 annually.
                 </Typography>
               </Box>
-
               <Box>
                 <Typography
                   variant="body2"
@@ -1398,7 +1353,6 @@ const MonthlyBudgetOverview = () => {
                   contributions by 2% to maximize growth.
                 </Typography>
               </Box>
-
               <Box>
                 <Typography
                   variant="body2"
@@ -1421,5 +1375,4 @@ const MonthlyBudgetOverview = () => {
     </Collapse>
   );
 };
-
 export default MonthlyBudgetOverview;
