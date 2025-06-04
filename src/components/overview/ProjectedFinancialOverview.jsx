@@ -345,37 +345,14 @@ const ProjectedFinancialOverview = () => {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
-              }}
-            >
-              <InsightIcon sx={{ fontSize: 22 }} />
-            </Box>
             <Box>
               <Typography
                 variant="h5"
-                sx={{
-                  fontWeight: 700,
-                  color: '#374151',
-                  fontSize: '1.25rem',
-                  mb: 0.5
-                }}
+                sx={{ fontWeight: 700, color: '#1f2937', mb: 1 }}
               >
                 Financial Projection
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: '#6b7280', fontSize: '0.85rem' }}
-              >
+              <Typography variant="body2" sx={{ color: '#6b7280' }}>
                 Interactive timeline showing your projected financial growth
               </Typography>
             </Box>
@@ -537,9 +514,9 @@ const ProjectedFinancialOverview = () => {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 4,
-          height: '300px' // Fixed height for consistency
+          height: '300px'
         }}
       >
         <InsightCard
@@ -562,7 +539,6 @@ const ProjectedFinancialOverview = () => {
           trend={timeHorizon > 0 ? 'up' : null}
           icon={SavingsIcon}
         />
-
         <InsightCard
           title="Emergency Fund"
           value={`${timeHorizon === 0 ? emergencyMonths : projectedEmergencyMonths} months`}
@@ -587,7 +563,6 @@ const ProjectedFinancialOverview = () => {
           }
           icon={SecurityIcon}
         />
-
         <InsightCard
           title="Debt Freedom"
           value={
@@ -624,29 +599,6 @@ const ProjectedFinancialOverview = () => {
             timeHorizon > 0 && projectedDebt < totalDebtBalance ? 'down' : null
           }
           icon={DebtIcon}
-        />
-
-        <InsightCard
-          title="Net Worth"
-          value={`£${(timeHorizon === 0 ? netWorth : projectedNetWorth).toLocaleString()}`}
-          change={netWorthChange}
-          description={
-            timeHorizon > 0
-              ? `Total wealth accumulation over time`
-              : `Current assets minus debts`
-          }
-          color="#8b5cf6"
-          progressValue={Math.min(
-            Math.max(
-              ((timeHorizon === 0 ? netWorth : projectedNetWorth) + 10000) /
-                600,
-              0
-            ) * 100,
-            100
-          )}
-          progressLabel="Building long-term wealth"
-          trend={timeHorizon > 0 && projectedNetWorth > netWorth ? 'up' : null}
-          icon={WealthIcon}
         />
       </Box>
     </>

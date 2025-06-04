@@ -262,7 +262,304 @@ const MonthlyBudgetOverview = () => {
   return (
     <Collapse in={isExpanded} timeout="auto" unmountOnExit>
       <CardContent sx={{ p: 0 }}>
-        <ProjectedFinancialOverview />
+        <Box sx={{ px: 3 }}>
+          {/* ProjectedFinancialOverview with Budget Health and Ad */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 280px',
+              gap: 4,
+              mb: 6
+            }}
+          >
+            <Box>
+              <ProjectedFinancialOverview />
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {/* Top: Budget Health */}
+              <Paper
+                sx={{
+                  p: 0,
+                  background:
+                    'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 3,
+                  height: 'calc(50% - 12px)',
+                  cursor: 'pointer',
+                  overflow: 'hidden',
+                  '&:hover': {
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.12)',
+                    transform: 'translateY(-2px)',
+                    border: '1px solid #cbd5e1'
+                  },
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3px',
+                    background: `linear-gradient(90deg, ${getHealthColor(budgetHealth.score)} 0%, ${getHealthColor(budgetHealth.score)}aa 100%)`,
+                    boxShadow: `0 2px 8px ${getHealthColor(budgetHealth.score)}40`
+                  }
+                }}
+                onClick={() => console.log('Open budget health details')}
+              >
+                <Box sx={{ position: 'relative' }}>
+                  <Box
+                    sx={{
+                      p: 3,
+                      textAlign: 'center',
+                      background: `linear-gradient(135deg, ${getHealthColor(budgetHealth.score)}08 0%, ${getHealthColor(budgetHealth.score)}04 100%)`,
+                      borderBottom: '1px solid #e2e8f0'
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        display: 'inline-block',
+                        mb: 2
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 70,
+                          height: 70,
+                          borderRadius: '50%',
+                          background: `conic-gradient(${getHealthColor(budgetHealth.score)} ${budgetHealth.score * 3.6}deg, #e5e7eb 0deg)`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          position: 'relative',
+                          boxShadow: `0 4px 12px ${getHealthColor(budgetHealth.score)}20`
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: 52,
+                            height: 52,
+                            borderRadius: '50%',
+                            bgcolor: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.06)'
+                          }}
+                        >
+                          <Typography
+                            variant="h4"
+                            sx={{
+                              fontWeight: 900,
+                              color: getHealthColor(budgetHealth.score),
+                              fontSize: '1.3rem'
+                            }}
+                          >
+                            {budgetHealth.score}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: -4,
+                          right: -4,
+                          width: 20,
+                          height: 20,
+                          borderRadius: '50%',
+                          bgcolor: 'white',
+                          border: '2px solid #e2e8f0',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}
+                      >
+                        <Typography sx={{ fontSize: '10px' }}>ℹ️</Typography>
+                      </Box>
+                    </Box>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 700,
+                        color: '#374151',
+                        fontSize: '0.85rem',
+                        mb: 0.5
+                      }}
+                    >
+                      Budget Health
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: getHealthColor(budgetHealth.score),
+                        fontSize: '0.75rem',
+                        fontWeight: 600
+                      }}
+                    >
+                      Good Standing
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      p: 3,
+                      pt: 2,
+                      background:
+                        'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        mb: 2
+                      }}
+                    >
+                      <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                      >
+                        <Box
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            bgcolor: '#10b981'
+                          }}
+                        />
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: '#374151',
+                            fontSize: '0.7rem',
+                            fontWeight: 600
+                          }}
+                        >
+                          Strengths
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: '#10b981',
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            ml: 0.5
+                          }}
+                        >
+                          {budgetHealth.strengths.length}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                      >
+                        <Box
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            bgcolor: '#f59e0b'
+                          }}
+                        />
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: '#374151',
+                            fontSize: '0.7rem',
+                            fontWeight: 600
+                          }}
+                        >
+                          Areas
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: '#f59e0b',
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            ml: 0.5
+                          }}
+                        >
+                          {budgetHealth.concerns.length}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 1,
+                        p: 1.5,
+                        bgcolor: 'rgba(102, 126, 234, 0.08)',
+                        borderRadius: 2,
+                        border: '1px solid rgba(102, 126, 234, 0.12)'
+                      }}
+                    >
+                      <Typography sx={{ fontSize: '12px' }}>👆</Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: '#667eea',
+                          fontSize: '0.7rem',
+                          fontWeight: 600
+                        }}
+                      >
+                        Click for detailed analysis
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </Paper>
+              {/* Bottom: Ad Placeholder */}
+              <Paper
+                sx={{
+                  p: 3,
+                  border: '2px dashed #cbd5e1',
+                  borderRadius: 3,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: '#f8fafc',
+                  color: '#6b7280',
+                  height: 'calc(50% - 12px)'
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 2,
+                    bgcolor: '#e2e8f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 2
+                  }}
+                >
+                  <Typography sx={{ fontSize: '16px' }}>📊</Typography>
+                </Box>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 600,
+                    textAlign: 'center',
+                    mb: 1,
+                    fontSize: '0.8rem'
+                  }}
+                >
+                  Financial Tools
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ textAlign: 'center', fontSize: '0.7rem' }}
+                >
+                  Sponsored content
+                </Typography>
+              </Paper>
+            </Box>
+          </Box>
+        </Box>
 
         <Box sx={{ px: 3 }}>
           <ProgressDivider label="Budget Breakdown" />
